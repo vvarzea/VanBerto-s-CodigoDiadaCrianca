@@ -473,6 +473,53 @@
       flex-shrink:0;
     }
 
+    /* ── MOBILE: D-pad compacto para caber tudo sem scroll ── */
+    @media(max-width:600px){
+      .dpad-wrap{
+        padding:8px 6px 6px;
+        gap:3px;
+        margin-bottom:8px;
+      }
+      .dpad-wrap::before{font-size:.58rem;}
+      .dpad-row{gap:3px;}
+      .dpad-btn{
+        width:clamp(52px,13vw,64px) !important;
+        height:clamp(52px,13vw,64px) !important;
+        border-radius:12px;
+        border-width:2px !important;
+        box-shadow:0 4px 0 #7a1e04, 0 0 10px rgba(255,107,53,0.35);
+      }
+      .dpad-btn:active,.dpad-btn.cmd-btn-active{
+        transform:translateY(3px);
+        box-shadow:0 1px 0 #7a1e04;
+      }
+      .dpad-center{
+        width:clamp(52px,13vw,64px) !important;
+        height:clamp(52px,13vw,64px) !important;
+      }
+      .dpad-cell-empty{
+        width:clamp(52px,13vw,64px) !important;
+        height:clamp(52px,13vw,64px) !important;
+      }
+      .dpad-arrow{font-size:clamp(1.1rem,3.5vw,1.4rem);}
+      .dpad-label{font-size:.44rem;}
+      .dpad-vanberto-img{
+        width:clamp(38px,10vw,52px) !important;
+        height:clamp(38px,10vw,52px) !important;
+      }
+      .dpad-action-btn{
+        width:clamp(52px,13vw,64px) !important;
+        height:clamp(52px,13vw,64px) !important;
+        border-radius:12px;
+        box-shadow:0 4px 0 #1e0a4e, 0 0 10px rgba(162,155,254,0.35) !important;
+      }
+      .dpad-action-btn .dpad-arrow{font-size:clamp(1rem,3vw,1.3rem);}
+      .dpad-actions{gap:6px;margin-top:4px;}
+      /* Feedback e hint mais compactos */
+      .feedback-box{font-size:.72rem;padding:6px 10px;margin-bottom:4px;}
+      .kbd-hint{display:none;}
+    }
+
     /* cmd-btn: base herdada por dpad-btn e action-btn */
     .cmd-btn{
       cursor:pointer;font-weight:900;
