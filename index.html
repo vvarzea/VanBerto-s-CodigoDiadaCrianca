@@ -2,7 +2,7 @@
 <html lang="pt-PT">
 <head>
   <meta charset="UTF-8"/>
-  <title>Mundo da Criança — Aventura!</title>
+  <title>Mundo da Criança — Programação!</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Baloo+2:wght@700;800;900&family=Nunito:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
@@ -100,7 +100,8 @@
       margin:0;font-family:'Nunito',sans-serif;
       background:#1a0a2e;color:var(--surface-text);
       animation:festFlicker 8s ease-in-out infinite;
-      min-height:100vh;overflow-x:hidden;transition:background .3s,color .3s;
+      min-height:100vh;min-height:100dvh;
+      overflow-x:hidden;transition:background .3s,color .3s;
     }
     body.dark{background:var(--bg-dark);}
     h1,h2,h3,h4{font-family:'Fredoka One',cursive;}
@@ -807,8 +808,42 @@
     .swipe-hint{
       font-size:.68rem;color:rgba(162,155,254,0.55);text-align:center;
       margin-top:6px;font-style:italic;display:none;
+      transition:opacity .5s ease, max-height .5s ease;
+      overflow:hidden;max-height:40px;
     }
     @media(max-width:600px){.swipe-hint{display:block;}}
+    .swipe-hint.swipe-hint-done{opacity:0;max-height:0;pointer-events:none;}
+
+    /* ── LANDSCAPE WARNING ── */
+    #landscape-warning{
+      display:none;
+      position:fixed;inset:0;z-index:99999;
+      background:#1a0a2e;
+      flex-direction:column;align-items:center;justify-content:center;gap:16px;
+      font-family:'Fredoka One',cursive;color:#ffd700;text-align:center;padding:24px;
+    }
+    #landscape-warning .lw-icon{font-size:3.5rem;animation:lwRotate 1.5s ease-in-out infinite alternate;}
+    #landscape-warning p{font-size:1.1rem;color:#ffb890;margin:0;}
+    @keyframes lwRotate{from{transform:rotate(-20deg);}to{transform:rotate(20deg);}}
+    @media(max-width:600px) and (orientation:landscape){
+      #landscape-warning{display:flex;}
+    }
+
+    /* ── FLASH VISUAL ao carregar botão ── */
+    @keyframes btnFlash{
+      0%{filter:brightness(1);}
+      35%{filter:brightness(2.2) saturate(1.8);}
+      100%{filter:brightness(1);}
+    }
+    .cmd-btn-flash{animation:btnFlash .2s ease-out forwards !important;}
+
+    /* ── VanBerto: reações ── */
+    @keyframes vbBump{0%,100%{transform:scale(1) translateY(0);}40%{transform:scale(1.3) translateY(-8px);}70%{transform:scale(0.9) translateY(2px);}}
+    @keyframes vbShake{0%,100%{transform:translateX(0);}20%{transform:translateX(-6px);}40%{transform:translateX(6px);}60%{transform:translateX(-4px);}80%{transform:translateX(4px);}}
+    @keyframes vbSpin{0%{transform:rotate(0deg) scale(1);}50%{transform:rotate(180deg) scale(1.25);}100%{transform:rotate(360deg) scale(1);}}
+    .vb-bump{animation:vbBump .4s ease-out forwards !important;}
+    .vb-shake{animation:vbShake .35s ease-out forwards !important;}
+    .vb-spin{animation:vbSpin .55s ease-out forwards !important;}
 
     /* ── POPUP NOME DO JOGADOR ── */
     #name-overlay{
@@ -1108,7 +1143,7 @@
   <header>
     <div>
       <h1>Mundo da Criança</h1>
-      <p>Aventura, brincadeiras e direitos das crianças!</p>
+      <p>Programação, aventura e direitos das crianças!</p>
     </div>
     <div class="header-player" id="header-player" style="display:none;">
       <span>👋 Olá,</span>
@@ -1367,6 +1402,13 @@
   <div id="app-footer">Professora Vanda Várzea</div>
 </div>
 
+<!-- LANDSCAPE WARNING -->
+<div id="landscape-warning">
+  <div class="lw-icon">📱</div>
+  <h2 style="margin:0;font-size:1.4rem;">Roda o ecrã!</h2>
+  <p>Este jogo fica melhor em modo vertical 🎮</p>
+</div>
+
 <!-- POPUP VITÓRIA -->
 <div class="popup hidden" id="popup-complete">
   <div class="popup-inner" style="position:relative;">
@@ -1480,7 +1522,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // robots do header e sidebar removidos — substituídos por nome do jogador
 
-  /* ===== DADOS DO JOGO — Dia da Criança ===== */
+  /* ===== DADOS DO JOGO ===== */
   const GAME_DATA = {
     "1c": {
       name:"1.º Ciclo", mode:"direct",
@@ -2273,18 +2315,20 @@ document.addEventListener("DOMContentLoaded", () => {
     if(!isQueueMode()) saveStateSnapshot();
     if(cmd==="MOVE") moveForward();
     else if(cmd==="BACK") moveBackward();
-    else if(cmd==="LEFT"){ dir=(dir+3)%4; playSound("soundMove"); setFeedback("↩️ Virou à esquerda.","info"); moveCount++; updateMoves(); renderGrid(); }
-    else if(cmd==="RIGHT"){ dir=(dir+1)%4; playSound("soundMove"); setFeedback("↪️ Virou à direita.","info"); moveCount++; updateMoves(); renderGrid(); }    else if(cmd==="COLLECT") grabItem();
-    else if(cmd==="DROP") dropItem();
+    else if(cmd==="LEFT"){ dir=(dir+3)%4; playSound("soundMove"); setFeedback("↩️ Virou à esquerda.","info"); moveCount++; updateMoves(); renderGrid(); if(window._vbReact) window._vbReact('vb-bump'); }
+    else if(cmd==="RIGHT"){ dir=(dir+1)%4; playSound("soundMove"); setFeedback("↪️ Virou à direita.","info"); moveCount++; updateMoves(); renderGrid(); if(window._vbReact) window._vbReact('vb-bump'); }
+    else if(cmd==="COLLECT"){ grabItem(); }
+    else if(cmd==="DROP"){ dropItem(); }
   }
 
   function moveForward(){
     const {robot,obstacles,size}=levelState;
     const [r,c]=robot; let nr=r,nc=c;
     if(dir===0)nr--;else if(dir===1)nc++;else if(dir===2)nr++;else nc--;
-    if(nr<0||nr>=size||nc<0||nc>=size){ playSound("soundBump"); setFeedback("❌ O robô não pode sair do tabuleiro.","err"); renderGrid(); return; }
-    if(obstacles.some(o=>o[0]===nr&&o[1]===nc)){ playSound("soundBump"); setFeedback("⛔ Há um obstáculo! Contorna-o.","warn"); renderGrid(); return; }
+    if(nr<0||nr>=size||nc<0||nc>=size){ playSound("soundBump"); setFeedback("❌ O robô não pode sair do tabuleiro.","err"); renderGrid(); if(window._vbReact) window._vbReact('vb-shake'); return; }
+    if(obstacles.some(o=>o[0]===nr&&o[1]===nc)){ playSound("soundBump"); setFeedback("⛔ Há um obstáculo! Contorna-o.","warn"); renderGrid(); if(window._vbReact) window._vbReact('vb-shake'); return; }
     robot[0]=nr; robot[1]=nc; moveCount++; updateMoves(); playSound("soundMove"); setFeedback("⬆️ Robô avançou.","info");
+    if(window._vbReact) window._vbReact('vb-bump');
     renderGrid(); checkStuck();
   }
 
@@ -2292,9 +2336,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const {robot,obstacles,size}=levelState;
     const [r,c]=robot; let nr=r,nc=c;
     if(dir===0)nr++;else if(dir===1)nc--;else if(dir===2)nr--;else nc++;
-    if(nr<0||nr>=size||nc<0||nc>=size){ playSound("soundBump"); setFeedback("❌ O robô não pode sair do tabuleiro.","err"); renderGrid(); return; }
-    if(obstacles.some(o=>o[0]===nr&&o[1]===nc)){ playSound("soundBump"); setFeedback("⛔ Há um obstáculo! Contorna-o.","warn"); renderGrid(); return; }
+    if(nr<0||nr>=size||nc<0||nc>=size){ playSound("soundBump"); setFeedback("❌ O robô não pode sair do tabuleiro.","err"); renderGrid(); if(window._vbReact) window._vbReact('vb-shake'); return; }
+    if(obstacles.some(o=>o[0]===nr&&o[1]===nc)){ playSound("soundBump"); setFeedback("⛔ Há um obstáculo! Contorna-o.","warn"); renderGrid(); if(window._vbReact) window._vbReact('vb-shake'); return; }
     robot[0]=nr; robot[1]=nc; moveCount++; updateMoves(); playSound("soundMove"); setFeedback("⬇️ Robô recuou.","info");
+    if(window._vbReact) window._vbReact('vb-bump');
     renderGrid(); checkStuck();
   }
 
@@ -2348,21 +2393,22 @@ document.addEventListener("DOMContentLoaded", () => {
   function grabItem(){
     const {robot,items}=levelState;
     const [r,c]=robot;
-    if(carriedItem){ playSound("soundError"); setFeedback("✋ Já tens um item. Deposita primeiro.","warn"); renderGrid(); return; }
+    if(carriedItem){ playSound("soundError"); setFeedback("✋ Já tens um item. Deposita primeiro.","warn"); renderGrid(); if(window._vbReact) window._vbReact('vb-shake'); return; }
     const idx=items.findIndex(it=>!it.collected&&it.r===r&&it.c===c);
-    if(idx===-1){ playSound("soundError"); setFeedback("❌ Não há nenhum item aqui para apanhar.","err"); renderGrid(); return; }
+    if(idx===-1){ playSound("soundError"); setFeedback("❌ Não há nenhum item aqui para apanhar.","err"); renderGrid(); if(window._vbReact) window._vbReact('vb-shake'); return; }
     const em=currentItemEms[idx%currentItemEms.length];
     items[idx].collected=true; carriedItem=em;
     moveCount++; updateMoves(); playSound("soundSuccess"); setFeedback("✅ Item apanhado! Leva ao portal 🌀","ok");
-    renderGrid(); collectEffect(em);
+    renderGrid(); collectEffect(em); if(window._vbReact) window._vbReact('vb-spin');
   }
 
   function dropItem(){
     const {robot,items}=levelState;
     const [r,c]=robot;
-    if(!carriedItem){ playSound("soundError"); setFeedback("❌ Não tens nenhum item para depositar.","err"); renderGrid(); return; }
-    if(!doorPos||r!==doorPos[0]||c!==doorPos[1]){ playSound("soundError"); setFeedback("🌀 Tens de estar no portal para depositar!","warn"); renderGrid(); return; }
+    if(!carriedItem){ playSound("soundError"); setFeedback("❌ Não tens nenhum item para depositar.","err"); renderGrid(); if(window._vbReact) window._vbReact('vb-shake'); return; }
+    if(!doorPos||r!==doorPos[0]||c!==doorPos[1]){ playSound("soundError"); setFeedback("🌀 Tens de estar no portal para depositar!","warn"); renderGrid(); if(window._vbReact) window._vbReact('vb-shake'); return; }
     carriedItem=null; moveCount++; updateMoves(); playTone('deposit'); depositEffect();
+    if(window._vbReact) window._vbReact('vb-spin');
     const rem=items.filter(i=>!i.collected).length;
     if(rem===0){
       allDeposited=true; doorQuizOpen=true; renderGrid();
@@ -2384,38 +2430,38 @@ document.addEventListener("DOMContentLoaded", () => {
   /* ===== QUIZ ===== */
   const QUIZ_DATA={
     parque:[
-      {q:"Quantos dias tem uma semana?",ops:["5","6","7","8"],a:2},
-      {q:"Qual é o quinto mês do ano?",ops:["Março","Abril","Maio","Junho"],a:2},
-      {q:"Quanto é 25 + 13?",ops:["35","37","38","40"],a:2},
-      {q:"Qual destas estações do ano tem neve?",ops:["Verão","Primavera","Outono","Inverno"],a:3},
-      {q:"Quantos meses tem um ano?",ops:["10","11","12","13"],a:2},
-      {q:"Quanto é 40 - 15?",ops:["20","25","30","35"],a:1},
-      {q:"Qual destes animais voa?",ops:["Cão","Peixe","Pombo","Cobra"],a:2},
-      {q:"Quantos sentidos tem o corpo humano?",ops:["3","4","5","6"],a:2},
-      {q:"Qual é o dia a seguir a segunda-feira?",ops:["Domingo","Terça-feira","Quarta-feira","Sábado"],a:1},
-      {q:"Quanto é 50 + 30?",ops:["70","75","80","90"],a:2},
-      {q:"Qual destes animais vive no mar?",ops:["Leão","Golfinho","Elefante","Cavalo"],a:1},
-      {q:"Qual destas frutas é vermelha?",ops:["Banana","Laranja","Morango","Uva"],a:2},
-      {q:"Quanto é 100 - 40?",ops:["50","55","60","70"],a:2},
-      {q:"Qual destes é um vegetal?",ops:["Maçã","Cenoura","Banana","Laranja"],a:1},
-      {q:"Com que órgão ouvimos?",ops:["Olhos","Nariz","Ouvidos","Boca"],a:2}
+      {q:"Quando se celebra o Dia da Criança em Portugal?",ops:["1 de janeiro","1 de junho","25 de dezembro","31 de outubro"],a:1},
+      {q:"O Dia da Criança é um dia para celebrar:",ops:["Só os adultos","Os direitos e a alegria das crianças","Apenas os professores","Os animais"],a:1},
+      {q:"Brincar é um direito das crianças?",ops:["Não, é um privilégio","Sim, todas as crianças têm direito a brincar","Só nos fins de semana","Apenas até aos 5 anos"],a:1},
+      {q:"Qual destas é uma brincadeira ao ar livre?",ops:["Ver televisão","Jogar ao computador","Jogar à apanhada","Dormir"],a:2},
+      {q:"As crianças têm direito a:",ops:["Trabalhar em vez de estudar","Ter um nome, família e ir à escola","Ficar sempre em casa","Não ter amigos"],a:1},
+      {q:"O que é importante partilhar com os amigos no parque?",ops:["Os brinquedos e a amizade","Só dinheiro","Nunca partilhar nada","Apenas comida"],a:0},
+      {q:"Qual destes é um direito de TODAS as crianças?",ops:["Ter um carro","Receber cuidados e carinho","Ter um castelo","Só brincar e nunca estudar"],a:1},
+      {q:"O que devemos fazer se uma criança está triste no parque?",ops:["Ignorar","Ajudar e ser amigo","Rir dela","Ir embora"],a:1},
+      {q:"As crianças têm direito a expressar a sua opinião?",ops:["Não, só os adultos falam","Sim, a opinião das crianças é importante","Só em casa","Nunca"],a:1},
+      {q:"O que torna um parque divertido para as crianças?",ops:["Estar sozinho","Brincar, correr e ter amigos","Ficar quieto num banco","Só olhar para o telemóvel"],a:1},
+      {q:"As crianças de todo o mundo têm os mesmos direitos?",ops:["Não, depende do país","Sim, são direitos universais","Só as crianças ricas","Apenas na Europa"],a:1},
+      {q:"Qual destes é um símbolo do Dia da Criança?",ops:["Uma gravata","Uma balão colorido e sorrisos","Um computador","Um carro"],a:1},
+      {q:"O que significa respeitar os outros no parque?",ops:["Empurrar para passar à frente","Tratar todos com amabilidade e justiça","Só brincar com os melhores amigos","Não falar com ninguém"],a:1},
+      {q:"As crianças têm direito a viver sem violência?",ops:["Não","Sim, a segurança é um direito fundamental","Só em casa","Apenas na escola"],a:1},
+      {q:"O que podemos fazer no Dia da Criança?",ops:["Trabalhar o dia todo","Celebrar, brincar e aprender sobre os direitos das crianças","Ficar triste em casa","Não fazer nada especial"],a:1}
     ],
     circo:[
-      {q:"Qual é o rio mais comprido de Portugal?",ops:["Douro","Tejo","Mondego","Guadiana"],a:1},
-      {q:"Quanto é ½ de 20?",ops:["5","8","10","12"],a:2},
-      {q:"Qual destes órgãos serve para respirar?",ops:["Coração","Estômago","Pulmões","Fígado"],a:2},
-      {q:"Qual é a cidade mais a norte de Portugal continental?",ops:["Porto","Braga","Viana do Castelo","Vila Real"],a:2},
-      {q:"Quanto é 7 × 8?",ops:["48","54","56","63"],a:2},
-      {q:"Qual destes é um mineral?",ops:["Madeira","Ouro","Borracha","Algodão"],a:1},
-      {q:"Quantos lados tem um hexágono?",ops:["4","5","6","8"],a:2},
-      {q:"O que faz o coração?",ops:["Digere os alimentos","Bombeia o sangue","Filtra o ar","Produz saliva"],a:1},
-      {q:"Qual é a fração equivalente a metade?",ops:["1/3","1/4","1/2","2/3"],a:2},
-      {q:"Qual destes animais é um réptil?",ops:["Golfinho","Lagarto","Pombo","Ouriço"],a:1},
-      {q:"Quanto é 123 + 456?",ops:["569","579","589","679"],a:1},
-      {q:"Qual é a serra mais alta de Portugal continental?",ops:["Serra da Estrela","Serra do Gerês","Serra de Sintra","Serra da Arrábida"],a:0},
-      {q:"Qual destes é um estado da água?",ops:["Duro","Gasoso","Granulado","Esponjoso"],a:1},
-      {q:"Quantos milímetros tem 1 centímetro?",ops:["5","10","100","1000"],a:1},
-      {q:"Qual é o distrito mais a sul de Portugal continental?",ops:["Setúbal","Évora","Beja","Faro"],a:3}
+      {q:"Em que data é o Dia Universal da Criança?",ops:["1 de junho","20 de novembro","25 de abril","31 de dezembro"],a:1},
+      {q:"Que organização aprovou a Convenção sobre os Direitos da Criança?",ops:["FIFA","ONU — Organização das Nações Unidas","NATO","União Europeia"],a:1},
+      {q:"Em que ano foi aprovada a Convenção sobre os Direitos da Criança?",ops:["1950","1975","1989","2001"],a:2},
+      {q:"O que é o UNICEF?",ops:["Uma empresa de brinquedos","O Fundo das Nações Unidas para a Infância","Uma escola","Um programa de televisão"],a:1},
+      {q:"Qual destes é um direito das crianças?",ops:["Trabalhar em fábricas","Ter acesso à educação gratuita","Não ter nome","Viver sem família"],a:1},
+      {q:"O trabalho infantil é:",ops:["Um direito das crianças","Uma violação dos direitos das crianças","Algo normal","Recomendado pela ONU"],a:1},
+      {q:"As crianças refugiadas têm direitos?",ops:["Não, perderam os direitos","Sim, os direitos aplicam-se a todas as crianças do mundo","Apenas em alguns países","Só depois dos 10 anos"],a:1},
+      {q:"O que significa discriminação?",ops:["Tratar todos com igualdade","Tratar alguém de forma injusta por ser diferente","Uma brincadeira divertida","Uma festa de circo"],a:1},
+      {q:"As crianças com deficiência têm direito a:",ops:["Ficar em casa sempre","Participar plenamente na sociedade e na escola","Não brincar","Ter menos direitos"],a:1},
+      {q:"O que é o bullying?",ops:["Uma brincadeira saudável","Um comportamento agressivo e repetido que prejudica outras crianças","Um jogo de circo","Um tipo de desporto"],a:1},
+      {q:"As crianças têm direito a ter uma identidade. Isso inclui:",ops:["Só o nome","Nome, nacionalidade e família","Apenas a cor dos olhos","O tamanho dos pés"],a:1},
+      {q:"Qual destes é um exemplo de proteção das crianças?",ops:["Deixá-las sozinhas em perigo","Garantir que têm adultos responsáveis que as protegem","Não ligar ao que sentem","Ignorar as suas necessidades"],a:1},
+      {q:"O que devem fazer os adultos para respeitar as crianças?",ops:["Ignorar o que dizem","Ouvir, proteger e garantir os seus direitos","Só dar ordens","Nunca explicar nada"],a:1},
+      {q:"Quantos artigos tem a Convenção sobre os Direitos da Criança?",ops:["10","25","54","100"],a:2},
+      {q:"As crianças têm direito ao descanso e ao lazer?",ops:["Não, só ao estudo","Sim, o descanso e o brincar são direitos fundamentais","Apenas ao fim de semana","Só em férias"],a:1}
     ],
     arte:[
       {q:"Quem foi o primeiro rei de Portugal?",ops:["D. Sancho I","D. Afonso Henriques","D. Dinis","D. João I"],a:1},
@@ -2539,8 +2585,8 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const FACTS={
-    parque:["Uma semana tem 7 dias e um ano tem 52 semanas! O nome dos dias da semana em português vem do latim — segunda, terça, quarta, quinta e sexta são os números 2 a 6!","Os golfinhos são mamíferos marinhos muito inteligentes — comunicam entre si com sons e até têm nomes uns para os outros!","O morango não é tecnicamente um fruto — é um pseudofruto! Os verdadeiros frutos do morangueiro são os pontinhos amarelos que vemos na superfície."],
-    circo:["O rio Tejo é o mais comprido da Península Ibérica com 1007 km, mas só 275 km percorrem Portugal — nasce em Espanha e desagua em Lisboa no Atlântico.","Os pulmões de um adulto têm cerca de 300 milhões de alvéolos pulmonares — pequenas bolsas onde o oxigénio passa para o sangue. Ufa!","A Serra da Estrela é o ponto mais alto de Portugal continental, com 1993 metros. Lá cai neve no inverno e há uma lagoa glaciar chamada Lagoa Comprida."],
+    parque:["O Dia da Criança celebra-se a 1 de junho em Portugal! Foi escolhido para lembrar que todas as crianças merecem um dia especial cheio de brincadeiras, alegria e respeito pelos seus direitos.","Brincar não é só divertido — é um direito! A ONU reconhece que brincar é essencial para o desenvolvimento saudável das crianças. O jogo ajuda a aprender, criar amigos e crescer feliz.","Todas as crianças do mundo têm direitos iguais, independentemente de onde nasceram, da sua cor, religião ou família. A igualdade e o respeito são a base de um mundo melhor!"],
+    circo:["A Convenção sobre os Direitos da Criança foi aprovada pela ONU em 20 de novembro de 1989 — por isso essa data é o Dia Universal da Criança! Mais de 190 países assinaram este acordo histórico.","O UNICEF é o Fundo das Nações Unidas para a Infância, criado em 1946. Trabalha em todo o mundo para garantir saúde, educação e proteção a milhões de crianças em situação difícil.","A Convenção dos Direitos da Criança tem 54 artigos que protegem as crianças: direito ao nome, à família, à escola, à saúde, ao brincar e a viver em segurança e paz."],
     arte:["D. Afonso Henriques tornou-se o primeiro rei de Portugal em 1139, após a Batalha de Ourique. Portugal é um dos países com fronteiras mais antigas da Europa!","O Sistema Solar tem 8 planetas: Mercúrio, Vénus, Terra, Marte, Júpiter, Saturno, Urano e Neptuno. Plutão foi reclassificado como planeta anão em 2006.","A conquista de Ceuta em 1415 pelo rei D. João I marcou o início da expansão marítima portuguesa — o maior feito dos portugueses na Idade Média!"],
     educacao:["A Convenção sobre os Direitos da Criança (ONU, 1989) estabelece no Artigo 28.º que todas as crianças têm direito a educação gratuita e obrigatória no ensino básico.","Em Portugal, a escolaridade obrigatória vai do 1.º ano até ao 12.º ano (ou 18 anos). É um dos maiores investimentos que um país pode fazer no seu futuro!","244 milhões de crianças no mundo não frequentam a escola — quase o dobro da população europeia. Muitas são raparigas ou vivem em zonas de conflito."],
     amizade:["O Artigo 15.º da Convenção dos Direitos da Criança garante às crianças o direito de se associar livremente e de se reunir com outras crianças.","O bullying afeta 1 em cada 3 crianças no mundo. Combatê-lo começa por cada um de nós, incluindo as crianças, que podem ajudar os colegas em dificuldade.","A amizade tem benefícios comprovados para a saúde mental das crianças: reduz a ansiedade, melhora a autoestima e desenvolve habilidades sociais essenciais."],
@@ -3005,10 +3051,59 @@ document.addEventListener("DOMContentLoaded", () => {
   const undoDirect=$("btn-undo-direct");
   if(undoDirect) undoDirect.addEventListener("click",()=>undoLastMove());
 
-  showScreen(menuScreen);
-  updateSideProgress();
-  updateThemeProgressUI();
-  setFeedback("🎉 Escolhe uma fase para começar a aventura do Dia da Criança!","info");
+  /* ── FLASH DE BOTÃO + REAÇÕES VANBERTO + SOM CLIQUE ── */
+  (function(){
+    // Som de clique curto via AudioContext
+    function playClick(){
+      if(isMuted) return;
+      try{
+        const ctx=new(window.AudioContext||window.webkitAudioContext)();
+        const o=ctx.createOscillator(), g=ctx.createGain();
+        o.connect(g); g.connect(ctx.destination);
+        o.frequency.setValueAtTime(520,ctx.currentTime);
+        o.frequency.exponentialRampToValueAtTime(320,ctx.currentTime+0.06);
+        g.gain.setValueAtTime(0.18,ctx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.08);
+        o.start(); o.stop(ctx.currentTime+0.08);
+      }catch(e){}
+    }
+
+    // Flash + som em todos os botões de comando
+    document.querySelectorAll('.cmd-btn').forEach(btn=>{
+      btn.addEventListener('pointerdown',()=>{
+        playClick();
+        btn.classList.remove('cmd-btn-flash');
+        void btn.offsetWidth;
+        btn.classList.add('cmd-btn-flash');
+        setTimeout(()=>btn.classList.remove('cmd-btn-flash'),220);
+      });
+    });
+
+    // Reações do VanBerto
+    const vb=document.querySelector('.dpad-vanberto-img');
+    function vbReact(cls){
+      if(!vb) return;
+      vb.classList.remove('vb-bump','vb-shake','vb-spin');
+      void vb.offsetWidth;
+      vb.classList.add(cls);
+      setTimeout(()=>vb.classList.remove(cls),600);
+    }
+    // Expor para o código principal usar
+    window._vbReact=vbReact;
+
+    // Swipe hint desaparece após 3 usos
+    const SWIPE_KEY='vb_swipe_seen';
+    let swipeSeen=0;
+    try{ swipeSeen=parseInt(localStorage.getItem(SWIPE_KEY)||'0'); }catch(e){}
+    const sh=document.querySelector('.swipe-hint');
+    if(sh && swipeSeen>=3) sh.classList.add('swipe-hint-done');
+    function markSwipeSeen(){
+      swipeSeen++;
+      try{ localStorage.setItem(SWIPE_KEY,swipeSeen); }catch(e){}
+      if(swipeSeen>=3 && sh) sh.classList.add('swipe-hint-done');
+    }
+    window._markSwipeSeen=markSwipeSeen;
+  })();
 
   /* ── TOUCH SWIPE SUPPORT ── */
   (function addSwipeSupport(){
@@ -3036,6 +3131,7 @@ document.addEventListener("DOMContentLoaded", () => {
         renderQueue(); setFeedback("✅ Swipe: "+lm[swipeCmd],"info");
       } else {
         runSingleCommand(swipeCmd);
+        if(window._markSwipeSeen) window._markSwipeSeen();
       }
     },{passive:false});
     // Also attach to the grid itself once it exists (re-attach on level load)
@@ -3118,14 +3214,13 @@ document.addEventListener("DOMContentLoaded", () => {
   (function(){
     const heroMsgs = [
       "Olá! Vamos jogar? 🎮",
-      "🎉 Dia da Criança!",
       "Guia o teu robô! 🤖",
       "Aprende a programar! 🚀",
       "Recolhe os itens! 🎈",
       "Leva os itens ao portal! 🌀",
       "Consegues chegar? 🌟",
       "Escolhe uma aventura! 🗺️",
-      "Brincar é um direito! 🎊",
+      "Pensa antes de agir! 🧠",
       "Força, campeão! 💪",
       "O robô conta contigo! 🤩",
     ];
