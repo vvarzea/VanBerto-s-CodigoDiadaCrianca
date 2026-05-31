@@ -295,10 +295,10 @@
       aspect-ratio:1;border-radius:var(--radius-sm);
       background:var(--cell-bg);border:2px solid var(--cell-border);
       display:flex;align-items:center;justify-content:center;
-      position:relative;font-size:clamp(1.6rem,5vw,2.4rem);transition:background .1s,border-color .1s,box-shadow .1s;
+      position:relative;font-size:clamp(2.2rem,6.5vw,3.2rem);transition:background .1s,border-color .1s,box-shadow .1s;
     }
-    .grid.big .cell{font-size:clamp(1.3rem,3.5vw,2rem);}
-    .grid.huge .cell{font-size:clamp(1rem,2.8vw,1.6rem);}
+    .grid.big .cell{font-size:clamp(1.8rem,5vw,2.6rem);}
+    .grid.huge .cell{font-size:clamp(1.4rem,3.8vw,2rem);}
     .cell.obstacle{
       background:repeating-linear-gradient(45deg,rgba(229,57,53,0.18),rgba(229,57,53,0.18) 4px,rgba(229,57,53,0.04) 4px,rgba(229,57,53,0.04) 8px)!important;
       border-color:rgba(229,57,53,0.55)!important;border-radius:var(--radius-sm)!important;
@@ -313,6 +313,14 @@
     .cell.door-cell.door-open{background:rgba(232,245,233,0.95)!important;border-color:#66BB6A!important;animation:doorGlow 1.5s ease-in-out infinite;}
     .cell.door-cell.door-opening .door-panel{animation:doorOpen 0.5s ease forwards;}
     .door-svg-wrap{width:100%;height:100%;display:flex;align-items:center;justify-content:center;position:relative;}
+    @keyframes portalSpin1{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+    @keyframes portalSpin2{from{transform:rotate(0deg);}to{transform:rotate(-360deg);}}
+    @keyframes portalPulse{0%,100%{opacity:.4;transform:scale(1);}50%{opacity:.9;transform:scale(1.08);}}
+    @keyframes portalCore{0%,100%{transform:scale(1);}50%{transform:scale(1.25);}}
+    .portal-waiting{background:rgba(99,102,241,0.08)!important;}
+    .portal-ready{background:rgba(74,222,128,0.08)!important;}
+    .portal-complete{background:rgba(255,200,50,0.12)!important;}
+
     @keyframes doorOpen{0%{transform:perspective(120px) rotateY(0deg);}100%{transform:perspective(120px) rotateY(-78deg);}}
     @keyframes doorGlow{0%,100%{box-shadow:0 0 6px rgba(102,187,106,0.4);}50%{box-shadow:0 0 18px rgba(102,187,106,0.9);}}
     @keyframes doorPulse{0%,100%{box-shadow:0 0 6px rgba(239,83,80,0.4);}50%{box-shadow:0 0 16px rgba(239,83,80,0.7);}}
@@ -749,28 +757,6 @@
   </header>
 
   <div id="menu-screen" class="screen">
-    <div class="layout-with-side">
-      <div class="sidebar">
-        <div class="side-player" id="side-player">
-          <div class="side-player-name" id="side-player-name">Jogador</div>
-          <div class="side-player-label">Aventureiro</div>
-        </div>
-        <div class="side-section">
-          <div class="side-title">📍 Navegar</div>
-          <button class="side-btn" id="side-home">🏠 Início</button>
-          <button class="side-btn" id="side-1c">🩷 1.º Ciclo — Brincar
-            <div class="side-prog" id="side-prog-1c"></div>
-          </button>
-          <button class="side-btn" id="side-2c">💙 2.º Ciclo — Direitos
-            <div class="side-prog" id="side-prog-2c"></div>
-          </button>
-          <button class="side-btn" id="side-3c">💚 3.º Ciclo — Mundo
-            <div class="side-prog" id="side-prog-3c"></div>
-          </button>
-        </div>
-
-      </div>
-
       <div>
         <!-- Campo do nome do jogador -->
         <div class="hero-name-row" id="hero-name-row" style="margin-bottom:18px;background:linear-gradient(145deg,#2a0a4e,#1a0835);border:2.5px solid #ff6b35;border-radius:14px;padding:14px 18px;">
@@ -799,6 +785,7 @@
               <span class="chip">🎪 Circo</span>
               <span class="chip">🎨 Arte</span>
             </div>
+            <div class="side-prog" id="side-prog-1c" style="font-size:.72rem;color:rgba(255,215,0,0.6);margin-top:6px;"></div>
           </div>
           <div class="cycle-card cycle-card--2c" id="btn-cycle-2c">
             <div class="cycle-title">💙 2.º Ciclo</div>
@@ -808,6 +795,7 @@
               <span class="chip">🤝 Amizade</span>
               <span class="chip">🛡️ Proteção</span>
             </div>
+            <div class="side-prog" id="side-prog-2c" style="font-size:.72rem;color:rgba(255,215,0,0.6);margin-top:6px;"></div>
           </div>
           <div class="cycle-card cycle-card--3c" id="btn-cycle-3c">
             <div class="cycle-title">💚 3.º Ciclo</div>
@@ -817,10 +805,13 @@
               <span class="chip">🚀 Sonhos</span>
               <span class="chip">🌈 Futuro</span>
             </div>
+            <div class="side-prog" id="side-prog-3c" style="font-size:.72rem;color:rgba(255,215,0,0.6);margin-top:6px;"></div>
           </div>
         </div>
+
+        <!-- Progresso geral -->
+        <div id="menu-progress-row" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;justify-content:center;"></div>
       </div>
-    </div>
   </div>
 
   <!-- THEMES 1C -->
@@ -940,7 +931,7 @@
           <div class="grid" id="grid"></div>
         </div>
         <div style="font-size:.72rem;color:#9E7BC2;margin-top:5px;" id="hint-text"></div>
-        <div class="swipe-hint">👆 Desliza na grelha para mover o robot!</div>
+        <div class="swipe-hint">👆 Desliza na grelha para mover o robô!</div>
       </div>
 
       <div class="academy-side">
@@ -1116,9 +1107,9 @@ document.addEventListener("DOMContentLoaded", () => {
             {size:5,robot:[4,3],items:[[1,3]],deposit:[[0,0]],obstacles:[],difficulty:"Super Fácil",desc:"Brincar ao ar livre é essencial para o desenvolvimento das crianças! Apanha o bilhete."}
           ],
           levels:[
-            {size:5,robot:[4,2],items:[[2,2]],deposit:[[0,0]],obstacles:[],difficulty:"Fácil",desc:"Que dia lindo no parque! Apanha o balão 🎈 e leva para a casinha 🏠. Brincar é um direito das crianças!"},
+            {size:5,robot:[4,2],items:[[2,2]],deposit:[[0,0]],obstacles:[],difficulty:"Fácil",desc:"Que dia lindo no parque! Apanha o balão 🎈 e leva ao portal 🌀. Brincar é um direito das crianças!"},
             {size:5,robot:[4,4],items:[[3,1],[1,3]],deposit:[[0,0]],obstacles:[[2,2]],difficulty:"Médio",desc:"Um cacto 🌵 bloqueia o caminho! Contorna-o e apanha os bilhetes para a roda gigante e para os carrinhos!"},
-            {size:6,robot:[5,5],items:[[4,1],[3,4],[2,5]],deposit:[[0,0]],obstacles:[[3,2],[3,5],[1,3]],difficulty:"Difícil",desc:"O parque está cheio de obstáculos! Recolhe todos os brinquedos espalhados e leva-os para a casinha."}
+            {size:6,robot:[5,5],items:[[4,1],[3,4],[2,5]],deposit:[[0,0]],obstacles:[[3,2],[3,5],[1,3]],difficulty:"Difícil",desc:"O parque está cheio de obstáculos! Recolhe todos os brinquedos espalhados e leva-os ao portal 🌀."}
           ]
         },
         circo:{
@@ -1411,8 +1402,7 @@ document.addEventListener("DOMContentLoaded", () => {
     doorPos=computeDoorPos(base);
     const em=$("level-emoji"); if(em) em.textContent=Array.from(currentTheme.emoji)[0]||"⭐";
     const tt=$("level-title-text"); if(tt) tt.textContent=currentTheme.name+" — Nível "+(idx+1)+" de "+lvls.length;
-    const depEmojiHint=currentTheme?.depositEmoji||"🏠";
-    const ld=$("level-desc"); if(ld) ld.innerHTML=(base.desc||"")+'<span style="display:block;margin-top:5px;font-size:.78rem;color:#38bdf8;opacity:.9;">🔒 Deposita todos os itens no '+depEmojiHint+' para abrir a porta de saída!</span>';
+    const ld=$("level-desc"); if(ld) ld.innerHTML=(base.desc||"")+'<span style="display:block;margin-top:5px;font-size:.78rem;color:#38bdf8;opacity:.9;">🌀 Apanha os itens e deposita-os no <strong>portal</strong> para passar de nível!</span>';
     const pd=$("pill-difficulty"); if(pd) pd.textContent="Dificuldade: "+(base.difficulty||"—");
     currentMinMoves=bfsOptimal(base,doorPos);
     const to=$("tag-optimal"); if(to) to.textContent="🏁 Ótimo: "+(currentMinMoves!==null?currentMinMoves+" mov.":"—");
@@ -1459,17 +1449,48 @@ document.addEventListener("DOMContentLoaded", () => {
         const isDoor=doorPos&&doorPos[0]===r&&doorPos[1]===c;
         if(isObs){ cell.classList.add("obstacle"); cell.textContent=obsEm; }
         else if(isDoor){
+          const hasItemsLeft=items.some(i=>!i.collected)||carriedItem;
+          const isComplete=allDeposited;
           cell.classList.add("door-cell");
-          if(allDeposited){
-            cell.classList.add(doorQuizOpen?"door-open":"door-locked");
+          cell.classList.add(isComplete?"portal-complete":hasItemsLeft?"portal-waiting":"portal-ready");
+          const c1=isComplete?"#ffe066":hasItemsLeft?"#38bdf8":"#4ade80";
+          const c2=isComplete?"#ff6b35":hasItemsLeft?"#a855f7":"#22d3ee";
+          const c3=isComplete?"#ff3cac":hasItemsLeft?"#6366f1":"#a855f7";
+          const glowCol=isComplete?"rgba(255,200,50,0.9)":hasItemsLeft?"rgba(99,102,241,0.8)":"rgba(74,222,128,0.8)";
+          const portalSvg=`<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" style="position:absolute;inset:3px;width:calc(100% - 6px);height:calc(100% - 6px);overflow:visible;pointer-events:none;">
+            <defs>
+              <radialGradient id="pg${r}${c}" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="${c1}" stop-opacity="1"/>
+                <stop offset="45%" stop-color="${c2}" stop-opacity="0.85"/>
+                <stop offset="100%" stop-color="${c3}" stop-opacity="0.3"/>
+              </radialGradient>
+              <filter id="pglow${r}${c}">
+                <feGaussianBlur stdDeviation="2.5" result="blur"/>
+                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+            </defs>
+            <circle cx="30" cy="30" r="28" fill="none" stroke="${c3}" stroke-width="1.5" opacity="0.4" style="animation:portalPulse 2s ease-in-out infinite;transform-origin:30px 30px;"/>
+            <circle cx="30" cy="30" r="24" fill="none" stroke="${c2}" stroke-width="2.5" stroke-dasharray="18 8" opacity="0.85" style="animation:portalSpin1 3s linear infinite;transform-origin:30px 30px;"/>
+            <circle cx="30" cy="30" r="18" fill="none" stroke="${c1}" stroke-width="2" stroke-dasharray="12 6" opacity="0.9" style="animation:portalSpin2 2s linear infinite;transform-origin:30px 30px;"/>
+            <circle cx="30" cy="30" r="12" fill="none" stroke="${c2}" stroke-width="1.8" stroke-dasharray="8 5" opacity="0.8" style="animation:portalSpin1 1.4s linear infinite;transform-origin:30px 30px;"/>
+            <circle cx="30" cy="30" r="7" fill="url(#pg${r}${c})" filter="url(#pglow${r}${c})" style="animation:portalCore 1.8s ease-in-out infinite;transform-origin:30px 30px;"/>
+            ${hasItemsLeft?`<text x="30" y="36" text-anchor="middle" font-size="18" style="animation:portalCore 1.8s ease-in-out infinite;transform-origin:30px 30px;">🔒</text>`:`<circle cx="30" cy="30" r="2.5" fill="white" opacity="0.95"/>`}
+          </svg>`;
+          cell.style.cssText+="position:relative;border-color:"+c2+"!important;box-shadow:0 0 18px "+glowCol+",inset 0 0 10px rgba(0,0,0,0.3)!important;";
+          if(isRobot){
+            // Portal as background, robot on top
+            cell.classList.add("robot-cell");
+            if(carriedItem) cell.classList.add("robot-carrying");
+            const angle=dir*90;
+            const badge=carriedItem?`<span class="carry-badge">${carriedItem}</span>`:"";
+            cell.innerHTML=portalSvg+`<div class="robot-icon" style="transform:rotate(${angle}deg);position:relative;z-index:2;"><span class="robot-icon-inner">${KID_ROBOT_SVG}</span></div><span class="robot-dir" style="position:relative;z-index:2;">${DIR_ARROWS[dir]}</span>${badge}`;
+            setTimeout(()=>{
+              const icon=cell.querySelector(".robot-icon");
+              if(icon&&!shouldDanceOnRender){ icon.classList.add("robot-icon-bounce"); icon.addEventListener("animationend",()=>icon.classList.remove("robot-icon-bounce"),{once:true}); }
+            },10);
           } else {
-            cell.classList.add("door-locked");
+            cell.innerHTML=portalSvg;
           }
-          const wrap=document.createElement("div"); wrap.className="door-svg-wrap";
-          const panel=document.createElement("div"); panel.className="door-panel";
-          panel.style.cssText="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1.8rem;";
-          panel.textContent=(allDeposited&&doorQuizOpen)?"🚪":"🔒";
-          wrap.appendChild(panel); cell.appendChild(wrap);
         }
         else if(isRobot){
           cell.classList.add("robot-cell");
@@ -1483,7 +1504,6 @@ document.addEventListener("DOMContentLoaded", () => {
             if(icon&&!shouldDanceOnRender){ icon.classList.add("robot-icon-bounce"); icon.addEventListener("animationend",()=>icon.classList.remove("robot-icon-bounce"),{once:true}); }
           },10);
         }
-        else if(isDep){ cell.classList.add("deposit"); cell.textContent=depEm; }
         else if(itemIdx>=0){ cell.classList.add("item"); cell.textContent=itemEms[itemIdx%itemEms.length]; }
         g.appendChild(cell);
       }
@@ -1492,9 +1512,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const ht=$("hint-text");
     if(ht){
       const rem=items.filter(i=>!i.collected).length;
-      if(rem>0) ht.textContent=`${rem} item${rem>1?"ns":""} por apanhar. Deposita no destino!`;
-      else if(!allDeposited) ht.textContent="Entrega o último item ao destino!";
-      else ht.textContent="🎉 Todos os itens entregues! Dirige-te à saída 🚪";
+      if(rem>0) ht.textContent=`${rem} item${rem>1?"ns":""} por apanhar. Leva ao portal 🌀!`;
+      else if(carriedItem) ht.textContent="Leva o item ao portal 🌀 e deposita!";
+      else if(!allDeposited) ht.textContent="Entrega o último item ao portal 🌀!";
+      else ht.textContent="🎉 Todos os itens entregues! Responde à pergunta do portal! 🌟";
     }
   }
 
@@ -1721,22 +1742,20 @@ document.addEventListener("DOMContentLoaded", () => {
     const {robot,obstacles,size}=levelState;
     const [r,c]=robot; let nr=r,nc=c;
     if(dir===0)nr--;else if(dir===1)nc++;else if(dir===2)nr++;else nc--;
-    if(nr<0||nr>=size||nc<0||nc>=size){ playSound("soundBump"); setFeedback("❌ O robot não pode sair do tabuleiro.","err"); renderGrid(); return; }
+    if(nr<0||nr>=size||nc<0||nc>=size){ playSound("soundBump"); setFeedback("❌ O robô não pode sair do tabuleiro.","err"); renderGrid(); return; }
     if(obstacles.some(o=>o[0]===nr&&o[1]===nc)){ playSound("soundBump"); setFeedback("⛔ Há um obstáculo! Contorna-o.","warn"); renderGrid(); return; }
-    if(!allDeposited&&doorPos&&nr===doorPos[0]&&nc===doorPos[1]){ playSound("soundBump"); setFeedback("🔒 A porta está fechada! Apanha e deposita todos os itens primeiro.","warn"); renderGrid(); return; }
-    robot[0]=nr; robot[1]=nc; moveCount++; updateMoves(); playSound("soundMove"); setFeedback("⬆️ Robot avançou.","info");
-    renderGrid(); checkDoor(nr,nc);
+    robot[0]=nr; robot[1]=nc; moveCount++; updateMoves(); playSound("soundMove"); setFeedback("⬆️ Robô avançou.","info");
+    renderGrid();
   }
 
   function moveBackward(){
     const {robot,obstacles,size}=levelState;
     const [r,c]=robot; let nr=r,nc=c;
     if(dir===0)nr++;else if(dir===1)nc--;else if(dir===2)nr--;else nc++;
-    if(nr<0||nr>=size||nc<0||nc>=size){ playSound("soundBump"); setFeedback("❌ O robot não pode sair do tabuleiro.","err"); renderGrid(); return; }
+    if(nr<0||nr>=size||nc<0||nc>=size){ playSound("soundBump"); setFeedback("❌ O robô não pode sair do tabuleiro.","err"); renderGrid(); return; }
     if(obstacles.some(o=>o[0]===nr&&o[1]===nc)){ playSound("soundBump"); setFeedback("⛔ Há um obstáculo! Contorna-o.","warn"); renderGrid(); return; }
-    if(!allDeposited&&doorPos&&nr===doorPos[0]&&nc===doorPos[1]){ playSound("soundBump"); setFeedback("🔒 A porta está fechada! Apanha e deposita todos os itens primeiro.","warn"); renderGrid(); return; }
-    robot[0]=nr; robot[1]=nc; moveCount++; updateMoves(); playSound("soundMove"); setFeedback("⬇️ Robot recuou.","info");
-    renderGrid(); checkDoor(nr,nc);
+    robot[0]=nr; robot[1]=nc; moveCount++; updateMoves(); playSound("soundMove"); setFeedback("⬇️ Robô recuou.","info");
+    renderGrid();
   }
 
   function grabItem(){
@@ -1746,21 +1765,22 @@ document.addEventListener("DOMContentLoaded", () => {
     const idx=items.findIndex(it=>!it.collected&&it.r===r&&it.c===c);
     if(idx===-1){ playSound("soundError"); setFeedback("❌ Não há nenhum item aqui para apanhar.","err"); renderGrid(); return; }
     items[idx].collected=true; carriedItem=currentItemEms[idx%currentItemEms.length];
-    moveCount++; updateMoves(); playSound("soundSuccess"); setFeedback("✅ Item apanhado! Leva ao destino!","ok"); renderGrid();
+    moveCount++; updateMoves(); playSound("soundSuccess"); setFeedback("✅ Item apanhado! Leva ao portal 🌀","ok"); renderGrid();
   }
 
   function dropItem(){
-    const {robot,items,deposit}=levelState;
+    const {robot,items}=levelState;
     const [r,c]=robot;
     if(!carriedItem){ playSound("soundError"); setFeedback("❌ Não tens nenhum item para depositar.","err"); renderGrid(); return; }
-    if(r!==deposit[0]||c!==deposit[1]){ playSound("soundError"); setFeedback("🏠 Tens de estar no destino para depositar!","warn"); renderGrid(); return; }
+    if(!doorPos||r!==doorPos[0]||c!==doorPos[1]){ playSound("soundError"); setFeedback("🌀 Tens de estar no portal para depositar!","warn"); renderGrid(); return; }
     carriedItem=null; moveCount++; updateMoves(); playTone('deposit');
     const rem=items.filter(i=>!i.collected).length;
     if(rem===0){
-      allDeposited=true; renderGrid();
-      setFeedback("🚪 Todos os itens entregues! Dirige-te à saída 🚪","ok");
+      allDeposited=true; doorQuizOpen=true; renderGrid();
+      setFeedback("🌟 Todos os itens entregues! Responde à pergunta do portal!","ok");
+      setTimeout(()=>openKidQuiz(),400);
     } else {
-      setFeedback("📥 Depositado! Faltam "+rem+" item(ns).","ok"); renderGrid();
+      setFeedback("📥 Depositado no portal! Faltam "+rem+" item(ns).","ok"); renderGrid();
     }
   }
 
@@ -1967,9 +1987,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     popup.style.display="flex";
     inner.innerHTML=`
-      <div style="font-size:2.2rem;text-align:center;margin-bottom:8px;animation:popIn .3s cubic-bezier(.34,1.56,.64,1);">🚪🌟</div>
+      <div style="font-size:2.2rem;text-align:center;margin-bottom:8px;animation:popIn .3s cubic-bezier(.34,1.56,.64,1);">🌀✨</div>
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-        <div style="font-size:.75rem;color:#ff6b35;text-transform:uppercase;letter-spacing:.07em;font-weight:400;font-family:'Fredoka One',cursive;">🔒 Porta Mágica</div>
+        <div style="font-size:.75rem;color:#ff6b35;text-transform:uppercase;letter-spacing:.07em;font-weight:400;font-family:'Fredoka One',cursive;">🌀 Portal</div>
         <div id="dq-attempt-badge" style="font-size:.72rem;font-family:'Fredoka One',cursive;padding:3px 12px;border-radius:999px;background:rgba(255,107,53,0.15);border:1px solid rgba(255,107,53,0.5);color:#ffb890;">${attemptLabel}</div>
       </div>
       <div style="font-size:.92rem;color:#FFD700;font-weight:400;line-height:1.6;margin-bottom:16px;font-family:'Fredoka One',cursive;">${q.q}</div>
@@ -2163,7 +2183,7 @@ document.addEventListener("DOMContentLoaded", () => {
       function pos(){ let r,c,k; do{r=rand(size);c=rand(size);k=r+"-"+c;}while(used.has(k)); used.add(k);return[r,c]; }
       const robot=pos(),deposit=[pos()],items=Array.from({length:ic},()=>pos()),obstacles=Array.from({length:oc},()=>pos());
       const ds=["Médio","Difícil","Desafio"];
-      return{size,robot,items,deposit,obstacles,difficulty:ds[Math.min(diff,2)],desc:"Missão extra: apanha todos os itens e leva ao destino!",_generated:true};
+      return{size,robot,items,deposit,obstacles,difficulty:ds[Math.min(diff,2)],desc:"Missão extra: apanha todos os itens e leva ao portal 🌀!",_generated:true};
     }
     Object.keys(GAME_DATA).forEach(ck=>{
       const cycle=GAME_DATA[ck], extra=ck==="1c"?10:5;
@@ -2299,10 +2319,10 @@ document.addEventListener("DOMContentLoaded", () => {
     let targetR, targetC, msg;
     if(carriedItem){
       targetR=deposit[0]; targetC=deposit[1];
-      msg="💡 Leva o item que tens ao destino!";
+      msg="💡 Leva o item que tens ao portal 🌀!";
     } else if(remaining.length===0&&allDeposited&&doorPos){
       targetR=doorPos[0]; targetC=doorPos[1];
-      msg="💡 Todos entregues! Vai à porta de saída 🚪";
+      msg="💡 Todos entregues! Responde à pergunta do portal 🌀";
     } else if(remaining.length>0){
       // nearest item
       let best=null, bestD=9999;
@@ -2313,7 +2333,7 @@ document.addEventListener("DOMContentLoaded", () => {
       targetR=best.r; targetC=best.c;
       msg="💡 Vai apanhar o item em destaque!";
     } else {
-      setFeedback("💡 Entrega os itens ao destino primeiro!","info"); return;
+      setFeedback("💡 Entrega os itens ao portal primeiro!","info"); return;
     }
     // Highlight target cell and robot
     const g=$("grid"); if(!g) return;
@@ -2463,15 +2483,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const heroMsgs = [
       "Olá! Vamos jogar? 🎮",
       "🎉 Dia da Criança!",
-      "Guia o teu robot! 🤖",
+      "Guia o teu robô! 🤖",
       "Aprende a programar! 🚀",
       "Recolhe os itens! 🎈",
-      "Vai à porta mágica! 🚪",
+      "Leva os itens ao portal! 🌀",
       "Consegues chegar? 🌟",
       "Escolhe uma aventura! 🗺️",
       "Brincar é um direito! 🎊",
       "Força, campeão! 💪",
-      "O robot conta contigo! 🤩",
+      "O robô conta contigo! 🤩",
     ];
     let heroBubT = null;
     let heroMsgIdx = 0;
