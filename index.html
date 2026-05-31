@@ -116,7 +116,7 @@
       flex-wrap:wrap;position:relative;overflow:hidden;
     }
     header::before{
-      content:'★ ✦ ★ ✦ ★ ✦ ★';
+      content:'★ ★ ★ ★ ★ ★ ★';
       position:absolute;top:4px;left:0;right:0;text-align:center;
       font-size:.65rem;letter-spacing:12px;opacity:.3;pointer-events:none;
     }
@@ -188,12 +188,43 @@
     .hero-text{flex:1 1 240px;}
     .hero-text h2{margin:0;font-size:1.5rem;color:var(--sun);letter-spacing:.03em;text-shadow:0 0 18px rgba(255,215,0,0.4);font-family:'Fredoka One',cursive;}
     .hero-text p{margin:4px 0 0;font-size:.85rem;color:#FFB3D1;font-style:italic;}
-    .hero-robot-wrap{width:180px;height:180px;position:relative;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-    .hero-glow{position:absolute;width:150%;height:150%;border-radius:999px;
-      background:radial-gradient(circle,rgba(255,140,0,0.45),transparent 60%);opacity:.5;filter:blur(16px);animation:heroGlow 4s ease-in-out infinite alternate;}
-    .hero-robot{width:150px;height:150px;position:relative;z-index:1;animation:float 3s ease-in-out infinite;}
-    .hero-robot svg{width:150px;height:150px;display:block;}
-    @keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+    /* ── HERO ROBOT FLUTUANTE ── */
+    .hero-robot-wrap{width:180px;height:auto;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;gap:0;}
+    .hero-glow{position:absolute;bottom:0;width:150%;height:80px;border-radius:999px;
+      background:radial-gradient(circle,rgba(255,140,0,0.45),transparent 60%);opacity:.5;filter:blur(16px);animation:heroGlow 4s ease-in-out infinite alternate;z-index:0;}
+    /* balão de fala */
+    .hero-vb-bubble{
+      background:linear-gradient(135deg,#2a0a4e,#1a0835);
+      border:2.5px solid #ff6b35;
+      outline:1.5px solid rgba(255,215,0,0.28);outline-offset:-3px;
+      border-radius:16px;padding:7px 12px 7px;
+      box-shadow:3px 3px 0 rgba(5,2,15,0.8);
+      font-family:'Fredoka One',cursive;
+      font-size:.78rem;
+      color:#fff8e0;max-width:170px;min-width:110px;text-align:center;
+      position:relative;z-index:2;margin-bottom:6px;
+      opacity:0;transform:translateY(6px) scale(.9);
+      transition:opacity .35s,transform .35s cubic-bezier(.34,1.56,.64,1);
+    }
+    /* seta do balão apontando para baixo */
+    .hero-vb-bubble::after{content:"";position:absolute;bottom:-14px;left:50%;transform:translateX(-50%);
+      border-left:9px solid transparent;border-right:9px solid transparent;border-top:14px solid #ff6b35;}
+    .hero-vb-bubble::before{content:"";position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);
+      border-left:7px solid transparent;border-right:7px solid transparent;border-top:10px solid #1a0835;z-index:1;}
+    .hero-vb-bubble.show{opacity:1;transform:translateY(0) scale(1);}
+    /* robot SVG */
+    .hero-robot{width:130px;height:130px;position:relative;z-index:1;cursor:pointer;
+      animation:heroVbFloat 3s ease-in-out infinite;filter:drop-shadow(0 0 14px #7dd3fc);}
+    .hero-robot:hover{filter:drop-shadow(0 0 26px #38bdf8);}
+    .hero-robot svg{width:130px;height:130px;display:block;}
+    .hero-robot.bounce{animation:heroVbPop .65s cubic-bezier(.34,1.56,.64,1),heroVbFloat 3s ease-in-out .65s infinite;}
+    @keyframes heroVbFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-9px);}}
+    @keyframes heroVbPop{0%,100%{transform:translateY(0) rotate(0)}30%{transform:translateY(-16px) rotate(-6deg)}70%{transform:translateY(-7px) rotate(5deg)}}
+    /* pálpebra do robot hero */
+    .hero-vb-eyelid{transform-origin:40px 23px;animation:heroVbBlink 5s ease-in-out infinite;}
+    #hero-vb-arm{transform-origin:65px 44px;animation:heroVbWave 1.5s ease-in-out infinite;}
+    @keyframes heroVbBlink{0%,90%,100%{transform:scaleY(0)}95%{transform:scaleY(1)}}
+    @keyframes heroVbWave{0%,100%{transform:rotate(0)}25%,75%{transform:rotate(-18deg)}}
     @keyframes heroGlow{0%{opacity:.25;transform:scale(1);}100%{opacity:.5;transform:scale(1.12);}}
     .hero-desc{font-size:.78rem;color:#FFB3D1;padding-top:8px;border-top:1px solid rgba(255,215,0,0.25);position:relative;z-index:1;font-style:italic;}
     .pill{padding:3px 12px;border-radius:999px;border:1px solid var(--surface-border);font-size:.72rem;color:var(--surface-text2);background:rgba(126,87,194,0.08);font-family:'Fredoka One',cursive;}
@@ -201,7 +232,8 @@
     .menu-header h2{margin:0;font-size:1.1rem;font-weight:400;color:var(--surface-text);letter-spacing:.02em;font-family:'Fredoka One',cursive;}
     .menu-header p{margin:4px 0 0;font-size:.82rem;color:var(--surface-text2);font-style:italic;}
 
-    .cycle-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:12px;}
+    .cycle-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px;}
+    @media(max-width:700px){.cycle-grid{grid-template-columns:1fr;}}
     .cycle-card{
       border-radius:var(--radius-md);padding:15px;cursor:pointer;
       transition:transform .15s,box-shadow .15s;
@@ -507,13 +539,183 @@
     }
     @media(max-width:600px){.swipe-hint{display:block;}}
 
+    /* ── POPUP NOME DO JOGADOR ── */
+    #name-overlay{
+      position:fixed;inset:0;z-index:9000;
+      background:rgba(8,3,20,0.92);
+      display:flex;align-items:center;justify-content:center;
+    }
+    .name-card{
+      background:linear-gradient(145deg,#2a0a4e,#1a0835);
+      border:3px solid #ff6b35;
+      outline:2px solid rgba(255,215,0,0.3);outline-offset:-5px;
+      border-radius:22px;padding:32px 28px 28px;
+      max-width:340px;width:90%;text-align:center;
+      box-shadow:6px 6px 0 rgba(0,0,0,0.6),0 0 40px rgba(255,107,53,0.3);
+      animation:popIn .4s cubic-bezier(.34,1.56,.64,1);
+    }
+    .name-card .robot-welcome{
+      font-size:4rem;line-height:1;margin-bottom:8px;
+      animation:float 3s ease-in-out infinite;
+      display:block;
+    }
+    .name-card h2{
+      font-family:'Fredoka One',cursive;
+      font-size:1.4rem;color:#FFD700;margin:0 0 4px;
+    }
+    .name-card p{
+      font-size:.82rem;color:#FFB3D1;font-style:italic;margin:0 0 18px;
+    }
+    .name-input{
+      width:100%;padding:10px 16px;
+      border:2.5px solid #ff6b35;border-radius:12px;
+      background:rgba(255,107,53,0.08);
+      color:#FFD700;font-family:'Fredoka One',cursive;font-size:1.1rem;
+      text-align:center;outline:none;
+      box-shadow:inset 0 1px 0 rgba(255,180,80,.08);
+      transition:border-color .2s,box-shadow .2s;
+      margin-bottom:16px;box-sizing:border-box;
+    }
+    .name-input::placeholder{color:rgba(255,215,0,0.35);}
+    .name-input:focus{border-color:#FFD700;box-shadow:0 0 12px rgba(255,215,0,0.2);}
+    .name-btn{
+      width:100%;padding:11px;
+      background:linear-gradient(180deg,#ff6b35,#e04010);
+      border:none;border-radius:12px;
+      font-family:'Fredoka One',cursive;font-size:1rem;color:#fff;
+      cursor:pointer;
+      box-shadow:0 4px 0 rgba(0,0,0,0.4);
+      transition:transform .1s,box-shadow .1s;
+    }
+    .name-btn:hover{transform:translateY(-2px);box-shadow:0 6px 0 rgba(0,0,0,0.4);}
+    .name-btn:active{transform:translateY(1px);box-shadow:0 2px 0 rgba(0,0,0,0.4);}
+
+    /* ── NOME NO HEADER ── */
+    .header-player{
+      display:flex;align-items:center;gap:6px;
+      font-family:'Fredoka One',cursive;font-size:.95rem;
+      color:#FFD700;white-space:nowrap;
+      text-shadow:0 0 10px rgba(255,215,0,0.4);
+    }
+    .header-player span{color:#FFB3D1;font-size:.78rem;display:block;line-height:1;}
+    .header-player strong{display:block;line-height:1.2;}
+
+    /* ── NOME NO SIDEBAR ── */
+    .side-player{
+      display:flex;flex-direction:column;align-items:center;gap:4px;
+      padding:10px 8px 12px;margin-bottom:4px;
+      border-bottom:1px solid rgba(255,215,0,0.2);
+    }
+    .side-player-avatar{
+      font-size:2rem;line-height:1;
+      filter:drop-shadow(0 0 8px rgba(56,189,248,.6));
+      animation:float 3s ease-in-out infinite;
+    }
+    .side-player-name{
+      font-family:'Fredoka One',cursive;font-size:.85rem;
+      color:#FFD700;text-align:center;
+      text-shadow:0 0 8px rgba(255,215,0,0.3);
+      word-break:break-word;max-width:100%;
+    }
+    .side-player-label{font-size:.62rem;color:#FFB3D1;font-style:italic;opacity:.8;}
+
+    /* ── CAMPO NOME NO HERO ── */
+    .hero-name-row{
+      display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+      position:relative;z-index:1;margin-top:4px;
+    }
+    .hero-name-label{
+      font-family:'Fredoka One',cursive;font-size:.88rem;
+      color:#FFD700;white-space:nowrap;flex-shrink:0;
+    }
+    .hero-name-input-wrap{display:flex;gap:8px;flex:1;flex-wrap:wrap;}
+    .hero-name-input{
+      flex:1;min-width:140px;padding:9px 14px;
+      border:2.5px solid #ff6b35;border-radius:12px;
+      background:rgba(255,107,53,0.08);
+      color:#FFD700;font-family:'Fredoka One',cursive;font-size:.95rem;
+      outline:none;transition:border-color .2s,box-shadow .2s;
+      box-shadow:inset 0 1px 0 rgba(255,180,80,.06);
+    }
+    .hero-name-input::placeholder{color:rgba(255,215,0,0.35);}
+    .hero-name-input:focus{border-color:#FFD700;box-shadow:0 0 12px rgba(255,215,0,0.2);}
+    .hero-name-btn{
+      padding:9px 18px;white-space:nowrap;
+      background:linear-gradient(180deg,#ff6b35,#e04010);
+      border:none;border-radius:12px;
+      font-family:'Fredoka One',cursive;font-size:.9rem;color:#fff;
+      cursor:pointer;flex-shrink:0;
+      box-shadow:0 3px 0 rgba(0,0,0,0.4);
+      transition:transform .1s,box-shadow .1s;
+    }
+    .hero-name-btn:hover{transform:translateY(-2px);box-shadow:0 5px 0 rgba(0,0,0,0.4);}
+    .hero-name-btn:active{transform:translateY(1px);box-shadow:0 1px 0 rgba(0,0,0,0.4);}
+    .hero-welcome{
+      display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+      position:relative;z-index:1;margin-top:4px;
+    }
+    .hero-welcome-text{
+      font-family:'Fredoka One',cursive;font-size:.95rem;
+      color:#FFD700;text-shadow:0 0 10px rgba(255,215,0,0.3);
+    }
+    .hero-welcome-text strong{color:#ff6b35;}
+    .hero-change-btn{
+      background:rgba(255,107,53,0.15);border:1px solid rgba(255,107,53,0.4);
+      border-radius:8px;padding:3px 8px;color:#ffb890;cursor:pointer;
+      font-size:.75rem;transition:background .15s;
+    }
+    .hero-change-btn:hover{background:rgba(255,107,53,0.28);}
+
+    /* ── ROBOT FIXO CANTO INFERIOR DIREITO ── */
+    #fixed-robot-wrap{
+      position:fixed;
+      bottom:18px;
+      right:18px;
+      z-index:9800;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:0;
+      pointer-events:none;
+    }
+    #fixed-robot-wrap .hero-vb-bubble{
+      pointer-events:auto;
+    }
+    #fixed-robot-wrap .hero-robot{
+      pointer-events:auto;
+      width:110px;height:110px;
+    }
+    #fixed-robot-wrap .hero-robot svg{width:110px;height:110px;}
+    #fixed-robot-wrap .hero-glow{
+      position:absolute;bottom:0;width:140%;height:60px;border-radius:999px;
+      background:radial-gradient(circle,rgba(255,140,0,0.45),transparent 60%);
+      opacity:.5;filter:blur(14px);
+      animation:heroGlow 4s ease-in-out infinite alternate;z-index:0;
+      pointer-events:none;
+    }
+    @media(max-width:480px){
+      #fixed-robot-wrap{ bottom:10px; right:8px; }
+      #fixed-robot-wrap .hero-robot,
+      #fixed-robot-wrap .hero-robot svg{ width:80px!important; height:80px!important; }
+    }
+
+    /* ── FOOTER ── */
+    #app-footer{
+      text-align:center;padding:10px 0 4px;
+      font-family:'Fredoka One',cursive;
+      font-size:.72rem;color:rgba(255,179,209,0.5);
+      letter-spacing:.5px;
+      border-top:1px solid rgba(255,107,53,0.12);
+    }
+
     /* ── MOBILE OPTIMIZATIONS ── */
     @media(max-width:480px){
       #app{padding:8px;gap:10px;}
       header{padding:10px 12px;}
       header h1{font-size:1.1rem;}
-      .hero-robot-wrap{width:100px!important;height:100px!important;}
-      .hero-robot,.hero-robot svg{width:90px!important;height:90px!important;}
+      .hero-robot-wrap{width:100px!important;height:auto!important;}
+      .hero-robot,.hero-robot svg{width:82px!important;height:82px!important;}
+      .hero-vb-bubble{font-size:.68rem!important;max-width:130px!important;}
       .cell{font-size:clamp(.7rem,4.5vw,1.1rem)!important;}
       .grid.big .cell{font-size:clamp(.6rem,4vw,.95rem)!important;}
       .grid.huge .cell{font-size:clamp(.55rem,3.5vw,.8rem)!important;}
@@ -530,10 +732,13 @@
 <div id="app">
   <header>
     <div>
-      <h1>🌈 Mundo da Criança</h1>
+      <h1>Mundo da Criança</h1>
       <p>Aventura, brincadeiras e direitos das crianças!</p>
     </div>
-    <div class="logo-wrap" id="logo-robot">🤖</div>
+    <div class="header-player" id="header-player" style="display:none;">
+      <span>👋 Olá,</span>
+      <strong id="header-player-name"></strong>
+    </div>
     <div class="header-btns">
       <button class="btn secondary small" id="btn-mute" data-tip="Ligar/desligar som">🔊 Som</button>
 
@@ -543,7 +748,10 @@
   <div id="menu-screen" class="screen">
     <div class="layout-with-side">
       <div class="sidebar">
-        <div class="side-robot-wrap" id="side-robot">🤖</div>
+        <div class="side-player" id="side-player">
+          <div class="side-player-name" id="side-player-name">Jogador</div>
+          <div class="side-player-label">Aventureiro</div>
+        </div>
         <div class="side-section">
           <div class="side-title">📍 Navegar</div>
           <button class="side-btn" id="side-home">🏠 Início</button>
@@ -557,68 +765,54 @@
             <div class="side-prog" id="side-prog-3c"></div>
           </button>
         </div>
-        <div class="side-section">
-          <div class="side-title">⚙️ Opções</div>
-          <button class="side-btn" id="btn-super-easy">🧸 Super Fácil: OFF</button>
-        </div>
+
       </div>
 
       <div>
-        <div class="menu-layout">
-          <div class="hero">
-            <div class="hero-bubbles">
-              <div class="hero-bubble" style="width:80px;height:80px;background:#FF6B9D;top:10%;left:5%;animation-delay:0s;"></div>
-              <div class="hero-bubble" style="width:60px;height:60px;background:#4FC3F7;top:40%;right:8%;animation-delay:.8s;"></div>
-              <div class="hero-bubble" style="width:50px;height:50px;background:#FFD700;bottom:15%;left:20%;animation-delay:1.5s;"></div>
-            </div>
-            <div class="hero-top">
-              <div class="hero-text">
-                <h2>🎉 Dia da Criança!</h2>
-                <p>Guia o teu robot por aventuras incríveis e aprende sobre brincadeiras e direitos das crianças!</p>
-              </div>
-              <div class="hero-robot-wrap">
-                <div class="hero-glow"></div>
-                <div class="hero-robot" id="hero-robot">🤖</div>
-              </div>
-            </div>
-            <div class="hero-desc">
-              🎮 Controla o robot, recolhe os itens, deposita no destino e passa pela porta mágica!
+        <!-- Campo do nome do jogador -->
+        <div class="hero-name-row" id="hero-name-row" style="margin-bottom:18px;background:linear-gradient(145deg,#2a0a4e,#1a0835);border:2.5px solid #ff6b35;border-radius:14px;padding:14px 18px;">
+          <label class="hero-name-label">🎮 O teu nome:</label>
+          <div class="hero-name-input-wrap">
+            <input class="hero-name-input" id="hero-name-input" type="text" maxlength="20" placeholder="Escreve o teu nome..." autocomplete="off" spellcheck="false"/>
+            <button class="hero-name-btn" id="hero-name-btn">▶ Começar a jogar!</button>
+          </div>
+        </div>
+        <!-- Boas-vindas após introduzir nome -->
+        <div class="hero-welcome" id="hero-welcome" style="display:none;margin-bottom:18px;background:linear-gradient(145deg,#2a0a4e,#1a0835);border:2.5px solid #ff6b35;border-radius:14px;padding:14px 18px;">
+          <span class="hero-welcome-text">👋 Olá, <strong id="hero-welcome-name"></strong>! Escolhe a tua aventura! 🚀</span>
+          <button class="hero-change-btn" id="hero-change-btn">✏️</button>
+        </div>
+
+        <div class="menu-header">
+          <h2>🗺️ Escolhe a tua aventura!</h2>
+          <p>Três ciclos com temas diferentes sobre o mundo das crianças.</p>
+        </div>
+        <div class="cycle-grid">
+          <div class="cycle-card cycle-card--1c" id="btn-cycle-1c">
+            <div class="cycle-title">🩷 1.º Ciclo</div>
+            <div class="cycle-sub">O mundo das brincadeiras — comandos diretos!</div>
+            <div class="chip-row">
+              <span class="chip">🎠 Parque</span>
+              <span class="chip">🎪 Circo</span>
+              <span class="chip">🎨 Arte</span>
             </div>
           </div>
-
-          <div>
-            <div class="menu-header">
-              <h2>🗺️ Escolhe a tua aventura!</h2>
-              <p>Três ciclos com temas diferentes sobre o mundo das crianças.</p>
+          <div class="cycle-card cycle-card--2c" id="btn-cycle-2c">
+            <div class="cycle-title">💙 2.º Ciclo</div>
+            <div class="cycle-sub">Os direitos das crianças — sequências!</div>
+            <div class="chip-row">
+              <span class="chip">📚 Educação</span>
+              <span class="chip">🤝 Amizade</span>
+              <span class="chip">🛡️ Proteção</span>
             </div>
-            <div class="cycle-grid">
-              <div class="cycle-card cycle-card--1c" id="btn-cycle-1c">
-                <div class="cycle-title">🩷 1.º Ciclo</div>
-                <div class="cycle-sub">O mundo das brincadeiras — comandos diretos!</div>
-                <div class="chip-row">
-                  <span class="chip">🎠 Parque</span>
-                  <span class="chip">🎪 Circo</span>
-                  <span class="chip">🎨 Arte</span>
-                </div>
-              </div>
-              <div class="cycle-card cycle-card--2c" id="btn-cycle-2c">
-                <div class="cycle-title">💙 2.º Ciclo</div>
-                <div class="cycle-sub">Os direitos das crianças — sequências!</div>
-                <div class="chip-row">
-                  <span class="chip">📚 Educação</span>
-                  <span class="chip">🤝 Amizade</span>
-                  <span class="chip">🛡️ Proteção</span>
-                </div>
-              </div>
-              <div class="cycle-card cycle-card--3c" id="btn-cycle-3c">
-                <div class="cycle-title">💚 3.º Ciclo</div>
-                <div class="cycle-sub">O mundo da criança — sequências avançadas!</div>
-                <div class="chip-row">
-                  <span class="chip">🌍 Natureza</span>
-                  <span class="chip">🚀 Sonhos</span>
-                  <span class="chip">🌈 Futuro</span>
-                </div>
-              </div>
+          </div>
+          <div class="cycle-card cycle-card--3c" id="btn-cycle-3c">
+            <div class="cycle-title">💚 3.º Ciclo</div>
+            <div class="cycle-sub">O mundo da criança — sequências avançadas!</div>
+            <div class="chip-row">
+              <span class="chip">🌍 Natureza</span>
+              <span class="chip">🚀 Sonhos</span>
+              <span class="chip">🌈 Futuro</span>
             </div>
           </div>
         </div>
@@ -796,6 +990,7 @@
       </div>
     </div>
   </div>
+  <div id="app-footer">Professora Vanda Várzea</div>
 </div>
 
 <!-- POPUP VITÓRIA -->
@@ -875,10 +1070,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const $ = id => document.getElementById(id);
 
-  ["logo-robot","hero-robot","side-robot"].forEach(id => {
-    const el = $(id);
-    if(el) el.innerHTML = KID_ROBOT_SVG;
-  });
+  // robots do header e sidebar removidos — substituídos por nome do jogador
 
   /* ===== DADOS DO JOGO — Dia da Criança ===== */
   const GAME_DATA = {
@@ -1187,7 +1379,7 @@ document.addEventListener("DOMContentLoaded", () => {
       size:base.size
     };
     doorPos=computeDoorPos(base);
-    const em=$("level-emoji"); if(em) em.textContent=currentTheme.emoji.split("")[0]||"⭐";
+    const em=$("level-emoji"); if(em) em.textContent=Array.from(currentTheme.emoji)[0]||"⭐";
     const tt=$("level-title-text"); if(tt) tt.textContent=currentTheme.name+" — Nível "+(idx+1)+" de "+lvls.length;
     const depEmojiHint=currentTheme?.depositEmoji||"🏠";
     const ld=$("level-desc"); if(ld) ld.innerHTML=(base.desc||"")+'<span style="display:block;margin-top:5px;font-size:.78rem;color:#38bdf8;opacity:.9;">🔒 Deposita todos os itens no '+depEmojiHint+' para abrir a porta de saída!</span>';
@@ -2172,7 +2364,144 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(()=>{ b.style.animation="bannerOut .3s ease forwards"; setTimeout(()=>{b.style.display="none";},300); }, 2200);
   }
 
+
+  /* ── NOME DO JOGADOR ── */
+  (function(){
+    const KEY = 'mundocrianca_player';
+    let playerName = '';
+
+    function saveName(n){ try{ localStorage.setItem(KEY, n); }catch(e){} }
+    function loadName(){ try{ return localStorage.getItem(KEY)||''; }catch(e){ return ''; } }
+
+    function applyName(name){
+      playerName = name;
+      // Header
+      const hp = document.getElementById('header-player');
+      const hn = document.getElementById('header-player-name');
+      if(hp && hn){ hn.textContent = name; hp.style.display = 'flex'; }
+      // Sidebar
+      const spn = document.getElementById('side-player-name');
+      if(spn) spn.textContent = name;
+      // Hero — esconde campo, mostra boas-vindas
+      const row = document.getElementById('hero-name-row');
+      const wel = document.getElementById('hero-welcome');
+      const wname = document.getElementById('hero-welcome-name');
+      if(row) row.style.display = 'none';
+      if(wel) wel.style.display = 'flex';
+      if(wname) wname.textContent = name;
+      // Balão do robot com o nome
+      if(typeof heroShowBub === 'function'){
+        heroShowBub('Olá, ' + name + '! 🎉');
+      } else {
+        setTimeout(()=>{ if(typeof heroShowBub==='function') heroShowBub('Olá, ' + name + '! 🎉'); }, 500);
+      }
+    }
+
+    function setupNameField(){
+      const input = document.getElementById('hero-name-input');
+      const btn   = document.getElementById('hero-name-btn');
+      const changeBtn = document.getElementById('hero-change-btn');
+
+      function submit(){
+        const val = (input ? input.value : '').trim();
+        if(!val){ if(input){ input.focus(); input.style.borderColor='#ff4444'; setTimeout(()=>input.style.borderColor='',800); } return; }
+        saveName(val);
+        applyName(val);
+      }
+
+      if(btn) btn.addEventListener('click', submit);
+      if(input) input.addEventListener('keydown', e=>{ if(e.key==='Enter') submit(); });
+
+      if(changeBtn) changeBtn.addEventListener('click', ()=>{
+        const row = document.getElementById('hero-name-row');
+        const wel = document.getElementById('hero-welcome');
+        if(row){ row.style.display='flex'; const inp=document.getElementById('hero-name-input'); if(inp){ inp.value=playerName; inp.focus(); inp.select(); } }
+        if(wel) wel.style.display='none';
+      });
+
+      // Se já tem nome guardado, aplicar logo
+      const saved = loadName();
+      if(saved) applyName(saved);
+    }
+
+    setupNameField();
+  })();
+
+  /* ── ROBOT FLUTUANTE HERO — balão de fala animado ── */
+  (function(){
+    const heroMsgs = [
+      "Olá! Vamos jogar? 🎮",
+      "🎉 Dia da Criança!",
+      "Guia o teu robot! 🤖",
+      "Aprende a programar! 🚀",
+      "Recolhe os itens! 🎈",
+      "Vai à porta mágica! 🚪",
+      "Consegues chegar? 🌟",
+      "Escolhe uma aventura! 🗺️",
+      "Brincar é um direito! 🎊",
+      "Força, campeão! 💪",
+      "O robot conta contigo! 🤩",
+    ];
+    let heroBubT = null;
+    let heroMsgIdx = 0;
+
+    window.heroShowBub = function heroShowBub(msg) {
+      clearTimeout(heroBubT);
+      const el = document.getElementById('heroVbBubble');
+      const rb = document.getElementById('hero-robot');
+      if(!el || !rb) return;
+      el.textContent = msg;
+      el.classList.add('show');
+      rb.classList.remove('bounce');
+      void rb.offsetWidth;
+      rb.classList.add('bounce');
+      heroBubT = setTimeout(() => el.classList.remove('show'), 4500);
+    }
+
+    // Mostrar primeira mensagem após 1.2s
+    setTimeout(() => heroShowBub(heroMsgs[heroMsgIdx]), 1200);
+
+    // Rodar mensagens a cada 5s
+    setInterval(() => {
+      heroMsgIdx = (heroMsgIdx + 1) % heroMsgs.length;
+      heroShowBub(heroMsgs[heroMsgIdx]);
+    }, 5000);
+
+    // Clicar no robot mostra mensagem aleatória
+    const heroRb = document.getElementById('hero-robot');
+    if(heroRb) {
+      heroRb.addEventListener('click', () => {
+        heroShowBub(heroMsgs[Math.floor(Math.random() * heroMsgs.length)]);
+      });
+    }
+  })();
+
 }); // fim DOMContentLoaded
 </script>
+
+<!-- ── ROBOT FLUTUANTE FIXO CANTO INFERIOR DIREITO ── -->
+<div id="fixed-robot-wrap">
+  <div class="hero-vb-bubble" id="heroVbBubble">Olá! 😊</div>
+  <svg class="hero-robot" id="hero-robot" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" width="110" height="110" role="button" tabindex="0" aria-label="VanBerto — clica para falar">
+    <defs>
+      <linearGradient id="hvbG" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#e5f2ff"/><stop offset="100%" stop-color="#bfdbfe"/></linearGradient>
+      <linearGradient id="hvvG" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#22d3ee"/><stop offset="100%" stop-color="#38bdf8"/></linearGradient>
+    </defs>
+    <circle cx="40" cy="40" r="34" fill="rgba(147,197,253,0.35)"/>
+    <rect x="18" y="30" width="44" height="32" rx="14" fill="url(#hvbG)"/>
+    <circle cx="40" cy="46" r="7" fill="#9ca3af"/>
+    <rect x="22" y="10" width="36" height="26" rx="13" fill="url(#hvbG)"/>
+    <rect x="26" y="15" width="28" height="16" rx="8" fill="url(#hvvG)"/>
+    <rect class="hero-vb-eyelid" x="26" y="15" width="28" height="16" rx="8" fill="#e5f2ff" opacity="0.9"/>
+    <circle cx="33" cy="23" r="2.5" fill="#0f172a"/><circle cx="47" cy="23" r="2.5" fill="#0f172a"/>
+    <circle cx="34.2" cy="21.5" r="1" fill="white" opacity="0.8"/><circle cx="48.2" cy="21.5" r="1" fill="white" opacity="0.8"/>
+    <line x1="40" y1="10" x2="40" y2="4" stroke="#38bdf8" stroke-width="2"/><circle cx="40" cy="3" r="2.5" fill="#38bdf8"/>
+    <rect x="12" y="34" width="6" height="20" rx="3" fill="#e5e7eb"/>
+    <rect id="hero-vb-arm" x="62" y="34" width="6" height="20" rx="3" fill="#e5e7eb"/>
+    <rect x="22" y="58" width="12" height="8" rx="3" fill="#1f2937"/><rect x="46" y="58" width="12" height="8" rx="3" fill="#1f2937"/>
+  </svg>
+  <div class="hero-glow"></div>
+</div>
+
 </body>
 </html>
