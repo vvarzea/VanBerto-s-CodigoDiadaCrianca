@@ -1,0 +1,2173 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Mundo da Criança — Aventura!</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Baloo+2:wght@700;800;900&family=Nunito:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --sun:#FFD700;--sun2:#FFC107;--sun3:#E8900A;
+      --pink:#FF6B9D;--pink2:#FF85AD;
+      --blue:#38bdf8;--blue2:#22d3ee;
+      --green:#4ecb71;--green2:#00b894;
+      --purple:#a29bfe;--purple2:#6c5ce7;
+      --orange:#ff6b35;--orange2:#e04010;
+      --ok:#4ecb71;--ok-bg:rgba(78,203,113,0.18);--ok-border:rgba(78,203,113,0.5);
+      --err:#ff6b35;--err-bg:rgba(255,107,53,0.18);--err-border:rgba(255,107,53,0.5);
+      --warn:#ff9f43;--warn-bg:rgba(255,159,67,0.15);--warn-border:rgba(255,159,67,0.45);
+      --radius-sm:8px;--radius-md:14px;--radius-lg:18px;
+      --bg-dark:#1a0a2e;
+      --bg-dark2:#2a0a4e;
+      --accent-orange:#ff6b35;
+      --accent-gold:#FFD700;
+      --accent-red:#FF4444;
+    }
+
+    body{
+      --ink:#ffd700;--ink2:#ffb890;
+      --surface:#1a0a2e;
+      --surface2:#2a0a4e;
+      --surface-border:#ff6b35;
+      --surface-text:#ffd700;
+      --surface-text2:#ffb890;
+      --card-bg:linear-gradient(145deg,#2a0a4e,#1a0835,#0f0525);
+      --card-border:#ff6b35;
+      --card-shadow:rgba(10,5,32,0.7);
+      --sidebar-bg:linear-gradient(155deg,#2a0a4e,#1a0a2e);
+      --sidebar-text:#FFD700;
+      --sidebar-btn:rgba(255,107,53,0.1);
+      --sidebar-btn-border:rgba(255,215,0,0.25);
+      --grid-bg:linear-gradient(135deg,#1a0835,#0f0525);
+      --grid-border:#ff6b35;
+      --cell-bg:rgba(255,107,53,0.06);
+      --cell-border:rgba(255,107,53,0.22);
+      --cmd-bg:linear-gradient(180deg,#2a0a4e,#1a0835);
+      --cmd-border:rgba(255,215,0,0.28);
+      --cmd-text:#ffd700;
+      --cmd-shadow:rgba(10,5,32,0.6);
+      --queue-bg:rgba(26,8,53,0.9);
+      --queue-border:rgba(255,215,0,0.22);
+      --queue-cmd-bg:rgba(255,107,53,0.1);
+      --queue-cmd-text:#ffb890;
+      --feedback-info-bg:rgba(255,107,53,0.08);
+      --feedback-info-border:rgba(255,107,53,0.28);
+      --feedback-info-text:#ffb890;
+      --popup-overlay:rgba(8,3,20,0.88);
+      --popup-bg:linear-gradient(145deg,#2a0a4e,#1a0835);
+      --popup-text:#ffd700;
+      --popup-subtext:#ffb890;
+      --popup-fact-bg:rgba(255,107,53,0.08);
+      --popup-fact-border:rgba(255,107,53,0.22);
+      --muted:#a29bfe;
+    }
+
+    body.dark{ /* dark is default — vars defined on body */ }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    *{box-sizing:border-box;}
+    @keyframes festFlicker{
+      0%,100%{background:radial-gradient(ellipse 70% 55% at 50% 35%,rgba(255,107,53,.1) 0%,rgba(26,10,46,0) 55%,rgba(10,4,20,.95) 100%) #1a0a2e;}
+      33%{background:radial-gradient(ellipse 68% 53% at 51% 33%,rgba(255,200,50,.12) 0%,rgba(26,10,46,0) 55%,rgba(10,4,20,.94) 100%) #1a0a2e;}
+      66%{background:radial-gradient(ellipse 72% 58% at 49% 37%,rgba(56,189,248,.08) 0%,rgba(26,10,46,0) 55%,rgba(10,4,20,.94) 100%) #1a0a2e;}
+    }
+    /* Stars background */
+    body::before{
+      content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+      background-image:
+        radial-gradient(1px 1px at 10% 20%, rgba(255,215,0,0.6) 0%, transparent 100%),
+        radial-gradient(1px 1px at 30% 60%, rgba(255,255,255,0.4) 0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 55% 15%, rgba(255,180,80,0.5) 0%, transparent 100%),
+        radial-gradient(1px 1px at 70% 45%, rgba(255,255,255,0.35) 0%, transparent 100%),
+        radial-gradient(1px 1px at 85% 25%, rgba(255,215,0,0.4) 0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 20% 80%, rgba(255,107,157,0.4) 0%, transparent 100%),
+        radial-gradient(1px 1px at 45% 70%, rgba(255,255,255,0.3) 0%, transparent 100%),
+        radial-gradient(1px 1px at 92% 70%, rgba(255,215,0,0.3) 0%, transparent 100%),
+        radial-gradient(1px 1px at 5% 50%, rgba(255,255,255,0.3) 0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 62% 88%, rgba(56,189,248,0.4) 0%, transparent 100%);
+    }
+    body{
+      margin:0;font-family:'Nunito',sans-serif;
+      background:#1a0a2e;color:var(--surface-text);
+      animation:festFlicker 8s ease-in-out infinite;
+      min-height:100vh;overflow-x:hidden;transition:background .3s,color .3s;
+    }
+    body.dark{background:var(--bg-dark);}
+    h1,h2,h3,h4{font-family:'Fredoka One',cursive;} .sidebar .side-title,.words-title,.cycle-title,.theme-title{font-family:'Baloo 2',sans-serif;font-weight:900;}
+    .hidden{display:none!important;}
+    #app{width:100%;max-width:1120px;padding:14px;margin:0 auto;display:flex;flex-direction:column;gap:14px;position:relative;z-index:1;}
+
+    header{
+      background:linear-gradient(145deg,#2a0a4e 0%,#1a0835 60%,#0f0525 100%);
+      border-radius:var(--radius-lg);padding:12px 20px;display:flex;
+      justify-content:space-between;align-items:center;gap:10px;
+      border:3px solid #ff6b35;
+      box-shadow:0 0 0 2px #ffd700,5px 5px 0 rgba(0,0,0,0.6),0 0 50px rgba(255,107,53,0.28),inset 0 1px 0 rgba(255,200,100,0.1);
+      flex-wrap:wrap;position:relative;overflow:hidden;
+    }
+    header::before{
+      content:'★ ✦ ★ ✦ ★ ✦ ★';
+      position:absolute;top:4px;left:0;right:0;text-align:center;
+      font-size:.65rem;letter-spacing:12px;opacity:.3;pointer-events:none;
+    }
+    header::after{
+      content:'';position:absolute;inset:0;
+      background:linear-gradient(90deg,transparent,rgba(255,215,0,0.04),transparent);
+      animation:headerSheen 4s ease-in-out infinite;pointer-events:none;
+    }
+    @keyframes headerSheen{0%,100%{opacity:0;transform:translateX(-100%);}50%{opacity:1;transform:translateX(100%);}}
+    header h1{
+      margin:0;font-size:1.5rem;font-weight:400;display:flex;align-items:center;gap:8px;
+      background:linear-gradient(90deg,#FFD700,#FFA500,#FF6B9D,#FFD700);
+      background-size:200% auto;
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+      animation:titleGradient 4s linear infinite;
+      filter:drop-shadow(0 0 12px rgba(255,215,0,0.4));
+      font-family:'Fredoka One',cursive;letter-spacing:.03em;
+    }
+    @keyframes titleGradient{0%{background-position:0% center;}100%{background-position:200% center;}}
+    header p{margin:2px 0 0;font-size:.82rem;color:#FFB3D1;font-style:italic;font-family:'Nunito',sans-serif;}
+    .logo-wrap{width:48px;height:48px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:2.2rem;animation:logoSpin 8s linear infinite;}
+    @keyframes logoSpin{0%,100%{transform:rotate(0deg);}50%{transform:rotate(10deg);}75%{transform:rotate(-6deg);}}
+    .header-btns{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+
+    .btn{
+      font-family:'Baloo 2',sans-serif;
+      border:2.5px solid #ff6b35;
+      border-radius:10px;padding:7px 16px;font-size:.82rem;
+      display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-weight:900;
+      letter-spacing:.2px;
+      background:linear-gradient(180deg,#3a0868,#25044a);
+      color:#ffd700;
+      box-shadow:4px 4px 0 #0a0520,inset 0 1px 0 rgba(255,180,80,.1);
+      transition:background .12s,transform .08s,box-shadow .08s,border-color .12s;
+      position:relative;overflow:hidden;
+    }
+    .btn::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,0.06),transparent);pointer-events:none;}
+    .btn:hover{background:linear-gradient(180deg,#4e0e80,#32065e);transform:translate(-1px,-2px);box-shadow:5px 6px 0 #0a0520,0 0 14px rgba(255,107,53,0.3);}
+    .btn:active{transform:translate(2px,2px);box-shadow:2px 2px 0 #0a0520;}
+    .btn.secondary{background:linear-gradient(180deg,#ff6b35,#e04010);color:#fff8e0;border-color:#ffd700;box-shadow:4px 4px 0 #0a0520,inset 0 1px 0 rgba(255,220,100,.2);}
+    .btn.secondary:hover{background:linear-gradient(180deg,#ff8050,#e85020);box-shadow:5px 6px 0 #0a0520,0 0 14px rgba(255,140,0,0.3);}
+    .btn.small{font-size:.72rem;padding:4px 12px;}
+
+    .screen{
+      background:linear-gradient(145deg,#2a0a4e,#1a0835,#0f0525);
+      border-radius:var(--radius-lg);
+      border:3px solid #ff6b35;
+      outline:2px solid #ffd700;outline-offset:-5px;
+      padding:14px;
+      box-shadow:0 0 0 2px #ffd700,6px 6px 0 #0a0520,0 0 30px rgba(255,107,53,.15),inset 0 1px 0 rgba(255,200,100,.06);
+      position:relative;overflow:hidden;
+    }
+    .screen::before{content:'✨';position:absolute;top:10px;left:14px;font-size:18px;opacity:.25;pointer-events:none;}
+    .screen::after{content:'✨';position:absolute;bottom:10px;right:14px;font-size:18px;opacity:.25;transform:rotate(180deg);pointer-events:none;}
+
+    .menu-layout{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:16px;align-items:stretch;}
+    @media(max-width:900px){.menu-layout{grid-template-columns:1fr;}}
+
+    .hero{
+      background:linear-gradient(145deg,#2a0a4e,#1a0835);
+      border-radius:var(--radius-lg);padding:18px;border:3px solid var(--orange);
+      position:relative;overflow:hidden;display:flex;flex-direction:column;gap:10px;justify-content:space-between;
+      box-shadow:inset 0 1px 0 rgba(255,140,0,0.15),0 0 30px rgba(255,140,0,0.1);
+    }
+    .hero-bubbles{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+    .hero-bubble{position:absolute;border-radius:50%;opacity:.12;animation:bubbleFloat 4s ease-in-out infinite;}
+    @keyframes bubbleFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-12px);}}
+    .hero-top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;position:relative;z-index:1;}
+    .hero-text{flex:1 1 240px;}
+    .hero-text h2{margin:0;font-size:1.5rem;color:var(--sun);letter-spacing:.03em;text-shadow:0 0 18px rgba(255,215,0,0.4);font-family:'Fredoka One',cursive;}
+    .hero-text p{margin:4px 0 0;font-size:.85rem;color:#FFB3D1;font-style:italic;}
+    .hero-robot-wrap{width:180px;height:180px;position:relative;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .hero-glow{position:absolute;width:150%;height:150%;border-radius:999px;
+      background:radial-gradient(circle,rgba(255,140,0,0.45),transparent 60%);opacity:.5;filter:blur(16px);animation:heroGlow 4s ease-in-out infinite alternate;}
+    .hero-robot{width:150px;height:150px;position:relative;z-index:1;animation:float 3s ease-in-out infinite;}
+    .hero-robot svg{width:150px;height:150px;display:block;}
+    @keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+    @keyframes heroGlow{0%{opacity:.25;transform:scale(1);}100%{opacity:.5;transform:scale(1.12);}}
+    .hero-desc{font-size:.78rem;color:#FFB3D1;padding-top:8px;border-top:1px solid rgba(255,215,0,0.25);position:relative;z-index:1;font-style:italic;}
+    .pill{padding:3px 12px;border-radius:999px;border:1px solid var(--surface-border);font-size:.72rem;color:var(--surface-text2);background:rgba(126,87,194,0.08);font-family:'Fredoka One',cursive;}
+
+    .menu-header h2{margin:0;font-size:1.1rem;font-weight:400;color:var(--surface-text);letter-spacing:.02em;font-family:'Fredoka One',cursive;}
+    .menu-header p{margin:4px 0 0;font-size:.82rem;color:var(--surface-text2);font-style:italic;}
+
+    .cycle-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:12px;}
+    .cycle-card{
+      border-radius:var(--radius-md);padding:15px;cursor:pointer;
+      transition:transform .15s,box-shadow .15s;
+      display:flex;flex-direction:column;gap:6px;position:relative;overflow:hidden;
+      background:var(--card-bg);
+      border:2.5px solid #ff6b35;
+      box-shadow:4px 4px 0 #0a0520,0 0 0 1px #ffd700;
+    }
+    .cycle-card:hover{transform:translateY(-3px) scale(1.02);box-shadow:6px 6px 0 #0a0520,0 0 20px rgba(255,107,53,0.3);}
+    .cycle-card--1c{border-top:4px solid #FF8C00!important;}
+    .cycle-card--2c{border-top:4px solid #FFD700!important;}
+    .cycle-card--3c{border-top:4px solid #FF4466!important;}
+    .cycle-title{font-weight:400;display:flex;align-items:center;gap:8px;font-size:1rem;color:var(--surface-text);font-family:'Fredoka One',cursive;}
+    .cycle-sub{font-size:.8rem;color:var(--surface-text2);font-style:italic;}
+    .chip-row{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px;}
+    .chip{border-radius:999px;border:1px solid var(--surface-border);padding:2px 10px;font-size:.7rem;background:rgba(126,87,194,0.07);color:var(--surface-text2);font-family:'Fredoka One',cursive;}
+
+    .back-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
+    .breadcrumbs{display:flex;align-items:center;gap:4px;font-size:.75rem;color:var(--surface-text2);flex-wrap:wrap;}
+    .small-text{font-size:.75rem;color:var(--surface-text2);font-style:italic;}
+
+    .theme-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin-top:10px;}
+    .theme-card{
+      background:var(--card-bg);border-radius:var(--radius-md);padding:15px;
+      border:2.5px solid #ff6b35;cursor:pointer;
+      display:flex;flex-direction:column;gap:4px;
+      transition:transform .18s cubic-bezier(.34,1.56,.64,1),box-shadow .18s;position:relative;overflow:hidden;
+      box-shadow:4px 4px 0 #0a0520,0 0 0 1px #ffd700;
+    }
+    .theme-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--orange),transparent);opacity:.7;}
+    .theme-card::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,215,0,0.03),transparent 50%);pointer-events:none;}
+    .theme-card:hover{transform:translateY(-5px) scale(1.02);border-color:var(--orange);box-shadow:6px 8px 0 var(--card-shadow),0 0 28px rgba(255,140,0,0.25);}
+    .theme-emoji{font-size:1.8rem;margin-bottom:3px;}
+    .theme-title{font-weight:400;font-size:1rem;color:var(--surface-text);font-family:'Fredoka One',cursive;}
+    .theme-sub{font-size:.78rem;color:var(--surface-text2);font-style:italic;}
+    .theme-progress{height:8px;border-radius:4px;background:rgba(126,87,194,0.12);margin-top:8px;overflow:hidden;border:1px solid rgba(126,87,194,0.2);}
+    .theme-progress-bar{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--orange),var(--sun),#FF6B9D);background-size:200% auto;animation:progressShine 3s linear infinite;transition:width .5s cubic-bezier(.34,1.56,.64,1);}
+    @keyframes progressShine{0%{background-position:200% center;}100%{background-position:0% center;}}
+    .theme-level-count{font-size:.75rem;color:var(--sun);margin-top:5px;margin-bottom:2px;font-family:'Fredoka One',cursive;font-weight:400;}
+
+    .game-layout{display:grid;grid-template-columns:1fr minmax(0,290px);gap:14px;align-items:start;}
+    @media(max-width:750px){.game-layout{grid-template-columns:1fr;}}
+    .level-info{
+      background:var(--card-bg);border-radius:var(--radius-md);padding:13px 15px;border:2px solid var(--card-border);margin-bottom:12px;
+      box-shadow:3px 3px 0 var(--card-shadow);
+    }
+    .level-title{font-size:1rem;font-weight:400;color:var(--surface-text);display:flex;align-items:center;gap:6px;margin-bottom:4px;font-family:'Fredoka One',cursive;}
+    .level-desc{font-size:.8rem;color:var(--surface-text2);line-height:1.6;margin-bottom:8px;font-style:italic;}
+    .tag-row{display:flex;flex-wrap:wrap;gap:5px;}
+    .tag{padding:3px 10px;border-radius:999px;font-size:.68rem;background:rgba(126,87,194,0.07);color:var(--surface-text2);border:1px solid var(--surface-border);font-weight:700;font-family:'Fredoka One',cursive;}
+
+    .grid-wrapper{
+      overflow:hidden;position:relative;
+      background:var(--grid-bg);border-radius:var(--radius-md);padding:10px;
+      border:3px solid var(--grid-border);box-shadow:inset 0 2px 10px rgba(0,0,0,0.5);
+    }
+    .grid{display:grid;gap:4px;width:100%;}
+    .cell{
+      aspect-ratio:1;border-radius:var(--radius-sm);
+      background:var(--cell-bg);border:2px solid var(--cell-border);
+      display:flex;align-items:center;justify-content:center;
+      position:relative;font-size:clamp(.8rem,3vw,1.4rem);transition:background .1s,border-color .1s,box-shadow .1s;
+    }
+    .grid.big .cell{font-size:clamp(.7rem,2.5vw,1.15rem);}
+    .grid.huge .cell{font-size:clamp(.6rem,2vw,1rem);}
+    .cell.obstacle{
+      background:repeating-linear-gradient(45deg,rgba(229,57,53,0.18),rgba(229,57,53,0.18) 4px,rgba(229,57,53,0.04) 4px,rgba(229,57,53,0.04) 8px)!important;
+      border-color:rgba(229,57,53,0.55)!important;border-radius:var(--radius-sm)!important;
+      box-shadow:inset 0 0 8px rgba(229,57,53,0.15)!important;
+    }
+    .cell.deposit{background:rgba(67,160,71,0.15)!important;border-color:rgba(67,160,71,0.6)!important;box-shadow:0 0 14px rgba(67,160,71,0.25),inset 0 0 8px rgba(67,160,71,0.1)!important;}
+    .cell.item{background:rgba(255,215,0,0.15)!important;border-color:rgba(255,215,0,0.7)!important;box-shadow:0 0 10px rgba(255,215,0,0.25),inset 0 0 6px rgba(255,215,0,0.08)!important;}
+    .cell.robot-cell{background:rgba(243,229,245,0.22);border-color:rgba(206,147,216,0.5);}
+    .cell.robot-carrying{background:linear-gradient(135deg,rgba(67,160,71,0.18),rgba(255,215,0,0.2))!important;}
+    .cell.door-cell{background:rgba(232,245,253,0.95)!important;border-color:#29B6F6!important;box-shadow:0 0 16px rgba(79,195,247,0.6)!important;}
+    .cell.door-cell.door-locked{background:rgba(255,243,243,0.95)!important;border-color:#EF5350!important;animation:doorPulse 2s ease-in-out infinite;}
+    .cell.door-cell.door-open{background:rgba(232,245,233,0.95)!important;border-color:#66BB6A!important;animation:doorGlow 1.5s ease-in-out infinite;}
+    .cell.door-cell.door-opening .door-panel{animation:doorOpen 0.5s ease forwards;}
+    .door-svg-wrap{width:100%;height:100%;display:flex;align-items:center;justify-content:center;position:relative;}
+    @keyframes doorOpen{0%{transform:perspective(120px) rotateY(0deg);}100%{transform:perspective(120px) rotateY(-78deg);}}
+    @keyframes doorGlow{0%,100%{box-shadow:0 0 6px rgba(102,187,106,0.4);}50%{box-shadow:0 0 18px rgba(102,187,106,0.9);}}
+    @keyframes doorPulse{0%,100%{box-shadow:0 0 6px rgba(239,83,80,0.4);}50%{box-shadow:0 0 16px rgba(239,83,80,0.7);}}
+    .item-under-robot{position:absolute;bottom:2px;right:3px;font-size:.68em;z-index:3;line-height:1;pointer-events:none;filter:drop-shadow(0 0 3px rgba(0,0,0,0.4));animation:itemPulse 1.4s ease-in-out infinite;}
+    @keyframes itemPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.2);}}
+
+    .robot-icon{width:80%;height:80%;display:inline-block;pointer-events:none;transform-origin:center;
+      transition:transform .2s ease;filter:drop-shadow(0 0 10px rgba(56,189,248,0.8));animation:robotFloat 2.8s ease-in-out infinite;}
+    @keyframes robotFloat{0%,100%{filter:drop-shadow(0 0 8px rgba(56,189,248,.7));}50%{filter:drop-shadow(0 0 20px rgba(34,211,238,1));}}
+    .robot-icon svg{width:100%;height:100%;display:block;}
+    .grid.big .robot-icon{width:94%;height:94%;}
+    .grid.huge .robot-icon{width:96%;height:96%;}
+    .robot-dir{position:absolute;bottom:2px;right:3px;font-size:.65rem;opacity:.7;color:var(--sun);}
+    .carry-badge{position:absolute;top:1px;right:2px;font-size:.7rem;}
+    .robot-icon-inner{display:block;width:100%;height:100%;}
+    @keyframes robotBounce{0%{transform:scale(1);}40%{transform:scale(1.15);}70%{transform:scale(.95);}100%{transform:scale(1);}}
+    .robot-icon-bounce .robot-icon-inner{animation:robotBounce .25s ease;}
+    @keyframes robotShake{0%{transform:translateX(0);}20%{transform:translateX(-5px);}40%{transform:translateX(5px);}60%{transform:translateX(-4px);}80%{transform:translateX(4px);}100%{transform:translateX(0);}}
+    .robot-icon-shake .robot-icon-inner{animation:robotShake .35s ease;}
+    @keyframes robotDance{0%{transform:rotate(0deg) scale(1);}15%{transform:rotate(-15deg) scale(1.1);}30%{transform:rotate(15deg) scale(1.1);}45%{transform:rotate(-15deg) scale(1.12);}60%{transform:rotate(15deg) scale(1.12);}80%{transform:rotate(0deg) scale(1.05);}100%{transform:rotate(0deg) scale(1);}}
+    .robot-dance .robot-icon-inner{animation:robotDance 1s ease;}
+    @keyframes levelFadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+    .level-fade-in{animation:levelFadeIn .22s ease both;}
+
+    /* ── D-PAD ── */
+    .dpad-wrap{display:flex;flex-direction:column;align-items:center;gap:3px;margin-bottom:10px;width:100%;}
+    .dpad-row{display:flex;gap:3px;align-items:center;width:100%;justify-content:center;}
+    .dpad-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+    .cmd-btn{
+      padding:10px 6px;border-radius:999px;
+      border:2px solid var(--cmd-border);
+      background:var(--cmd-bg);font-size:.78rem;cursor:pointer;font-weight:700;
+      font-family:'Fredoka One',cursive;color:var(--cmd-text);
+      transition:background .12s,transform .1s,border-color .12s,box-shadow .12s;
+      display:flex;align-items:center;justify-content:center;gap:5px;
+      box-shadow:2px 2px 0 var(--cmd-shadow);
+      user-select:none;-webkit-user-select:none;
+      -webkit-tap-highlight-color:transparent;
+    }
+    .cmd-btn:hover{border-color:var(--orange);transform:translateY(-2px);box-shadow:3px 4px 0 var(--cmd-shadow),0 0 12px rgba(255,140,0,0.25);}
+    .cmd-btn:active,.cmd-btn.cmd-btn-active{transform:scale(.92);box-shadow:1px 1px 0 var(--cmd-shadow);background:rgba(255,107,53,0.2);}
+    .dpad-btn{
+      width:clamp(48px,12vw,64px);height:clamp(48px,12vw,64px);border-radius:12px;font-size:clamp(1rem,4vw,1.3rem);padding:0;
+      border:2px solid var(--cmd-border);background:var(--cmd-bg);
+      cursor:pointer;display:flex;align-items:center;justify-content:center;
+      box-shadow:0 4px 0 var(--cmd-shadow);
+      transition:transform .08s,box-shadow .08s,border-color .12s,background .1s;
+      user-select:none;-webkit-user-select:none;
+      -webkit-tap-highlight-color:transparent;
+      touch-action:manipulation;
+    }
+    .dpad-btn:hover{border-color:var(--orange);box-shadow:0 5px 0 var(--cmd-shadow),0 0 10px rgba(255,140,0,0.2);}
+    .dpad-btn:active,.dpad-btn.cmd-btn-active{transform:translateY(3px);box-shadow:0 1px 0 var(--cmd-shadow);background:rgba(255,107,53,0.15);}
+    .dpad-center{
+      width:clamp(48px,12vw,64px);height:clamp(48px,12vw,64px);border-radius:50%;
+      background:radial-gradient(circle,rgba(56,189,248,0.1),transparent);
+      border:2px dashed rgba(56,189,248,0.2);
+      display:flex;align-items:center;justify-content:center;
+      font-size:.6rem;color:var(--muted);pointer-events:none;
+    }
+    .action-btn{
+      padding:11px 6px;border-radius:14px;
+      border:2px solid var(--cmd-border);background:var(--cmd-bg);
+      font-size:.78rem;cursor:pointer;font-weight:700;
+      font-family:'Fredoka One',cursive;color:var(--cmd-text);
+      transition:background .12s,transform .1s,border-color .12s,box-shadow .12s;
+      display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+      box-shadow:0 4px 0 var(--cmd-shadow);
+      user-select:none;-webkit-user-select:none;
+      -webkit-tap-highlight-color:transparent;
+      touch-action:manipulation;
+    }
+    .action-btn:hover{border-color:var(--orange);box-shadow:0 5px 0 var(--cmd-shadow),0 0 10px rgba(255,140,0,0.2);}
+    .action-btn:active,.action-btn.cmd-btn-active{transform:translateY(3px);box-shadow:0 1px 0 var(--cmd-shadow);background:rgba(255,107,53,0.15);}
+    .action-btn .btn-icon{font-size:1.2rem;line-height:1;}
+    .action-btn .btn-label{font-size:.62rem;opacity:.85;}
+    /* hint highlight */
+    .cell.hint-highlight{animation:hintPulse 0.7s ease-in-out 3;border-color:rgba(255,215,0,0.9)!important;box-shadow:0 0 14px rgba(255,215,0,0.7),inset 0 0 8px rgba(255,215,0,0.3)!important;}
+    @keyframes hintPulse{0%,100%{background:var(--cell-bg);}50%{background:rgba(255,215,0,0.25)!important;}}
+    .robot-cell.hint-highlight{border-color:rgba(255,107,157,0.9)!important;box-shadow:0 0 14px rgba(255,107,157,0.7)!important;}
+
+    .queue-box{
+      background:var(--queue-bg);border-radius:var(--radius-md);
+      border:2px solid var(--queue-border);padding:10px;margin-bottom:8px;
+    }
+    .queue-label{font-size:.75rem;color:var(--surface-text2);font-weight:700;margin-bottom:6px;font-family:'Fredoka One',cursive;}
+    .queue-commands{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px;min-height:28px;}
+    .queue-cmd{
+      padding:3px 10px;border-radius:999px;font-size:.7rem;
+      background:var(--queue-cmd-bg);border:1px solid var(--queue-border);
+      color:var(--queue-cmd-text);font-family:'Fredoka One',cursive;
+    }
+    .queue-actions{display:flex;gap:5px;flex-wrap:wrap;}
+
+    .feedback-box{
+      border-radius:var(--radius-md);padding:8px 14px;font-size:.8rem;
+      margin-bottom:8px;border:2px solid;line-height:1.5;font-family:'Nunito',sans-serif;
+    }
+    .feedback-ok{background:var(--ok-bg);border-color:var(--ok-border);color:var(--ok);}
+    .feedback-err{background:var(--err-bg);border-color:var(--err-border);color:var(--err);}
+    .feedback-warn{background:var(--warn-bg);border-color:var(--warn-border);color:var(--warn);}
+    .feedback-info{background:var(--feedback-info-bg);border-color:var(--feedback-info-border);color:var(--feedback-info-text);}
+
+    .kbd-hint{font-size:.7rem;color:var(--muted);margin-bottom:8px;font-style:italic;}
+
+    .academy-side{
+      background:var(--card-bg);border-radius:var(--radius-md);padding:12px;border:2px solid var(--card-border);
+      box-shadow:3px 3px 0 var(--card-shadow);
+    }
+
+    .layout-with-side{display:grid;grid-template-columns:minmax(0,180px) 1fr;gap:14px;align-items:start;}
+    @media(max-width:700px){.layout-with-side{grid-template-columns:1fr;}}
+
+    .sidebar{
+      background:linear-gradient(145deg,#2a0a4e,#1a0a2e);
+      border-radius:var(--radius-lg);padding:14px 10px;
+      border:3px solid #ff6b35;
+      box-shadow:0 0 0 1px #ffd700,4px 4px 0 #0a0520;
+      position:sticky;top:14px;
+    }
+    .side-section{margin-bottom:14px;}
+    .side-title{font-size:.68rem;color:var(--sun);text-transform:uppercase;letter-spacing:.07em;font-family:'Fredoka One',cursive;margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid rgba(255,215,0,0.25);}
+    .side-robot-wrap{display:flex;justify-content:center;margin-bottom:10px;}
+    .side-robot-wrap svg{width:54px;height:54px;filter:drop-shadow(0 0 10px rgba(56,189,248,.7));}
+    .side-btn{
+      display:block;width:100%;text-align:left;padding:6px 10px;margin-bottom:4px;
+      font-size:.72rem;cursor:pointer;font-family:'Fredoka One',cursive;font-weight:400;
+      background:var(--sidebar-btn);border:1px solid var(--sidebar-btn-border);border-radius:999px;
+      color:var(--sidebar-text);transition:background .1s,border-color .1s;
+    }
+    .side-btn:hover{background:rgba(255,140,0,0.2);border-color:var(--orange);}
+    .side-prog{font-size:.7rem;color:rgba(255,255,255,0.5);margin-top:3px;margin-left:4px;}
+
+    .popup{
+      position:fixed;inset:0;background:var(--popup-overlay);
+      display:flex;align-items:center;justify-content:center;z-index:9999;
+      animation:popBg .15s ease;
+      backdrop-filter:blur(4px);
+    }
+    @keyframes popBg{from{opacity:0;}to{opacity:1;}}
+    .popup.hidden{display:none!important;}
+    .popup-inner{
+      background:linear-gradient(145deg,#2d0e52,#1a0835);
+      border:3px solid #ff6b35;
+      box-shadow:0 0 0 2px #ffd700,8px 8px 0 #0a0520,0 0 80px rgba(255,107,53,.35);
+      border-radius:22px;
+      padding:26px 30px;max-width:420px;width:92%;text-align:center;
+      color:var(--popup-text);font-family:'Fredoka One',cursive;
+      animation:popIn .28s cubic-bezier(.34,1.56,.64,1);position:relative;
+    }
+    @keyframes popIn{from{opacity:0;transform:scale(.8) translateY(20px);}to{opacity:1;transform:scale(1) translateY(0);}}
+    .popup-inner h3{margin:6px 0 4px;font-size:1.5rem;color:var(--popup-text);}
+    .popup-inner p{font-size:.82rem;color:var(--popup-subtext);font-style:italic;font-family:'Nunito',sans-serif;}
+    .popup-stars-row{display:flex;justify-content:center;gap:8px;font-size:2rem;margin:10px 0;}
+    .popup-star{display:inline-block;opacity:.15;transition:opacity .3s,transform .3s;filter:grayscale(1);}
+    .popup-star.lit{opacity:1;filter:none;animation:starPop .35s cubic-bezier(.34,1.56,.64,1) forwards;}
+    @keyframes starPop{from{transform:scale(0)rotate(-30deg);}to{transform:scale(1)rotate(0);}}
+    .popup-fact{
+      background:rgba(255,107,53,0.1);border:1px solid rgba(255,107,53,0.3);
+      border-radius:var(--radius-md);padding:10px 14px;font-size:.8rem;color:#FFB3D1;
+      font-style:italic;font-family:'Nunito',sans-serif;text-align:left;margin:10px 0;line-height:1.7;
+    }
+    .popup-btns{display:flex;justify-content:center;gap:8px;margin-top:14px;flex-wrap:wrap;}
+    .popup-confetti-wrap{position:absolute;inset:0;overflow:hidden;border-radius:22px;pointer-events:none;}
+
+    @keyframes cardAnim{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+    .card-anim{animation:cardAnim .32s ease both;}
+
+    /* ── QUIZ – dark theme melhorado ── */
+    .quiz-q{font-size:.92rem;color:#FFD700;font-family:'Fredoka One',cursive;font-weight:400;margin-bottom:14px;line-height:1.6;text-align:left;}
+    .quiz-opts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+    .quiz-opt{
+      padding:10px 12px;border-radius:12px;border:2px solid rgba(255,107,53,0.4);
+      background:rgba(255,107,53,0.1);color:#FFD700;font-size:.78rem;cursor:pointer;
+      font-family:'Nunito',sans-serif;text-align:center;line-height:1.4;
+      transition:background .12s,border-color .12s,transform .08s;font-weight:700;
+      -webkit-tap-highlight-color:transparent;
+    }
+    .quiz-opt:hover:not(:disabled){background:rgba(255,107,53,0.22);border-color:var(--orange);transform:translateY(-1px);}
+    .quiz-opt:disabled{cursor:default;}
+    .quiz-opt-correct{background:rgba(67,160,71,0.25)!important;border-color:#66BB6A!important;color:#A5D6A7!important;}
+    .quiz-opt-wrong{background:rgba(229,57,53,0.25)!important;border-color:#EF5350!important;color:#EF9A9A!important;}
+    .quiz-result{font-size:.82rem;text-align:center;min-height:1.4em;margin-top:4px;font-family:'Fredoka One',cursive;}
+    .quiz-ok{color:#81C784;font-weight:700;}
+    .quiz-err{color:#EF9A9A;}
+
+    /* ── MOVE COUNTER ANIMATION ── */
+    @keyframes movePop{0%{transform:scale(1);}40%{transform:scale(1.35);}100%{transform:scale(1);}}
+    .move-pop{animation:movePop .2s ease;}
+
+    /* ── LEVEL COMPLETE MINI BANNER ── */
+    @keyframes bannerIn{from{transform:translateY(-100%);opacity:0;}to{transform:translateY(0);opacity:1;}}
+    @keyframes bannerOut{from{transform:translateY(0);opacity:1;}to{transform:translateY(-100%);opacity:0;}}
+    .level-banner{
+      position:fixed;top:0;left:0;right:0;z-index:9990;
+      background:linear-gradient(90deg,#ff6b35,#ffd700,#ff6b35);
+      background-size:200% auto;animation:bannerIn .3s ease,progressShine 2s linear infinite;
+      color:#1a0a2e;font-family:'Fredoka One',cursive;font-size:1rem;
+      padding:10px 20px;text-align:center;
+      box-shadow:0 4px 20px rgba(255,107,53,0.5);
+    }
+
+    /* ── SIDEBAR ACTIVE STATE ── */
+    .side-btn.active{background:rgba(255,140,0,0.2);border-color:var(--orange);color:#ffd700;}
+
+    /* ── KEYBOARD SHORTCUT HINT IMPROVED ── */
+    .kbd-hint{
+      font-size:.68rem;color:var(--muted);margin-bottom:8px;font-style:italic;
+      background:rgba(162,155,254,0.06);border:1px solid rgba(162,155,254,0.12);
+      border-radius:8px;padding:5px 8px;line-height:1.6;
+    }
+    @media(max-width:600px){.kbd-hint{display:none;}}
+
+    /* ── FEEDBACK ANIMATION ── */
+    @keyframes feedbackFlash{0%{transform:scale(1);}30%{transform:scale(1.03);}100%{transform:scale(1);}}
+    .feedback-flash{animation:feedbackFlash .2s ease;}
+
+    /* ── GRID WRAPPER SCROLLABLE ── */
+
+    /* ── SWIPE HINT ── */
+    .swipe-hint{
+      font-size:.68rem;color:rgba(162,155,254,0.55);text-align:center;
+      margin-top:6px;font-style:italic;display:none;
+    }
+    @media(max-width:600px){.swipe-hint{display:block;}}
+
+    /* ── MOBILE OPTIMIZATIONS ── */
+    @media(max-width:480px){
+      #app{padding:8px;gap:10px;}
+      header{padding:10px 12px;}
+      header h1{font-size:1.1rem;}
+      .hero-robot-wrap{width:100px!important;height:100px!important;}
+      .hero-robot,.hero-robot svg{width:90px!important;height:90px!important;}
+      .cell{font-size:clamp(.7rem,4.5vw,1.1rem)!important;}
+      .grid.big .cell{font-size:clamp(.6rem,4vw,.95rem)!important;}
+      .grid.huge .cell{font-size:clamp(.55rem,3.5vw,.8rem)!important;}
+      .action-btn{padding:13px 6px;}
+      .action-btn .btn-icon{font-size:1.4rem;}
+      .popup-inner{padding:18px 16px;}
+      .quiz-opts{grid-template-columns:1fr!important;}
+      .quiz-opt{padding:12px 14px;font-size:.82rem;}
+      .back-row{flex-direction:column;align-items:flex-start;gap:6px;}
+    }
+  </style>
+</head>
+<body class="dark">
+<div id="app">
+  <header>
+    <div>
+      <h1>🌈 Mundo da Criança</h1>
+      <p>Aventura, brincadeiras e direitos das crianças!</p>
+    </div>
+    <div class="logo-wrap" id="logo-robot">🤖</div>
+    <div class="header-btns">
+      <button class="btn secondary small" id="btn-mute" data-tip="Ligar/desligar som">🔊 Som</button>
+
+    </div>
+  </header>
+
+  <div id="menu-screen" class="screen">
+    <div class="layout-with-side">
+      <div class="sidebar">
+        <div class="side-robot-wrap" id="side-robot">🤖</div>
+        <div class="side-section">
+          <div class="side-title">📍 Navegar</div>
+          <button class="side-btn" id="side-home">🏠 Início</button>
+          <button class="side-btn" id="side-1c">🩷 1.º Ciclo — Brincar
+            <div class="side-prog" id="side-prog-1c"></div>
+          </button>
+          <button class="side-btn" id="side-2c">💙 2.º Ciclo — Direitos
+            <div class="side-prog" id="side-prog-2c"></div>
+          </button>
+          <button class="side-btn" id="side-3c">💚 3.º Ciclo — Mundo
+            <div class="side-prog" id="side-prog-3c"></div>
+          </button>
+        </div>
+        <div class="side-section">
+          <div class="side-title">⚙️ Opções</div>
+          <button class="side-btn" id="btn-super-easy">🧸 Super Fácil: OFF</button>
+        </div>
+      </div>
+
+      <div>
+        <div class="menu-layout">
+          <div class="hero">
+            <div class="hero-bubbles">
+              <div class="hero-bubble" style="width:80px;height:80px;background:#FF6B9D;top:10%;left:5%;animation-delay:0s;"></div>
+              <div class="hero-bubble" style="width:60px;height:60px;background:#4FC3F7;top:40%;right:8%;animation-delay:.8s;"></div>
+              <div class="hero-bubble" style="width:50px;height:50px;background:#FFD700;bottom:15%;left:20%;animation-delay:1.5s;"></div>
+            </div>
+            <div class="hero-top">
+              <div class="hero-text">
+                <h2>🎉 Dia da Criança!</h2>
+                <p>Guia o teu robot por aventuras incríveis e aprende sobre brincadeiras e direitos das crianças!</p>
+              </div>
+              <div class="hero-robot-wrap">
+                <div class="hero-glow"></div>
+                <div class="hero-robot" id="hero-robot">🤖</div>
+              </div>
+            </div>
+            <div class="hero-desc">
+              🎮 Controla o robot, recolhe os itens, deposita no destino e passa pela porta mágica!
+            </div>
+          </div>
+
+          <div>
+            <div class="menu-header">
+              <h2>🗺️ Escolhe a tua aventura!</h2>
+              <p>Três ciclos com temas diferentes sobre o mundo das crianças.</p>
+            </div>
+            <div class="cycle-grid">
+              <div class="cycle-card cycle-card--1c" id="btn-cycle-1c">
+                <div class="cycle-title">🩷 1.º Ciclo</div>
+                <div class="cycle-sub">O mundo das brincadeiras — comandos diretos!</div>
+                <div class="chip-row">
+                  <span class="chip">🎠 Parque</span>
+                  <span class="chip">🎪 Circo</span>
+                  <span class="chip">🎨 Arte</span>
+                </div>
+              </div>
+              <div class="cycle-card cycle-card--2c" id="btn-cycle-2c">
+                <div class="cycle-title">💙 2.º Ciclo</div>
+                <div class="cycle-sub">Os direitos das crianças — sequências!</div>
+                <div class="chip-row">
+                  <span class="chip">📚 Educação</span>
+                  <span class="chip">🤝 Amizade</span>
+                  <span class="chip">🛡️ Proteção</span>
+                </div>
+              </div>
+              <div class="cycle-card cycle-card--3c" id="btn-cycle-3c">
+                <div class="cycle-title">💚 3.º Ciclo</div>
+                <div class="cycle-sub">O mundo da criança — sequências avançadas!</div>
+                <div class="chip-row">
+                  <span class="chip">🌍 Natureza</span>
+                  <span class="chip">🚀 Sonhos</span>
+                  <span class="chip">🌈 Futuro</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- THEMES 1C -->
+  <div id="themes-1c" class="screen hidden">
+    <div class="back-row">
+      <button class="btn secondary small" id="btn-back-menu-1c">← Início</button>
+      <span class="small-text">🩷 1.º Ciclo — O mundo das brincadeiras (comandos diretos)</span>
+    </div>
+    <div class="theme-grid">
+      <div class="theme-card" data-cycle="1c" data-theme="parque">
+        <div class="theme-emoji">🎠🌳</div>
+        <div class="theme-title">Parque de Diversões</div>
+        <div class="theme-sub">Recolhe os brinquedos espalhados pelo parque!</div>
+        <div class="theme-progress"><div class="theme-progress-bar" style="width:0%"></div></div>
+      </div>
+      <div class="theme-card" data-cycle="1c" data-theme="circo">
+        <div class="theme-emoji">🎪🤹</div>
+        <div class="theme-title">O Grande Circo</div>
+        <div class="theme-sub">Ajuda o palhaço a recolher as suas peças!</div>
+        <div class="theme-progress"><div class="theme-progress-bar" style="width:0%"></div></div>
+      </div>
+      <div class="theme-card" data-cycle="1c" data-theme="arte">
+        <div class="theme-emoji">🎨🖌️</div>
+        <div class="theme-title">Ateliê de Arte</div>
+        <div class="theme-sub">Reúne os materiais de pintura espalhados!</div>
+        <div class="theme-progress"><div class="theme-progress-bar" style="width:0%"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- THEMES 2C -->
+  <div id="themes-2c" class="screen hidden">
+    <div class="back-row">
+      <button class="btn secondary small" id="btn-back-menu-2c">← Início</button>
+      <span class="small-text">💙 2.º Ciclo — Os direitos das crianças (sequências)</span>
+    </div>
+    <div class="theme-grid">
+      <div class="theme-card" data-cycle="2c" data-theme="educacao">
+        <div class="theme-emoji">📚✏️</div>
+        <div class="theme-title">Direito à Educação</div>
+        <div class="theme-sub">Leva os livros de volta à biblioteca!</div>
+        <div class="theme-progress"><div class="theme-progress-bar" style="width:0%"></div></div>
+      </div>
+      <div class="theme-card" data-cycle="2c" data-theme="amizade">
+        <div class="theme-emoji">🤝💛</div>
+        <div class="theme-title">O Direito à Amizade</div>
+        <div class="theme-sub">Reúne as crianças do mundo num só lugar!</div>
+        <div class="theme-progress"><div class="theme-progress-bar" style="width:0%"></div></div>
+      </div>
+      <div class="theme-card" data-cycle="2c" data-theme="saude">
+        <div class="theme-emoji">🏥💊</div>
+        <div class="theme-title">Direito à Saúde</div>
+        <div class="theme-sub">Leva os medicamentos ao hospital das crianças!</div>
+        <div class="theme-progress"><div class="theme-progress-bar" style="width:0%"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- THEMES 3C -->
+  <div id="themes-3c" class="screen hidden">
+    <div class="back-row">
+      <button class="btn secondary small" id="btn-back-menu-3c">← Início</button>
+      <span class="small-text">💚 3.º Ciclo — O mundo da criança (desafio final)</span>
+    </div>
+    <div class="theme-grid">
+      <div class="theme-card" data-cycle="3c" data-theme="natureza">
+        <div class="theme-emoji">🌍🌿</div>
+        <div class="theme-title">A Natureza é Nossa</div>
+        <div class="theme-sub">Recicla e cuida do planeta para as crianças!</div>
+        <div class="theme-progress"><div class="theme-progress-bar" style="width:0%"></div></div>
+      </div>
+      <div class="theme-card" data-cycle="3c" data-theme="sonhos">
+        <div class="theme-emoji">🚀⭐</div>
+        <div class="theme-title">Sonhos sem Limites</div>
+        <div class="theme-sub">Cada criança pode ser o que quiser!</div>
+        <div class="theme-progress"><div class="theme-progress-bar" style="width:0%"></div></div>
+      </div>
+      <div class="theme-card" data-cycle="3c" data-theme="mundo">
+        <div class="theme-emoji">🌈🌏</div>
+        <div class="theme-title">Crianças do Mundo</div>
+        <div class="theme-sub">Todas as crianças merecem felicidade!</div>
+        <div class="theme-progress"><div class="theme-progress-bar" style="width:0%"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GAME SCREEN -->
+  <div id="game-screen" class="screen hidden">
+    <div class="back-row">
+      <div class="breadcrumbs">
+        <button class="btn secondary small" id="btn-main-menu">🏠 Início</button>
+        <span>›</span>
+        <button class="btn secondary small" id="btn-back-themes">← Temas</button>
+        <span>›</span>
+        <span id="crumb-theme">—</span>
+        <span>›</span>
+        <span id="crumb-level">Nível 1</span>
+      </div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap;">
+        <span class="pill" id="pill-difficulty">Dificuldade: —</span>
+        <button class="btn secondary small" id="btn-reset-level-top">↺ Reiniciar</button>
+        <button class="btn secondary small" id="btn-reset-theme">🗑 Recomeçar tema</button>
+      </div>
+    </div>
+
+    <div class="game-layout">
+      <div>
+        <div class="level-info">
+          <div class="level-title"><span id="level-emoji">⭐</span> <span id="level-title-text">Tema</span></div>
+          <div class="level-desc" id="level-desc">Descrição do nível.</div>
+          <div class="tag-row">
+            <span class="tag" id="tag-optimal">🏁 Ótimo: —</span>
+            <span class="tag" id="moves">Movimentos: 0</span>
+          </div>
+        </div>
+        <div class="grid-wrapper">
+          <div class="grid" id="grid"></div>
+        </div>
+        <div style="font-size:.72rem;color:#9E7BC2;margin-top:5px;" id="hint-text"></div>
+        <div class="swipe-hint">👆 Desliza na grelha para mover o robot!</div>
+      </div>
+
+      <div class="academy-side">
+        <!-- D-PAD -->
+        <div class="dpad-wrap">
+          <div class="dpad-row">
+            <div style="flex:1;"></div>
+            <button class="dpad-btn cmd-btn" data-cmd="MOVE" id="btn-cmd-move" title="Avançar">⬆️</button>
+            <div style="flex:1;"></div>
+          </div>
+          <div class="dpad-row">
+            <button class="dpad-btn cmd-btn" data-cmd="LEFT" id="btn-cmd-left" title="Virar esq.">↩️</button>
+            <div class="dpad-center">🤖</div>
+            <button class="dpad-btn cmd-btn" data-cmd="RIGHT" id="btn-cmd-right" title="Virar dir.">↪️</button>
+          </div>
+          <div class="dpad-row">
+            <div style="flex:1;min-width:44px;"></div>
+            <button class="dpad-btn cmd-btn" data-cmd="BACK" id="btn-cmd-back" title="Recuar">⬇️</button>
+            <div style="flex:1;min-width:44px;"></div>
+          </div>
+        </div>
+        <!-- AÇÕES -->
+        <div class="dpad-actions">
+          <button class="action-btn cmd-btn" data-cmd="COLLECT" id="btn-cmd-collect">
+            <span class="btn-icon">✋</span><span class="btn-label">Apanhar</span>
+          </button>
+          <button class="action-btn cmd-btn" data-cmd="DROP" id="btn-cmd-drop">
+            <span class="btn-icon">📥</span><span class="btn-label">Depositar</span>
+          </button>
+        </div>
+
+        <div class="queue-box hidden" id="queue-box">
+          <div class="queue-label">📋 Sequência de comandos</div>
+          <div class="queue-commands" id="queue-commands"></div>
+          <div class="queue-actions">
+            <button class="btn small" id="btn-run-queue" style="display:none;">▶️ Executar</button>
+            <button class="btn secondary small" id="btn-undo-queue" style="display:none;">↩ Desfazer</button>
+            <button class="btn secondary small" id="btn-clear-queue" style="display:none;">🧹 Limpar</button>
+          </div>
+        </div>
+
+        <div class="feedback-box feedback-info" id="feedback">Seleciona um tema para começar.</div>
+        <div class="kbd-hint">⌨️ W/↑ avançar · S/↓ recuar · A/← esq · D/→ dir · E apanhar · F depositar</div>
+
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <button class="btn secondary small" id="btn-reset-level">↺ Reiniciar nível</button>
+          <button class="btn secondary small" id="btn-undo-direct" style="display:none;">↩ Desfazer (Z)</button>
+          <button class="btn secondary small" id="btn-hint">💡 Dica</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- POPUP VITÓRIA -->
+<div class="popup hidden" id="popup-complete">
+  <div class="popup-inner" style="position:relative;">
+    <div class="popup-confetti-wrap" id="popup-confetti"></div>
+    <div style="font-size:2.5rem;margin-bottom:2px;">🎉</div>
+    <h3 id="popup-title">Missão cumprida!</h3>
+    <div class="popup-stars-row">
+      <span class="popup-star" id="popup-star1">⭐</span>
+      <span class="popup-star" id="popup-star2">⭐</span>
+      <span class="popup-star" id="popup-star3">⭐</span>
+    </div>
+    <p id="popup-text"></p>
+    <div class="popup-fact" id="popup-fact" style="display:none;"></div>
+    <div id="popup-quiz-section" style="display:none;"></div>
+    <div class="popup-btns">
+      <button class="btn small" id="popup-next">➡️ Próxima missão</button>
+      <button class="btn secondary small" id="popup-menu">🏠 Menu</button>
+    </div>
+  </div>
+</div>
+
+<!-- Sons gerados por Web Audio API — sem dependência externa -->
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  "use strict";
+
+  /* ===== ROBOT SVG — Criança Robot ===== */
+  const KID_ROBOT_SVG = `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <defs>
+    <linearGradient id="vbBodyGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e5f2ff"/><stop offset="100%" stop-color="#bfdbfe"/>
+    </linearGradient>
+    <linearGradient id="vbVisorGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#22d3ee"/><stop offset="100%" stop-color="#38bdf8"/>
+    </linearGradient>
+  </defs>
+  <circle cx="40" cy="40" r="32" fill="rgba(147,197,253,0.28)"/>
+  <rect x="18" y="30" width="44" height="32" rx="14" fill="url(#vbBodyGrad)"/>
+  <circle cx="40" cy="46" r="7" fill="#9ca3af"/>
+  <rect x="22" y="10" width="36" height="26" rx="13" fill="url(#vbBodyGrad)"/>
+  <rect x="26" y="15" width="28" height="16" rx="8" fill="url(#vbVisorGrad)"/>
+  <circle cx="33" cy="23" r="2.5" fill="#0f172a"/><circle cx="47" cy="23" r="2.5" fill="#0f172a"/>
+  <circle cx="34.2" cy="21.5" r="1" fill="white" opacity="0.8"/><circle cx="48.2" cy="21.5" r="1" fill="white" opacity="0.8"/>
+  <line x1="40" y1="10" x2="40" y2="4" stroke="#38bdf8" stroke-width="2"/><circle cx="40" cy="3" r="2.5" fill="#38bdf8"/>
+  <rect x="12" y="34" width="6" height="20" rx="3" fill="#e5e7eb"/>
+  <rect x="62" y="34" width="6" height="20" rx="3" fill="#e5e7eb"/>
+  <rect x="22" y="58" width="12" height="8" rx="3" fill="#1f2937"/><rect x="46" y="58" width="12" height="8" rx="3" fill="#1f2937"/>
+</svg>`;
+
+  function KID_POPUP_SVG(){
+    const uid = Math.random().toString(36).slice(2,6);
+    return `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="vbpbg${uid}" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e5f2ff"/><stop offset="100%" stop-color="#bfdbfe"/>
+    </linearGradient>
+    <linearGradient id="vbpvg${uid}" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#22d3ee"/><stop offset="100%" stop-color="#38bdf8"/>
+    </linearGradient>
+  </defs>
+  <circle cx="40" cy="40" r="34" fill="rgba(147,197,253,0.25)"/>
+  <rect x="18" y="30" width="44" height="32" rx="14" fill="url(#vbpbg${uid})"/>
+  <circle cx="40" cy="46" r="7" fill="#9ca3af"/>
+  <rect x="22" y="10" width="36" height="26" rx="13" fill="url(#vbpbg${uid})"/>
+  <rect x="26" y="15" width="28" height="16" rx="8" fill="url(#vbpvg${uid})"/>
+  <circle cx="33" cy="23" r="2.5" fill="#0f172a"/><circle cx="47" cy="23" r="2.5" fill="#0f172a"/>
+  <circle cx="34.2" cy="21.5" r="1" fill="white" opacity="0.8"/><circle cx="48.2" cy="21.5" r="1" fill="white" opacity="0.8"/>
+  <line x1="40" y1="10" x2="40" y2="4" stroke="#38bdf8" stroke-width="2"/><circle cx="40" cy="3" r="2.5" fill="#38bdf8"/>
+  <rect x="12" y="34" width="6" height="20" rx="3" fill="#e5e7eb"/>
+  <rect x="62" y="34" width="6" height="20" rx="3" fill="#e5e7eb"/>
+  <rect x="22" y="58" width="12" height="8" rx="3" fill="#1f2937"/><rect x="46" y="58" width="12" height="8" rx="3" fill="#1f2937"/>
+</svg>`;
+  }
+
+  const $ = id => document.getElementById(id);
+
+  ["logo-robot","hero-robot","side-robot"].forEach(id => {
+    const el = $(id);
+    if(el) el.innerHTML = KID_ROBOT_SVG;
+  });
+
+  /* ===== DADOS DO JOGO — Dia da Criança ===== */
+  const GAME_DATA = {
+    "1c": {
+      name:"1.º Ciclo", mode:"direct",
+      themes:{
+        parque:{
+          name:"Parque de Diversões", emoji:"🎠🌳",
+          itemEmojis:["🎈","🎡","🎢"], obstacleEmoji:"🌵",
+          depositEmoji:"🏠",
+          superEasyLevels:[
+            {size:4,robot:[3,3],items:[[1,1]],deposit:[[0,0]],obstacles:[],difficulty:"Super Fácil",desc:"O 1 de junho é o Dia Mundial da Criança! Apanha o balão e leva para casa."},
+            {size:5,robot:[4,4],items:[[2,1]],deposit:[[0,0]],obstacles:[],difficulty:"Super Fácil",desc:"No parque há uma roda gigante maravilhosa! Recolhe a tua entrada e vai brincar."},
+            {size:5,robot:[4,3],items:[[1,3]],deposit:[[0,0]],obstacles:[],difficulty:"Super Fácil",desc:"Brincar ao ar livre é essencial para o desenvolvimento das crianças! Apanha o bilhete."}
+          ],
+          levels:[
+            {size:5,robot:[4,2],items:[[2,2]],deposit:[[0,0]],obstacles:[],difficulty:"Fácil",desc:"Que dia lindo no parque! Apanha o balão 🎈 e leva para a casinha 🏠. Brincar é um direito das crianças!"},
+            {size:5,robot:[4,4],items:[[3,1],[1,3]],deposit:[[0,0]],obstacles:[[2,2]],difficulty:"Médio",desc:"Um cacto 🌵 bloqueia o caminho! Contorna-o e apanha os bilhetes para a roda gigante e para os carrinhos!"},
+            {size:6,robot:[5,5],items:[[4,1],[3,4],[2,5]],deposit:[[0,0]],obstacles:[[3,2],[3,5],[1,3]],difficulty:"Difícil",desc:"O parque está cheio de obstáculos! Recolhe todos os brinquedos espalhados e leva-os para a casinha."}
+          ]
+        },
+        circo:{
+          name:"O Grande Circo", emoji:"🎪🤹",
+          itemEmojis:["🎭","🤡","🎪"], obstacleEmoji:"🔥",
+          depositEmoji:"🎠",
+          superEasyLevels:[
+            {size:4,robot:[3,0],items:[[1,1]],deposit:[[0,3]],obstacles:[],difficulty:"Super Fácil",desc:"O palhaço perdeu a máscara! Apanha e leva ao palco do circo."},
+            {size:5,robot:[4,0],items:[[2,2]],deposit:[[0,4]],obstacles:[],difficulty:"Super Fácil",desc:"O circo chegou à cidade! Recolhe as peças do espetáculo."},
+            {size:5,robot:[4,1],items:[[1,3]],deposit:[[0,4]],obstacles:[],difficulty:"Super Fácil",desc:"O malabarista precisa das suas bolas de circo para o espetáculo!"}
+          ],
+          levels:[
+            {size:5,robot:[4,0],items:[[2,1]],deposit:[[0,4]],obstacles:[],difficulty:"Fácil",desc:"O circo começa em breve! O palhaço perdeu o seu chapéu 🎭. Apanha e leva ao palco 🎠 antes do espetáculo!"},
+            {size:5,robot:[4,0],items:[[3,2],[1,3]],deposit:[[0,4]],obstacles:[[2,2]],difficulty:"Médio",desc:"O aro de fogo 🔥 bloqueia o caminho! O palhaço e o malabarista precisam das suas peças para o show!"},
+            {size:6,robot:[5,1],items:[[4,3],[2,4],[1,2]],deposit:[[0,5]],obstacles:[[3,2],[2,2],[2,3]],difficulty:"Difícil",desc:"Grande espetáculo de circo! Reúne todas as peças do show: máscaras, chapéus e bolas de malabarismo!"}
+          ]
+        },
+        arte:{
+          name:"Ateliê de Arte", emoji:"🎨🖌️",
+          itemEmojis:["🖌️","🎨","✏️"], obstacleEmoji:"💧",
+          depositEmoji:"🖼️",
+          superEasyLevels:[
+            {size:4,robot:[3,1],items:[[1,2]],deposit:[[0,3]],obstacles:[],difficulty:"Super Fácil",desc:"Pintar é uma forma de expressão! Apanha o pincel e leva ao quadro."},
+            {size:5,robot:[4,1],items:[[2,3]],deposit:[[0,3]],obstacles:[],difficulty:"Super Fácil",desc:"As crianças adoram criar! Recolhe as tintas para o ateliê."},
+            {size:5,robot:[4,0],items:[[1,1]],deposit:[[0,3]],obstacles:[],difficulty:"Super Fácil",desc:"A arte desenvolve a criatividade das crianças! Leva o lápis ao quadro."}
+          ],
+          levels:[
+            {size:5,robot:[4,1],items:[[2,1]],deposit:[[0,3]],obstacles:[],difficulty:"Fácil",desc:"Hoje é dia de arte! Apanha o pincel 🖌️ e leva ao quadro 🖼️. Expressar sentimentos através da arte é muito importante!"},
+            {size:5,robot:[4,1],items:[[3,3],[1,1]],deposit:[[0,3]],obstacles:[[2,2]],difficulty:"Médio",desc:"Tinta derramada 💧 bloqueia o caminho! Apanha os materiais de arte e leva-os ao ateliê."},
+            {size:6,robot:[5,0],items:[[4,2],[3,4],[1,3]],deposit:[[0,4]],obstacles:[[3,1],[2,2],[2,3]],difficulty:"Difícil",desc:"Grande exposição de arte infantil! Reúne todos os materiais: pincéis, tintas e lápis. A criatividade não tem limites!"}
+          ]
+        }
+      }
+    },
+    "2c": {
+      name:"2.º Ciclo", mode:"queue",
+      themes:{
+        educacao:{
+          name:"Direito à Educação", emoji:"📚✏️",
+          itemEmojis:["📚","✏️","📖"], obstacleEmoji:"🧱",
+          depositEmoji:"🏫",
+          levels:[
+            {size:6,robot:[5,0],items:[[4,2],[2,1]],deposit:[[0,5]],obstacles:[[3,2],[3,3]],difficulty:"Fácil",desc:"Todas as crianças têm direito à educação! A Convenção sobre os Direitos da Criança (ONU, 1989) garante esse direito. Leva os livros à escola!"},
+            {size:7,robot:[6,0],items:[[5,4],[3,5],[2,2]],deposit:[[0,6]],obstacles:[[4,2],[4,3],[3,3],[2,4]],difficulty:"Médio",desc:"Muros 🧱 bloqueiam o acesso à escola. Mas nenhum obstáculo pode impedir uma criança de aprender! Leva os livros e cadernos."},
+            {size:7,robot:[6,1],items:[[5,5],[4,1],[3,6],[2,3]],deposit:[[0,6]],obstacles:[[4,2],[3,2],[3,3],[2,5],[1,3]],difficulty:"Difícil",desc:"Em todo o mundo, 244 milhões de crianças não vão à escola. Cada livro 📚 conta! Reúne todos os materiais escolares para a biblioteca."}
+          ]
+        },
+        amizade:{
+          name:"O Direito à Amizade", emoji:"🤝💛",
+          itemEmojis:["💛","🌟","🤝"], obstacleEmoji:"😢",
+          depositEmoji:"🏡",
+          levels:[
+            {size:6,robot:[5,1],items:[[4,3],[2,4]],deposit:[[0,2]],obstacles:[[3,2],[3,3]],difficulty:"Fácil",desc:"A amizade é um dos maiores tesouros das crianças! Reúne os corações 💛 e leva-os para o encontro de amigos 🏡."},
+            {size:7,robot:[6,2],items:[[5,4],[4,1],[2,4]],deposit:[[0,5]],obstacles:[[4,3],[3,3],[3,4],[2,2]],difficulty:"Médio",desc:"A tristeza 😢 às vezes bloqueia os caminhos. Mas a amizade supera tudo! Recolhe as estrelas da amizade e leva ao ponto de encontro."},
+            {size:7,robot:[6,3],items:[[5,1],[5,5],[3,2],[2,4]],deposit:[[0,5]],obstacles:[[4,2],[4,3],[3,3],[2,2],[1,4]],difficulty:"Difícil",desc:"As crianças têm direito a brincar com outras crianças e a fazer amigos! Reúne todos os símbolos de amizade para a grande festa."}
+          ]
+        },
+        saude:{
+          name:"Direito à Saúde", emoji:"🏥💊",
+          itemEmojis:["💊","🩺","💉"], obstacleEmoji:"🦠",
+          depositEmoji:"🏥",
+          levels:[
+            {size:6,robot:[5,0],items:[[4,2],[2,1]],deposit:[[0,5]],obstacles:[[3,2],[3,3]],difficulty:"Fácil",desc:"Todas as crianças têm direito a cuidados de saúde! Leva os medicamentos 💊 ao hospital 🏥."},
+            {size:7,robot:[6,0],items:[[5,4],[3,5],[2,2]],deposit:[[0,6]],obstacles:[[4,2],[4,3],[3,3],[2,4]],difficulty:"Médio",desc:"Os vírus 🦠 bloqueiam o caminho! Mas os médicos estão prontos a ajudar. Leva os medicamentos e o estetoscópio."},
+            {size:7,robot:[6,1],items:[[5,5],[4,1],[3,6],[2,3]],deposit:[[0,6]],obstacles:[[4,2],[3,2],[3,3],[2,5],[1,3]],difficulty:"Difícil",desc:"O direito à saúde é fundamental! Reúne todos os equipamentos médicos para o hospital das crianças."}
+          ]
+        }
+      }
+    },
+    "3c": {
+      name:"3.º Ciclo", mode:"queue",
+      themes:{
+        natureza:{
+          name:"A Natureza é Nossa", emoji:"🌍🌿",
+          itemEmojis:["🌿","♻️","🌸"], obstacleEmoji:"🏭",
+          depositEmoji:"🌳",
+          levels:[
+            {size:7,robot:[6,0],items:[[5,2],[3,1],[2,4]],deposit:[[0,6]],obstacles:[[4,2],[4,3],[3,3],[2,2]],difficulty:"Médio",desc:"As crianças têm direito a um ambiente saudável! Recolhe os itens recicláveis 🌿 e leva à árvore da vida 🌳."},
+            {size:8,robot:[7,1],items:[[6,4],[4,6],[2,2],[1,5]],deposit:[[0,7]],obstacles:[[5,2],[5,3],[4,3],[3,4],[2,5]],difficulty:"Difícil",desc:"As fábricas 🏭 poluem o ambiente! As crianças de hoje merecem um planeta verde amanhã. Recolhe todas as plantas e recicla!"},
+            {size:8,robot:[7,0],items:[[6,2],[6,6],[3,1],[2,4],[1,6]],deposit:[[0,7]],obstacles:[[5,2],[5,5],[4,4],[3,3],[2,2],[1,3]],difficulty:"Desafio",desc:"Missão ambiental! As crianças são os guardiões do futuro do planeta. Reúne todas as plantas e símbolos de reciclagem para a grande árvore!"}
+          ]
+        },
+        sonhos:{
+          name:"Sonhos sem Limites", emoji:"🚀⭐",
+          itemEmojis:["⭐","🚀","🌙"], obstacleEmoji:"☁️",
+          depositEmoji:"🌟",
+          levels:[
+            {size:7,robot:[6,2],items:[[5,4],[3,5],[2,1]],deposit:[[0,4]],obstacles:[[4,3],[4,4],[3,3],[2,4]],difficulty:"Médio",desc:"Cada criança tem o direito de sonhar! Apanha as estrelas ⭐ e leva ao sonho máximo 🌟. O futuro pertence às crianças!"},
+            {size:8,robot:[7,2],items:[[6,6],[4,1],[3,6],[2,2]],deposit:[[0,4]],obstacles:[[5,4],[5,5],[4,4],[3,4],[2,5],[1,3]],difficulty:"Difícil",desc:"As nuvens ☁️ às vezes escondem as estrelas, mas nunca as apagam! Reúne os foguetões e as estrelas dos teus sonhos."},
+            {size:8,robot:[7,3],items:[[6,1],[6,7],[4,6],[2,2],[1,5]],deposit:[[0,4]],obstacles:[[5,4],[4,4],[3,4],[2,5],[2,3],[1,3]],difficulty:"Desafio",desc:"Desafio final dos sonhos! Seja astronauta, médica, artista ou o que quiseres — todas as crianças merecem perseguir os seus sonhos! Reúne tudo!"}
+          ]
+        },
+        mundo:{
+          name:"Crianças do Mundo", emoji:"🌈🌏",
+          itemEmojis:["🌈","🌏","🕊️"], obstacleEmoji:"⛈️",
+          depositEmoji:"🏳️",
+          levels:[
+            {size:7,robot:[6,1],items:[[5,5],[4,2],[2,4]],deposit:[[0,6]],obstacles:[[5,3],[4,3],[3,3],[2,2]],difficulty:"Médio",desc:"Crianças de todo o mundo merecem paz e alegria! Apanha os arco-íris 🌈 e leva à bandeira da paz 🏳️."},
+            {size:8,robot:[7,1],items:[[6,6],[5,2],[4,7],[2,4],[1,6]],deposit:[[0,7]],obstacles:[[6,3],[5,3],[4,3],[3,4],[2,5],[1,5]],difficulty:"Difícil",desc:"As tempestades ⛈️ testam a nossa força! Mas as crianças do mundo, juntas, são invencíveis! Reúne os arco-íris e os pombos da paz."},
+            {size:8,robot:[7,2],items:[[6,7],[6,1],[4,6],[3,1],[2,5],[1,7]],deposit:[[0,7]],obstacles:[[6,3],[5,3],[4,4],[3,4],[2,4],[1,5]],difficulty:"Desafio",desc:"Missão final! A Convenção sobre os Direitos da Criança foi aprovada pela ONU em 1989 e é o tratado de direitos humanos mais ratificado do mundo. Reúne tudo para celebrar as crianças do mundo!"}
+          ]
+        }
+      }
+    }
+  };
+
+  /* ===== ESTADO ===== */
+  let currentCycleKey=null, currentThemeKey=null, currentCycle=null, currentTheme=null, currentLevelIndex=0;
+  let levelState=null, dir=0, carriedItem=false, moveCount=0;
+  let allDeposited=false, doorPos=null, doorQuizOpen=false;
+  let moveHistory=[];
+  let runningQueue=false, queuedCommands=[];
+  let currentMinMoves=null, shouldDanceOnRender=false;
+  let stuckMoves=0, lastItemCount=0;
+  const STUCK_THRESHOLD=8;
+  const DIR_ARROWS=["⬆️","➡️","⬇️","⬅️"];
+  const OPT_CACHE=new Map();
+  let isMuted=false, superEasy1c=false;
+
+  const menuScreen=$("menu-screen"), themes1cScreen=$("themes-1c"), themes2cScreen=$("themes-2c");
+  const themes3cScreen=$("themes-3c"), gameScreen=$("game-screen");
+  const allScreens=[menuScreen,themes1cScreen,themes2cScreen,themes3cScreen,gameScreen];
+  const STORAGE_KEY="kid_game_progress_v1";
+  const SUPER_EASY_KEY="kid_game_supereasy_v1";
+
+  function showScreen(screen){
+    allScreens.forEach(s=>{ if(!s) return; s.classList.add("hidden"); s.classList.remove("active"); });
+    if(!screen) return;
+    screen.classList.remove("hidden"); void screen.offsetWidth; screen.classList.add("active");
+    animateCardsIn(screen);
+  }
+  function animateCardsIn(screen){
+    if(!screen) return;
+    screen.querySelectorAll(".cycle-card,.theme-card").forEach((el,i)=>{
+      el.classList.remove("card-anim"); el.style.animationDelay=(i*45)+"ms";
+      void el.offsetWidth; el.classList.add("card-anim");
+    });
+  }
+
+  function loadAllProgress(){ try{ const r=localStorage.getItem(STORAGE_KEY); return r?JSON.parse(r):{}; }catch(e){ return {}; } }
+  function saveAllProgress(obj){ try{ localStorage.setItem(STORAGE_KEY,JSON.stringify(obj)); }catch(e){} }
+  function effectiveCycleKey(ck){ return(ck==="1c"&&superEasy1c)?"1c_se":ck; }
+  function levelsFor(ck,theme){
+    if(ck==="1c"&&superEasy1c&&theme?.superEasyLevels?.length) return theme.superEasyLevels;
+    return theme?.levels||[];
+  }
+  function loadProgress(ck,tk){
+    ck=effectiveCycleKey(ck);
+    const all=loadAllProgress();
+    if(!all[ck]||!all[ck][tk]) return{currentLevelIndex:0,levels:{}};
+    const d=all[ck][tk];
+    if(!d.levels) d.levels={};
+    if(typeof d.currentLevelIndex!=="number") d.currentLevelIndex=0;
+    return d;
+  }
+  function saveProgress(ck,tk,data){
+    ck=effectiveCycleKey(ck);
+    const all=loadAllProgress();
+    if(!all[ck]) all[ck]={};
+    all[ck][tk]=data; saveAllProgress(all);
+  }
+
+  function updateThemeProgressUI(){
+    document.querySelectorAll(".theme-card").forEach(card=>{
+      const ck=card.getAttribute("data-cycle"), tk=card.getAttribute("data-theme");
+      const theme=GAME_DATA[ck]?.themes[tk]; if(!theme) return;
+      const lvls=levelsFor(ck,theme);
+      const prog=loadProgress(ck,tk);
+      const done=Object.values(prog.levels||{}).filter(l=>l.completed).length;
+      const total=lvls.length;
+      const pct=total>0?Math.min(100,Math.round(done/total*100)):0;
+      const bar=card.querySelector(".theme-progress-bar");
+      if(bar) bar.style.width=pct+"%";
+      let countEl=card.querySelector(".theme-level-count");
+      if(!countEl){
+        countEl=document.createElement("div");
+        countEl.className="theme-level-count";
+        const progressEl=card.querySelector(".theme-progress");
+        if(progressEl) card.insertBefore(countEl,progressEl);
+      }
+      const allDone=done===total&&total>0;
+      countEl.innerHTML=allDone?`✅ ${total} níveis — concluído!`:`📋 ${done} / ${total} níveis`;
+    });
+  }
+  function updateSideProgress(){
+    ["1c","2c","3c"].forEach(ck=>{
+      const cycle=GAME_DATA[ck]; if(!cycle) return;
+      let completed=0, total=0;
+      Object.entries(cycle.themes).forEach(([tk,theme])=>{
+        const lvls=levelsFor(ck,theme);
+        const prog=loadProgress(ck,tk);
+        const done=Object.values(prog.levels||{}).filter(l=>l.completed).length;
+        if(done===lvls.length&&lvls.length>0) completed++;
+        total++;
+      });
+      const el=$("side-prog-"+ck); if(el) el.textContent=completed+" / "+total+" temas";
+    });
+  }
+
+  function bfsOptimal(base, door){
+    door=door||computeDoorPos(base);
+    const key=JSON.stringify({r:base.robot,it:base.items,dep:base.deposit,ob:base.obstacles,sz:base.size,door});
+    if(OPT_CACHE.has(key)) return OPT_CACHE.get(key);
+    const s=base.size;
+    const isObs=(r,c)=>(base.obstacles||[]).some(o=>o[0]===r&&o[1]===c);
+    const dep=base.deposit[0]||[0,0];
+    function stKey(rob,d,items,carry){
+      return rob[0]+","+rob[1]+","+d+","+(carry?1:0)+"|"+items.filter(i=>!i.collected).map(i=>i.r+","+i.c).sort().join(";");
+    }
+    const items0=base.items.map(([r,c])=>({r,c,collected:false}));
+    const start={rob:[...base.robot],d:0,items:items0,carry:false,moves:0};
+    const visited=new Set(); visited.add(stKey(start.rob,start.d,start.items,start.carry));
+    const queue=[start];
+    let best=null;
+    const DR=[[-1,0],[0,1],[1,0],[0,-1]];
+    while(queue.length){
+      const cur=queue.shift();
+      if(best!==null&&cur.moves>=best) continue;
+      if(cur.moves>120) continue;
+      const remaining=cur.items.filter(i=>!i.collected);
+      const [rr,rc]=cur.rob;
+      if(remaining.length===0&&!cur.carry&&rr===door[0]&&rc===door[1]){ best=cur.moves; continue; }
+      const [fdr,fdc]=DR[cur.d];
+      const [fr,fc]=[rr+fdr,rc+fdc];
+      if(fr>=0&&fr<s&&fc>=0&&fc<s&&!isObs(fr,fc)){
+        const sk=stKey([fr,fc],cur.d,cur.items,cur.carry);
+        if(!visited.has(sk)){ visited.add(sk); queue.push({rob:[fr,fc],d:cur.d,items:cur.items.map(i=>({...i})),carry:cur.carry,moves:cur.moves+1}); }
+      }
+      const dl=(cur.d+3)%4;
+      const skl=stKey(cur.rob,dl,cur.items,cur.carry);
+      if(!visited.has(skl)){ visited.add(skl); queue.push({rob:[...cur.rob],d:dl,items:cur.items.map(i=>({...i})),carry:cur.carry,moves:cur.moves+1}); }
+      const dr=(cur.d+1)%4;
+      const skr=stKey(cur.rob,dr,cur.items,cur.carry);
+      if(!visited.has(skr)){ visited.add(skr); queue.push({rob:[...cur.rob],d:dr,items:cur.items.map(i=>({...i})),carry:cur.carry,moves:cur.moves+1}); }
+      if(!cur.carry){
+        const idx=cur.items.findIndex(i=>!i.collected&&i.r===rr&&i.c===rc);
+        if(idx>=0){
+          const ni=cur.items.map(i=>({...i})); ni[idx].collected=true;
+          const sk=stKey(cur.rob,cur.d,ni,true);
+          if(!visited.has(sk)){ visited.add(sk); queue.push({rob:[...cur.rob],d:cur.d,items:ni,carry:true,moves:cur.moves+1}); }
+        }
+      }
+      if(cur.carry&&rr===dep[0]&&rc===dep[1]){
+        const sk=stKey(cur.rob,cur.d,cur.items,false);
+        if(!visited.has(sk)){ visited.add(sk); queue.push({rob:[...cur.rob],d:cur.d,items:cur.items.map(i=>({...i})),carry:false,moves:cur.moves+1}); }
+      }
+    }
+    OPT_CACHE.set(key,best);
+    return best;
+  }
+
+  function isQueueMode(){ return currentCycle?.mode==="queue"; }
+
+  function computeDoorPos(base){
+    const s=base.size, dep=base.deposit[0]||[0,0], rob=base.robot;
+    const corners=[[0,0],[0,s-1],[s-1,0],[s-1,s-1]];
+    const obs=base.obstacles||[];
+    const free=corners.filter(([r,c])=>{
+      if(obs.some(o=>o[0]===r&&o[1]===c)) return false;
+      if(dep[0]===r&&dep[1]===c) return false;
+      if(rob[0]===r&&rob[1]===c) return false;
+      return true;
+    });
+    const pool=free.length?free:corners;
+    return pool.reduce((best,p)=>{
+      const d=Math.abs(p[0]-dep[0])+Math.abs(p[1]-dep[1]);
+      const bd=Math.abs(best[0]-dep[0])+Math.abs(best[1]-dep[1]);
+      return d>bd?p:best;
+    },pool[0]);
+  }
+
+  function loadLevel(idx){
+    if(!currentTheme) return;
+    const lvls=levelsFor(currentCycleKey,currentTheme);
+    if(idx>=lvls.length){ showAllCompleted(); return; }
+    currentLevelIndex=idx;
+    const base=lvls[idx];
+    const cr=$("crumb-level"); if(cr) cr.textContent="Nível "+(idx+1)+" de "+lvls.length;
+    const ct=$("crumb-theme"); if(ct) ct.textContent=currentTheme.name+" "+currentTheme.emoji;
+    dir=0; carriedItem=false; moveCount=0; allDeposited=false; doorQuizOpen=false;
+    moveHistory=[]; runningQueue=false; queuedCommands=[];
+    levelState={
+      robot:[...base.robot],
+      items:base.items.map(([r,c])=>({r,c,collected:false})),
+      deposit:base.deposit[0]||[0,0],
+      obstacles:base.obstacles||[],
+      size:base.size
+    };
+    doorPos=computeDoorPos(base);
+    const em=$("level-emoji"); if(em) em.textContent=currentTheme.emoji.split("")[0]||"⭐";
+    const tt=$("level-title-text"); if(tt) tt.textContent=currentTheme.name+" — Nível "+(idx+1)+" de "+lvls.length;
+    const ld=$("level-desc"); if(ld) ld.textContent=base.desc||"";
+    const pd=$("pill-difficulty"); if(pd) pd.textContent="Dificuldade: "+(base.difficulty||"—");
+    currentMinMoves=bfsOptimal(base,doorPos);
+    const to=$("tag-optimal"); if(to) to.textContent="🏁 Ótimo: "+(currentMinMoves!==null?currentMinMoves+" mov.":"—");
+    updateMoves();
+    stuckMoves=0; lastItemCount=levelState.items.length;
+    const qb=$("queue-box");
+    if(isQueueMode()){ if(qb) qb.classList.remove("hidden"); updateQueueUI(); }
+    else{ if(qb) qb.classList.add("hidden"); }
+    const ub=$("btn-undo-direct"); if(ub) ub.style.display=isQueueMode()?"none":"inline-flex";
+    renderGrid(); setFeedback("📍 Nível "+(idx+1)+" de "+lvls.length+" — "+currentTheme.name,"info");
+    if(idx>0) setTimeout(()=>showLevelBanner("🎯 Nível "+(idx+1)+" — "+currentTheme.name+" "+currentTheme.emoji),100);
+    const g=$("grid"); if(g){ g.classList.remove("level-fade-in"); void g.offsetWidth; g.classList.add("level-fade-in"); }
+    updateThemeProgressUI(); updateSideProgress();
+  }
+
+  function updateMoves(){
+    const mv=$("moves");
+    if(mv){
+      mv.textContent="Movimentos: "+moveCount;
+      mv.classList.remove("move-pop"); void mv.offsetWidth; mv.classList.add("move-pop");
+    }
+  }
+
+  function renderGrid(){
+    if(!levelState) return;
+    const g=$("grid"); if(!g) return;
+    const {robot,items,obstacles,deposit,size}=levelState;
+    const sizeClass=size>=9?"huge":size>=7?"big":"";
+    g.className="grid"+(sizeClass?" "+sizeClass:"");
+    g.style.gridTemplateColumns=`repeat(${size},1fr)`;
+    g.innerHTML="";
+    const itemEms=currentTheme?.itemEmojis||["🎈","⭐","🤝"];
+    const obsEm=currentTheme?.obstacleEmoji||"🌵";
+    const depEm=currentTheme?.depositEmoji||"🏠";
+    for(let r=0;r<size;r++){
+      for(let c=0;c<size;c++){
+        const cell=document.createElement("div");
+        cell.className="cell";
+        const isRobot=robot[0]===r&&robot[1]===c;
+        const isObs=obstacles.some(o=>o[0]===r&&o[1]===c);
+        const isDep=deposit[0]===r&&deposit[1]===c;
+        const itemIdx=items.findIndex(it=>!it.collected&&it.r===r&&it.c===c);
+        const isDoor=doorPos&&doorPos[0]===r&&doorPos[1]===c;
+        if(isObs){ cell.classList.add("obstacle"); cell.textContent=obsEm; }
+        else if(isDoor&&allDeposited){
+          cell.classList.add("door-cell");
+          cell.classList.add(doorQuizOpen?"door-open":"door-locked");
+          const wrap=document.createElement("div"); wrap.className="door-svg-wrap";
+          const panel=document.createElement("div"); panel.className="door-panel";
+          panel.style.cssText="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1.3rem;";
+          panel.textContent=doorQuizOpen?"🚪":"🔒";
+          wrap.appendChild(panel); cell.appendChild(wrap);
+        }
+        else if(isRobot){
+          cell.classList.add("robot-cell");
+          if(carriedItem) cell.classList.add("robot-carrying");
+          const angle=dir*90;
+          const badge=carriedItem?`<span class="carry-badge">${itemEms[0]}</span>`:"";
+          const itemBadge=itemIdx>=0?`<span class="item-under-robot">${itemEms[itemIdx%itemEms.length]}</span>`:"";
+          cell.innerHTML=`<div class="robot-icon" style="transform:rotate(${angle}deg);"><span class="robot-icon-inner">${KID_ROBOT_SVG}</span></div><span class="robot-dir">${DIR_ARROWS[dir]}</span>${badge}${itemBadge}`;
+          setTimeout(()=>{
+            const icon=cell.querySelector(".robot-icon");
+            if(icon&&!shouldDanceOnRender){ icon.classList.add("robot-icon-bounce"); icon.addEventListener("animationend",()=>icon.classList.remove("robot-icon-bounce"),{once:true}); }
+          },10);
+        }
+        else if(isDep){ cell.classList.add("deposit"); cell.textContent=depEm; }
+        else if(itemIdx>=0){ cell.classList.add("item"); cell.textContent=itemEms[itemIdx%itemEms.length]; }
+        g.appendChild(cell);
+      }
+    }
+    shouldDanceOnRender=false;
+    const ht=$("hint-text");
+    if(ht){
+      const rem=items.filter(i=>!i.collected).length;
+      if(rem>0) ht.textContent=`${rem} item${rem>1?"ns":""} por apanhar. Deposita no destino!`;
+      else if(!allDeposited) ht.textContent="Entrega o último item ao destino!";
+      else ht.textContent="🎉 Todos os itens entregues! Dirige-te à saída 🚪";
+    }
+  }
+
+  function setFeedback(msg,type="info"){
+    const fb=$("feedback"); if(!fb) return;
+    fb.className="feedback-box feedback-"+type;
+    fb.textContent=msg;
+    fb.classList.remove("feedback-flash"); void fb.offsetWidth; fb.classList.add("feedback-flash");
+  }
+  /* ===== WEB AUDIO ENGINE ===== */
+  let _audioCtx = null;
+  function getAudioCtx(){
+    if(!_audioCtx){
+      try{ _audioCtx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){}
+    }
+    return _audioCtx;
+  }
+  // Unlock audio context on first user interaction
+  function unlockAudio(){
+    const ctx = getAudioCtx();
+    if(ctx && ctx.state === 'suspended') ctx.resume();
+  }
+  document.addEventListener('touchstart', unlockAudio, {once:true});
+  document.addEventListener('mousedown', unlockAudio, {once:true});
+
+  function playTone(type){
+    if(isMuted) return;
+    const ctx = getAudioCtx(); if(!ctx) return;
+    try{ if(ctx.state==='suspended') ctx.resume(); } catch(e){}
+    try{
+      const t = ctx.currentTime;
+      switch(type){
+
+        case 'move': {
+          // Clique suave — tick mecânico leve
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.connect(gain); gain.connect(ctx.destination);
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(520, t);
+          osc.frequency.exponentialRampToValueAtTime(320, t+0.08);
+          gain.gain.setValueAtTime(0.18, t);
+          gain.gain.exponentialRampToValueAtTime(0.001, t+0.09);
+          osc.start(t); osc.stop(t+0.1);
+          break;
+        }
+
+        case 'collect': {
+          // Apanhar item — som ascendente alegre tipo "ping!"
+          const freqs = [523, 659, 784];
+          freqs.forEach((freq, i) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.type = 'sine';
+            const s = t + i * 0.07;
+            osc.frequency.setValueAtTime(freq, s);
+            gain.gain.setValueAtTime(0, s);
+            gain.gain.linearRampToValueAtTime(0.22, s+0.02);
+            gain.gain.exponentialRampToValueAtTime(0.001, s+0.18);
+            osc.start(s); osc.stop(s+0.2);
+          });
+          break;
+        }
+
+        case 'deposit': {
+          // Depositar — som suave de "choque" satisfatório
+          const osc1 = ctx.createOscillator();
+          const osc2 = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc1.connect(gain); osc2.connect(gain); gain.connect(ctx.destination);
+          osc1.type = 'triangle'; osc2.type = 'sine';
+          osc1.frequency.setValueAtTime(440, t);
+          osc1.frequency.exponentialRampToValueAtTime(220, t+0.15);
+          osc2.frequency.setValueAtTime(660, t);
+          osc2.frequency.exponentialRampToValueAtTime(330, t+0.15);
+          gain.gain.setValueAtTime(0.25, t);
+          gain.gain.exponentialRampToValueAtTime(0.001, t+0.2);
+          osc1.start(t); osc1.stop(t+0.22);
+          osc2.start(t); osc2.stop(t+0.22);
+          break;
+        }
+
+        case 'bump': {
+          // Colisão — batida seca curta
+          const bufferSize = ctx.sampleRate * 0.06;
+          const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+          const data = buffer.getChannelData(0);
+          for(let i=0; i<bufferSize; i++) data[i] = (Math.random()*2-1) * Math.exp(-i/(bufferSize*0.15));
+          const src = ctx.createBufferSource();
+          src.buffer = buffer;
+          const filter = ctx.createBiquadFilter();
+          filter.type = 'lowpass'; filter.frequency.value = 180;
+          const gain = ctx.createGain();
+          gain.gain.setValueAtTime(0.5, t);
+          gain.gain.exponentialRampToValueAtTime(0.001, t+0.06);
+          src.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
+          src.start(t);
+          break;
+        }
+
+        case 'error': {
+          // Erro — descida dissonante
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.connect(gain); gain.connect(ctx.destination);
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(330, t);
+          osc.frequency.exponentialRampToValueAtTime(165, t+0.18);
+          gain.gain.setValueAtTime(0.15, t);
+          gain.gain.exponentialRampToValueAtTime(0.001, t+0.2);
+          osc.start(t); osc.stop(t+0.22);
+          break;
+        }
+
+        case 'victory': {
+          // Vitória — fanfarra ascendente alegre (Dó-Mi-Sol-Dó)
+          const melody = [
+            {f:523, d:0,    dur:0.12},
+            {f:659, d:0.11, dur:0.12},
+            {f:784, d:0.22, dur:0.12},
+            {f:1047,d:0.33, dur:0.28},
+            {f:784, d:0.42, dur:0.1},
+            {f:1047,d:0.52, dur:0.4},
+          ];
+          melody.forEach(({f, d, dur}) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.type = 'sine';
+            const s = t + d;
+            osc.frequency.setValueAtTime(f, s);
+            gain.gain.setValueAtTime(0, s);
+            gain.gain.linearRampToValueAtTime(0.28, s+0.02);
+            gain.gain.setValueAtTime(0.28, s+dur-0.04);
+            gain.gain.exponentialRampToValueAtTime(0.001, s+dur);
+            osc.start(s); osc.stop(s+dur+0.05);
+          });
+          // Harmonia suave em paralelo
+          [262, 330, 392].forEach((f, i) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(f, t+0.33);
+            gain.gain.setValueAtTime(0.08, t+0.33);
+            gain.gain.exponentialRampToValueAtTime(0.001, t+0.93);
+            osc.start(t+0.33); osc.stop(t+1);
+          });
+          break;
+        }
+
+        case 'quizOk': {
+          // Quiz correto — dois pings ascendentes
+          [523, 784].forEach((f, i) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.type = 'sine';
+            const s = t + i*0.12;
+            osc.frequency.setValueAtTime(f, s);
+            gain.gain.setValueAtTime(0.2, s);
+            gain.gain.exponentialRampToValueAtTime(0.001, s+0.18);
+            osc.start(s); osc.stop(s+0.2);
+          });
+          break;
+        }
+
+        case 'quizErr': {
+          // Quiz errado — tom triste descendente
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.connect(gain); gain.connect(ctx.destination);
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(294, t);
+          osc.frequency.exponentialRampToValueAtTime(196, t+0.25);
+          gain.gain.setValueAtTime(0.18, t);
+          gain.gain.exponentialRampToValueAtTime(0.001, t+0.28);
+          osc.start(t); osc.stop(t+0.3);
+          break;
+        }
+
+      }
+    }catch(e){}
+  }
+
+  function playSound(id){
+    if(isMuted) return;
+    const map = {
+      soundMove:    'move',
+      soundSuccess: 'collect',
+      soundError:   'error',
+      soundBump:    'bump',
+      soundVictory: 'victory',
+    };
+    const type = map[id];
+    if(type) playTone(type);
+  }
+
+  function saveStateSnapshot(){
+    moveHistory.push({robot:[...levelState.robot],dir,carriedItem,moveCount,items:levelState.items.map(it=>({...it})),allDeposited});
+    if(moveHistory.length>50) moveHistory.shift();
+  }
+  function undoLastMove(){
+    if(!levelState||isQueueMode()||moveHistory.length===0) return;
+    const s=moveHistory.pop();
+    levelState.robot=[...s.robot]; dir=s.dir; carriedItem=s.carriedItem; moveCount=s.moveCount;
+    levelState.items=s.items.map(it=>({...it})); allDeposited=s.allDeposited;
+    updateMoves(); renderGrid(); setFeedback("↩ Movimento desfeito.","info");
+  }
+
+  function runSingleCommand(cmd){
+    if(!levelState||runningQueue) return;
+    if(doorQuizOpen) return;
+    if(!isQueueMode()) saveStateSnapshot();
+    if(cmd==="MOVE") moveForward();
+    else if(cmd==="BACK") moveBackward();
+    else if(cmd==="LEFT"){ dir=(dir+3)%4; playSound("soundMove"); setFeedback("↩️ Virou à esquerda.","info"); moveCount++; updateMoves(); renderGrid(); }
+    else if(cmd==="RIGHT"){ dir=(dir+1)%4; playSound("soundMove"); setFeedback("↪️ Virou à direita.","info"); moveCount++; updateMoves(); renderGrid(); }    else if(cmd==="COLLECT") grabItem();
+    else if(cmd==="DROP") dropItem();
+  }
+
+  function moveForward(){
+    const {robot,obstacles,size}=levelState;
+    const [r,c]=robot; let nr=r,nc=c;
+    if(dir===0)nr--;else if(dir===1)nc++;else if(dir===2)nr++;else nc--;
+    if(nr<0||nr>=size||nc<0||nc>=size){ playSound("soundBump"); setFeedback("❌ O robot não pode sair do tabuleiro.","err"); renderGrid(); return; }
+    if(obstacles.some(o=>o[0]===nr&&o[1]===nc)){ playSound("soundBump"); setFeedback("⛔ Há um obstáculo! Contorna-o.","warn"); renderGrid(); return; }
+    if(!allDeposited&&doorPos&&nr===doorPos[0]&&nc===doorPos[1]){ playSound("soundBump"); setFeedback("🔒 Porta fechada! Entrega todos os itens primeiro.","warn"); renderGrid(); return; }
+    robot[0]=nr; robot[1]=nc; moveCount++; updateMoves(); playSound("soundMove"); setFeedback("⬆️ Robot avançou.","info");
+    renderGrid(); checkDoor(nr,nc);
+  }
+
+  function moveBackward(){
+    const {robot,obstacles,size}=levelState;
+    const [r,c]=robot; let nr=r,nc=c;
+    if(dir===0)nr++;else if(dir===1)nc--;else if(dir===2)nr--;else nc++;
+    if(nr<0||nr>=size||nc<0||nc>=size){ playSound("soundBump"); setFeedback("❌ O robot não pode sair do tabuleiro.","err"); renderGrid(); return; }
+    if(obstacles.some(o=>o[0]===nr&&o[1]===nc)){ playSound("soundBump"); setFeedback("⛔ Há um obstáculo! Contorna-o.","warn"); renderGrid(); return; }
+    if(!allDeposited&&doorPos&&nr===doorPos[0]&&nc===doorPos[1]){ playSound("soundBump"); setFeedback("🔒 Porta fechada! Entrega todos os itens primeiro.","warn"); renderGrid(); return; }
+    robot[0]=nr; robot[1]=nc; moveCount++; updateMoves(); playSound("soundMove"); setFeedback("⬇️ Robot recuou.","info");
+    renderGrid(); checkDoor(nr,nc);
+  }
+
+  function grabItem(){
+    const {robot,items}=levelState;
+    const [r,c]=robot;
+    if(carriedItem){ playSound("soundError"); setFeedback("✋ Já tens um item. Deposita primeiro.","warn"); renderGrid(); return; }
+    const idx=items.findIndex(it=>!it.collected&&it.r===r&&it.c===c);
+    if(idx===-1){ playSound("soundError"); setFeedback("❌ Não há nenhum item aqui para apanhar.","err"); renderGrid(); return; }
+    items[idx].collected=true; carriedItem=true;
+    moveCount++; updateMoves(); playSound("soundSuccess"); setFeedback("✅ Item apanhado! Leva ao destino!","ok"); renderGrid();
+  }
+
+  function dropItem(){
+    const {robot,items,deposit}=levelState;
+    const [r,c]=robot;
+    if(!carriedItem){ playSound("soundError"); setFeedback("❌ Não tens nenhum item para depositar.","err"); renderGrid(); return; }
+    if(r!==deposit[0]||c!==deposit[1]){ playSound("soundError"); setFeedback("🏠 Tens de estar no destino para depositar!","warn"); renderGrid(); return; }
+    carriedItem=false; moveCount++; updateMoves(); playTone('deposit');
+    const rem=items.filter(i=>!i.collected).length;
+    if(rem===0){
+      allDeposited=true; renderGrid();
+      setFeedback("🚪 Todos os itens entregues! Dirige-te à saída 🚪","ok");
+    } else {
+      setFeedback("📥 Depositado! Faltam "+rem+" item(ns).","ok"); renderGrid();
+    }
+  }
+
+  function checkDoor(nr,nc){
+    if(!allDeposited||doorQuizOpen||!doorPos) return;
+    if(nr===doorPos[0]&&nc===doorPos[1]){
+      doorQuizOpen=true; runningQueue=false; renderGrid();
+      setTimeout(()=>openKidQuiz(),400);
+    }
+  }
+
+  /* ===== QUIZ ===== */
+  const QUIZ_DATA={
+    parque:[
+      {q:"Em que dia se celebra o Dia Internacional da Criança?",ops:["1 de junho","5 de outubro","20 de novembro","25 de dezembro"],a:0},
+      {q:"Brincar é um direito das crianças segundo a ONU?",ops:["Sim, está na Convenção da ONU","Não, é um privilégio","Só se tiverem boas notas","Só aos fins de semana"],a:0},
+      {q:"Qual é o brinquedo mais antigo do mundo?",ops:["Videojogo","Boneca/Boneco","Smartphone","Tablet"],a:1},
+      {q:"Em que artigo da Convenção da ONU está o direito a brincar?",ops:["Artigo 5.º","Artigo 15.º","Artigo 31.º","Artigo 42.º"],a:2},
+      {q:"O que é um parque infantil?",ops:["Um sítio só para adultos","Um espaço para as crianças brincarem em segurança","Um supermercado","Uma escola"],a:1},
+      {q:"Qual destas atividades é considerada brincadeira?",ops:["Trabalhar numa fábrica","Construir um castelo de areia","Conduzir um carro","Pagar impostos"],a:1},
+      {q:"Qual desporto usa uma raqueta e uma bola pequena amarela?",ops:["Futebol","Basquetebol","Ténis","Rugby"],a:2},
+      {q:"O que é o 'faz-de-conta'?",ops:["Um jogo de computador","Uma brincadeira de imaginação","Um desporto radical","Uma lição de matemática"],a:1},
+      {q:"Qual é a principal vantagem de brincar ao ar livre?",ops:["Nenhuma","Exercício físico e contacto com a natureza","Fica-se mais sujo","É mais perigoso"],a:1},
+      {q:"O que é o 'jogo do gato e do rato'?",ops:["Um videojogo","Uma brincadeira em grupo onde se perseguem","Um filme de animação","Um desporto olímpico"],a:1},
+      {q:"Qual destes é um jogo de tabuleiro tradicional?",ops:["Futebol","Xadrez","Natação","Corrida"],a:1},
+      {q:"Brincar em grupo ajuda as crianças a desenvolver:",ops:["Competição agressiva","Habilidades sociais e trabalho em equipa","Isolamento","Desobediência"],a:1},
+      {q:"Qual destes brinquedos funciona com vento?",ops:["Boneco de peluche","Papagaio de papel","Puzzle","Livro"],a:1},
+      {q:"Como se chamam os jogos que misturam atividade física com diversão?",ops:["Jogos sedentários","Jogos ativos","Jogos de tabuleiro","Jogos de cartas"],a:1},
+      {q:"Qual destes é um jogo típico português de exterior?",ops:["Mahjong","Berlinde","Xadrez","Damas"],a:1}
+    ],
+    circo:[
+      {q:"O que faz um malabarista num circo?",ops:["Canta e dança","Lança objetos ao ar e apanha-os","Pinta quadros","Conta histórias"],a:1},
+      {q:"Qual destes é um artista típico do circo?",ops:["Médico","Palhaço","Bombeiro","Professor"],a:1},
+      {q:"As crianças têm direito a participar em atividades culturais?",ops:["Sim, é um direito humano","Não, só os adultos","Só com dinheiro","Apenas em escola"],a:0},
+      {q:"O que é a acrobacia?",ops:["Um tipo de comida","Movimentos corporais com equilíbrio e agilidade","Um instrumento musical","Um tipo de pintura"],a:1},
+      {q:"Como se chama o artista que anda em cima de uma corda?",ops:["Palhaço","Mago","Equilibrista","Cantor"],a:2},
+      {q:"O que faz um ilusionista no circo?",ops:["Canta ópera","Faz truques de magia","Cozinha","Nada de especial"],a:1},
+      {q:"Qual destes animais era comum nos circos antigos?",ops:["Tubarão","Elefante","Polvo","Baleia"],a:1},
+      {q:"Como se chama a tenda grande onde decorrem os espetáculos de circo?",ops:["Palácio","Chapitô","Castelo","Coliseu"],a:1},
+      {q:"O que faz um trapezista?",ops:["Toca guitarra","Executa acrobacias no ar em barras suspensas","Cozinha pratos exóticos","Conta piadas"],a:1},
+      {q:"A arte circense pode ser aprendida em:",ops:["Hospitais","Escolas de circo","Supermercados","Bibliotecas"],a:1},
+      {q:"O que usa um palhaço para fazer rir o público?",ops:["Seriedade e silêncio","Humor, gestos exagerados e roupa colorida","Discursos longos","Magia negra"],a:1},
+      {q:"Como se chama a arte de caminhar com os pés em objetos altos?",ops:["Ginástica","Pernas de pau","Esgrima","Ballet"],a:1},
+      {q:"Qual das seguintes é uma habilidade circense?",ops:["Tricotar","Fazer contorcionismo","Conduzir caminhões","Cozinhar sopas"],a:1},
+      {q:"Quantas estrelas têm geralmente os cartazes de circo?",ops:["Nenhuma","Muitas — para chamar atenção!","Apenas uma","Exatamente três"],a:1},
+      {q:"O circo moderno nasceu em que século?",ops:["Século XV","Século XVIII","Século XX","Século XII"],a:1}
+    ],
+    arte:[
+      {q:"A criatividade das crianças deve ser:",ops:["Ignorada","Encorajada e desenvolvida","Proibida","Apenas para adultos"],a:1},
+      {q:"A arte ajuda as crianças a:",ops:["Nada de especial","Expressar sentimentos e desenvolver criatividade","Apenas decorar paredes","Perder tempo"],a:1},
+      {q:"Qual destes é um material de pintura?",ops:["Martelo","Pincel","Chave de fendas","Prego"],a:1},
+      {q:"Quais são as três cores primárias?",ops:["Verde, laranja e roxo","Vermelho, azul e amarelo","Cor-de-rosa, cinzento e branco","Castanho, preto e bege"],a:1},
+      {q:"O que é a escultura?",ops:["Uma pintura plana","Uma arte tridimensional que dá forma a materiais","Uma dança","Uma música"],a:1},
+      {q:"O que se obtém ao misturar azul e amarelo?",ops:["Laranja","Verde","Roxo","Castanho"],a:1},
+      {q:"Como se chama a arte de fazer figuras com papel dobrado?",ops:["Calligrafia","Origami","Mosaico","Gravura"],a:1},
+      {q:"O que é uma galeria de arte?",ops:["Um parque de diversões","Um espaço para expor e apreciar obras de arte","Um estúdio de música","Uma escola de dança"],a:1},
+      {q:"Qual destes é um estilo de arte famoso?",ops:["Geometria","Impressionismo","Física","Química"],a:1},
+      {q:"O que é uma colagem?",ops:["Uma dança tradicional","Obra criada com recortes colados numa superfície","Um tipo de escultura em pedra","Uma técnica de música"],a:1},
+      {q:"Como se chama o artista que cria esculturas?",ops:["Pintor","Escultor","Escritor","Músico"],a:1},
+      {q:"Qual pintor português é famoso pelas suas azulejarias?",ops:["Pablo Picasso","Rafael Bordalo Pinheiro","Salvador Dalí","Monet"],a:1},
+      {q:"O que é a aquarela?",ops:["Uma cor muito escura","Técnica de pintura com tintas diluídas em água","Um tipo de escultura","Uma dança"],a:1},
+      {q:"Qual destes materiais é usado em cerâmica?",ops:["Vidro","Barro/argila","Plástico","Metal"],a:1},
+      {q:"O que mistura vermelho e branco?",ops:["Laranja","Roxo","Rosa/cor-de-rosa","Verde"],a:2}
+    ],
+    educacao:[
+      {q:"Quantas crianças no mundo não vão à escola?",ops:["Menos de 1 milhão","Cerca de 50 milhões","Mais de 244 milhões","Nenhuma criança"],a:2},
+      {q:"O direito à educação está garantido por:",ops:["Convenção ONU sobre Direitos da Criança","Apenas leis nacionais","Apenas em Portugal","Não está garantido"],a:0},
+      {q:"A educação básica deve ser:",ops:["Só para meninos","Gratuita e obrigatória","Apenas para ricos","Opcional"],a:1},
+      {q:"Até que ano de escolaridade é obrigatório em Portugal?",ops:["6.º ano","9.º ano","12.º ano","4.º ano"],a:2},
+      {q:"Quem disse 'a educação é a arma mais poderosa para mudar o mundo'?",ops:["Nelson Mandela","Napoleão","Albert Einstein","Leonardo da Vinci"],a:0},
+      {q:"O que é a literacia?",ops:["Uma brincadeira","A capacidade de ler e escrever","Um tipo de desporto","Um instrumento"],a:1},
+      {q:"Em que artigo da Convenção da ONU está o direito à educação?",ops:["Artigo 10.º","Artigo 28.º","Artigo 5.º","Artigo 50.º"],a:1},
+      {q:"Qual é o papel de um professor?",ops:["Apenas vigiar os alunos","Ensinar, guiar e apoiar o desenvolvimento dos alunos","Apenas dar testes","Substituir os pais"],a:1},
+      {q:"O que é uma biblioteca?",ops:["Um sítio para comer","Um lugar onde se guardam e emprestam livros","Uma loja de brinquedos","Um ginásio"],a:1},
+      {q:"Qual é a diferença entre escola pública e privada?",ops:["Não há diferença","A pública é financiada pelo Estado, a privada por propinas","A privada é melhor sempre","A pública só existe nas cidades"],a:1},
+      {q:"O que é o analfabetismo?",ops:["Gostar muito de ler","Incapacidade de ler e escrever","Ser muito inteligente","Aprender línguas estrangeiras"],a:1},
+      {q:"Qual destes é um recurso de aprendizagem?",ops:["Televisão 24h","Livro escolar","Redes sociais apenas","Jogos violentos"],a:1},
+      {q:"O que se celebra a 5 de outubro em Portugal?",ops:["Dia da Criança","Dia do Professor","Dia do Pai","Dia da Mãe"],a:1},
+      {q:"Aprender matemática ajuda as crianças a:",ops:["Nada de útil","Resolver problemas e pensar de forma lógica","Apenas fazer contas","Ser menos criativas"],a:1},
+      {q:"O que é educação inclusiva?",ops:["Só para crianças sem necessidades especiais","Educação que acolhe todas as crianças independentemente das suas diferenças","Educação cara","Educação só online"],a:1}
+    ],
+    amizade:[
+      {q:"As crianças têm direito a:",ops:["Brincar sozinhas apenas","Associarem-se livremente","Não ter amigos","Só falar com adultos"],a:1},
+      {q:"O que é bullying?",ops:["Uma brincadeira divertida","Mau trato repetido a outra criança","Uma dança","Um jogo de equipa"],a:1},
+      {q:"Como podemos ajudar uma criança que se sente sozinha?",ops:["Ignorá-la","Incluí-la nas brincadeiras","Rir dela","Afastá-la"],a:1},
+      {q:"O que é empatia?",ops:["Sentir o que o outro sente","Ignorar os outros","Competir sempre","Ser sempre o primeiro"],a:0},
+      {q:"O que devemos fazer se virmos alguém a sofrer bullying?",ops:["Rir também","Ignorar","Pedir ajuda a um adulto","Filmá-lo"],a:2},
+      {q:"A amizade entre crianças de países diferentes é possível?",ops:["Não, é impossível","Sim, a amizade não tem fronteiras","Só online","Apenas com tradutor"],a:1},
+      {q:"O que é respeito mútuo?",ops:["Só respeitar quem é mais forte","Tratar os outros como gostaríamos de ser tratados","Ignorar as diferenças","Competir sempre"],a:1},
+      {q:"Como se resolve um conflito entre amigos?",ops:["Com violência","Com diálogo e compreensão","Ignorando o problema","Queixando-se sempre"],a:1},
+      {q:"O que é um amigo verdadeiro?",ops:["Alguém que só aparece quando precisamos de algo","Alguém que está presente nos bons e maus momentos","O mais popular da turma","Quem tem mais brinquedos"],a:1},
+      {q:"O cyberbullying acontece:",ops:["Só na escola","Online, nas redes sociais e mensagens","Apenas nos recreios","Só entre adultos"],a:1},
+      {q:"Como devemos tratar alguém que é diferente de nós?",ops:["Com desconfiança","Com respeito e curiosidade","Afastando-o","Ignorando-o"],a:1},
+      {q:"O que ajuda a construir uma boa amizade?",ops:["Mentiras e segredos","Honestidade, respeito e carinho","Competição constante","Inveja"],a:1},
+      {q:"Qual é a melhor forma de fazer novos amigos?",ops:["Ficar quieto no canto","Ser simpático, sorrir e mostrar interesse pelos outros","Ser agressivo","Fingir ser outra pessoa"],a:1},
+      {q:"As crianças de culturas diferentes podem ser amigas?",ops:["Não, é muito difícil","Sim, a diversidade enriquece as amizades","Só se falarem a mesma língua","Apenas com autorização dos pais"],a:1},
+      {q:"O que devemos fazer quando um amigo erra?",ops:["Rir e gozar","Ajudá-lo a aprender e melhorar","Terminar a amizade","Contar a toda a gente"],a:1}
+    ],
+    saude:[
+      {q:"As crianças têm direito a:",ops:["Ficar doentes sem ajuda","Cuidados de saúde adequados","Apenas remédios caros","Nenhum cuidado especial"],a:1},
+      {q:"O que é vacinação?",ops:["Uma punição","Proteção contra doenças","Um castigo","Um remédio para adultos"],a:1},
+      {q:"Quem tem responsabilidade pela saúde das crianças?",ops:["Só as crianças","Família, Estado e sociedade","Só os médicos","Ninguém"],a:1},
+      {q:"Qual a importância de lavar as mãos?",ops:["Nenhuma","Prevenir a propagação de doenças","Só para ficar limpas","É desnecessário"],a:1},
+      {q:"Quantas horas deve dormir uma criança de 8 anos?",ops:["4 a 5 horas","6 a 7 horas","9 a 11 horas","15 a 16 horas"],a:2},
+      {q:"O que é o SNS em Portugal?",ops:["Um videojogo","O Serviço Nacional de Saúde","Uma escola","Um parque"],a:1},
+      {q:"Qual destes alimentos é o mais saudável para uma criança?",ops:["Batatas fritas todos os dias","Fruta e legumes variados","Refrigerantes","Doces em excesso"],a:1},
+      {q:"Quantos copos de água se deve beber por dia?",ops:["1 copo","2 copos","6 a 8 copos","20 copos"],a:2},
+      {q:"O exercício físico regular ajuda as crianças a:",ops:["Ficar mais cansadas sem benefício","Ter um corpo e mente mais saudáveis","Crescer menos","Dormir menos"],a:1},
+      {q:"O que é saúde mental?",ops:["Só se aplica a adultos","Bem-estar emocional e psicológico","Uma doença contagiosa","Algo sem importância"],a:1},
+      {q:"Qual é a função de um dentista?",ops:["Cuidar dos olhos","Cuidar dos dentes e da saúde oral","Curar constipações","Dar injeções"],a:1},
+      {q:"Por que é importante o pequeno-almoço para as crianças?",ops:["Não é importante","Dá energia para aprender e brincar durante o dia","Só engorda","É opcional"],a:1},
+      {q:"O que é uma consulta de rotina?",ops:["Uma consulta de urgência","Uma visita regular ao médico para verificar a saúde","Um exame difícil","Uma cirurgia"],a:1},
+      {q:"Qual destes hábitos é saudável?",ops:["Passar 10 horas seguidas no ecrã","Lavar os dentes todos os dias","Comer só fast food","Não praticar desporto"],a:1},
+      {q:"O que deve uma criança fazer quando se sente triste ou ansiosa?",ops:["Esconder os sentimentos","Falar com um adulto de confiança","Ignorar","Ficar sozinha sempre"],a:1}
+    ],
+    natureza:[
+      {q:"As crianças têm direito a um ambiente:",ops:["Poluído","Saudável e sustentável","Artificial","Indiferente"],a:1},
+      {q:"O que podemos fazer para proteger o ambiente?",ops:["Deitar lixo no chão","Reciclar e poupar energia","Cortar todas as árvores","Desperdiçar água"],a:1},
+      {q:"Porque é importante proteger a natureza para as crianças?",ops:["Não é importante","Para terem um futuro melhor","Só é bonito","É desnecessário"],a:1},
+      {q:"O que são energias renováveis?",ops:["Energia do carvão","Energia do sol, vento e água","Energia nuclear","Energia do petróleo"],a:1},
+      {q:"Qual animal está em perigo de extinção?",ops:["Pombo","Formiga","Panda gigante","Galinha"],a:2},
+      {q:"O que significa '3Rs' do ambiente?",ops:["Rir, Relaxar, Repousar","Reduzir, Reutilizar, Reciclar","Rego, Rio, Riacho","Rapidez, Robustez, Rigor"],a:1},
+      {q:"O que são alterações climáticas?",ops:["Mudanças no tempo apenas de manhã","Mudanças no clima global causadas por atividade humana","Alterações na moda","Mudanças nas horas de aulas"],a:1},
+      {q:"Qual destes gestos poupa água?",ops:["Deixar a torneira aberta","Fechar a torneira enquanto se lava os dentes","Encher a banheira todos os dias","Regar as plantas com mangueira"],a:1},
+      {q:"O que é a biodiversidade?",ops:["Variedade de aparelhos eletrónicos","Variedade de espécies vivas num ecossistema","Tipos de minerais","Diversidade de países"],a:1},
+      {q:"Qual é o principal gás causador do efeito de estufa?",ops:["Oxigénio","Dióxido de carbono (CO₂)","Azoto","Hidrogénio"],a:1},
+      {q:"O que é uma floresta tropical?",ops:["Um deserto frio","Um ecossistema com muita chuva e biodiversidade","Um tipo de jardim urbano","Uma plantação de palmeiras"],a:1},
+      {q:"Porque devemos separar o lixo em casa?",ops:["É obrigatório por lei mas inútil","Para facilitar a reciclagem e reduzir o desperdício","Para ocupar mais espaço","Apenas por estética"],a:1},
+      {q:"O que faz um oceano limpo para as crianças?",ops:["Nada de especial","Garante peixe saudável, ar limpo e praias seguras","Só serve para nadar","É apenas decorativo"],a:1},
+      {q:"Qual destes é um animal marinho em perigo?",ops:["Gato doméstico","Tartaruga-marinha","Cão pastor","Porco"],a:1},
+      {q:"O que é compostagem?",ops:["Um tipo de dança","Processo de transformar resíduos orgânicos em adubo","Uma técnica de pintura","Um jogo de equipa"],a:1}
+    ],
+    sonhos:[
+      {q:"Todas as crianças têm direito a:",ops:["Apenas brincar","Ter sonhos e persegui-los","Não ter esperança","Só trabalhar"],a:1},
+      {q:"O que impede as crianças de realizarem sonhos?",ops:["Esforço","Pobreza, discriminação e falta de oportunidades","Ter amigos","Estudar"],a:1},
+      {q:"O que devemos dizer a uma criança que quer ser astronauta?",ops:["Isso é impossível","Trabalha para isso, é possível!","Desiste","Sonhos são inúteis"],a:1},
+      {q:"Quem foi a primeira mulher a ir ao espaço?",ops:["Marie Curie","Valentina Tereshkova","Amelia Earhart","Rosa Parks"],a:1},
+      {q:"O que é necessário para realizar um sonho?",ops:["Sorte apenas","Esforço, perseverança e apoio","Dinheiro apenas","Nada, acontece sozinho"],a:1},
+      {q:"Malala Yousafzai ficou famosa por lutar por qual direito?",ops:["Direito ao voto","Direito à alimentação","Direito à educação das raparigas","Direito ao desporto"],a:2},
+      {q:"Qual profissão estuda as estrelas e o universo?",ops:["Biólogo","Astrónomo","Geógrafo","Historiador"],a:1},
+      {q:"O que é a perseverança?",ops:["Desistir ao primeiro obstáculo","Continuar a tentar mesmo quando é difícil","Pedir sempre ajuda","Copiar pelos outros"],a:1},
+      {q:"Qual destes é um exemplo de seguir um sonho?",ops:["Desistir dos estudos","Treinar todos os dias para ser atleta olímpico","Nunca tentar nada novo","Ficar em casa sempre"],a:1},
+      {q:"O que é a criatividade?",ops:["Copiar ideias dos outros","Capacidade de criar coisas novas e originais","Fazer sempre o mesmo","Seguir só as regras"],a:1},
+      {q:"Por que os sonhos das crianças são importantes?",ops:["Não são importantes","Motivam-nas a aprender, crescer e mudar o mundo","São apenas fantasias inúteis","Só interessam aos adultos"],a:1},
+      {q:"Qual cientista português ficou famoso por explorar o mundo?",ops:["Luís de Camões","Vasco da Gama","Fernando Pessoa","Eça de Queirós"],a:1},
+      {q:"O que faz uma criança resiliente?",ops:["Nunca enfrenta desafios","Supera as dificuldades e aprende com elas","Chora sem parar","Evita tudo que é difícil"],a:1},
+      {q:"Qual destes é um sonho que pode ajudar o mundo?",ops:["Poluir mais","Ser cientista e curar doenças","Desperdiçar recursos","Ignorar os outros"],a:1},
+      {q:"A imaginação das crianças é:",ops:["Um problema","Um superpoder que pode mudar o futuro","Algo a eliminar","Apenas para bebés"],a:1}
+    ],
+    mundo:[
+      {q:"A Convenção sobre os Direitos da Criança foi aprovada em:",ops:["1948","1979","1989","2000"],a:2},
+      {q:"Quantos países ratificaram a Convenção dos Direitos da Criança?",ops:["Menos de 50","Cerca de 100","Mais de 190","Só 10"],a:2},
+      {q:"A paz é um direito das crianças?",ops:["Não","Sim, todas as crianças merecem viver em paz","Só em alguns países","Apenas para adultos"],a:1},
+      {q:"O que é o UNICEF?",ops:["Uma empresa de brinquedos","Fundo da ONU para a Infância","Um país","Uma escola internacional"],a:1},
+      {q:"Em que data se celebra o Dia Universal da Criança?",ops:["1 de junho","20 de novembro","15 de agosto","25 de dezembro"],a:1},
+      {q:"Quantos artigos tem a Convenção sobre os Direitos da Criança?",ops:["10 artigos","25 artigos","54 artigos","100 artigos"],a:2},
+      {q:"Qual é o idioma mais falado no mundo?",ops:["Inglês","Mandarim","Espanhol","Francês"],a:1},
+      {q:"Em quantos continentes vivem crianças?",ops:["3","5","7","Apenas 1"],a:2},
+      {q:"O que é cultura?",ops:["Só a língua de um povo","Tradições, língua, arte e modo de vida de um povo","Apenas a comida típica","Só a roupa tradicional"],a:1},
+      {q:"Qual destes é um direito de TODAS as crianças do mundo?",ops:["Ter um iate","Ter um nome e uma nacionalidade","Viver num palácio","Ter 10 irmãos"],a:1},
+      {q:"O que é a ONU?",ops:["Uma organização desportiva","Organização das Nações Unidas, para a paz e cooperação","Uma empresa privada","Um partido político"],a:1},
+      {q:"Por que se celebra o Dia dos Direitos da Criança a 20 de novembro?",ops:["Foi o aniversário de uma criança famosa","Nesse dia foi aprovada a Convenção pela ONU em 1989","É um dia inventado pelas lojas","Escolhido aleatoriamente"],a:1},
+      {q:"O que é a cidadania global?",ops:["Ter passaporte de todos os países","Sentido de responsabilidade pelo bem de toda a humanidade","Viajar muito","Falar muitas línguas"],a:1},
+      {q:"Qual organização protege especialmente os refugiados?",ops:["FIFA","ACNUR (Alto Comissariado da ONU para Refugiados)","UEFA","NASA"],a:1},
+      {q:"O que são crianças refugiadas?",ops:["Crianças ricas em férias","Crianças forçadas a fugir do seu país por guerra ou perseguição","Crianças que viajam por turismo","Crianças desaparecidas em jogos"],a:1}
+    ]
+  };
+
+  const FACTS={
+    parque:["O 1 de junho é o Dia Mundial da Criança, celebrado desde 1950 por iniciativa da ONU. É um dia para reafirmar os direitos das crianças em todo o mundo!","Brincar é tão importante para o desenvolvimento das crianças que está garantido como direito no Artigo 31.º da Convenção sobre os Direitos da Criança da ONU.","Os brinquedos mais antigos encontrados pelos arqueólogos têm mais de 4000 anos — as crianças sempre gostaram de brincar!"],
+    circo:["O circo tem mais de 2000 anos de história. As primeiras referências a espetáculos de circo surgem na Roma Antiga.","O palhaço é um dos personagens mais amados pelas crianças em todo o mundo. A arte da palhaçaria é reconhecida como Património da Humanidade pela UNESCO.","Muitas escolas de circo em Portugal ensinam crianças a fazer malabarismo, acrobacia e outras artes circenses como forma de expressão artística."],
+    arte:["A arte é fundamental no desenvolvimento das crianças: melhora a coordenação motora, a criatividade, a autoexpressão e até a matemática!","Portugal tem um rico programa de educação artística nas escolas, incluindo Expressão Plástica no 1.º ciclo, que inclui pintura, escultura e outras formas de arte.","As crianças até aos 6 anos produzem arte de forma completamente intuitiva — é uma das formas mais puras de expressão humana!"],
+    educacao:["A Convenção sobre os Direitos da Criança (ONU, 1989) estabelece no Artigo 28.º que todas as crianças têm direito a educação gratuita e obrigatória no ensino básico.","Em Portugal, a escolaridade obrigatória vai do 1.º ano até ao 12.º ano (ou 18 anos). É um dos maiores investimentos que um país pode fazer no seu futuro!","244 milhões de crianças no mundo não frequentam a escola — quase o dobro da população europeia. Muitas são raparigas ou vivem em zonas de conflito."],
+    amizade:["O Artigo 15.º da Convenção dos Direitos da Criança garante às crianças o direito de se associar livremente e de se reunir com outras crianças.","O bullying afeta 1 em cada 3 crianças no mundo. Combatê-lo começa por cada um de nós, incluindo as crianças, que podem ajudar os colegas em dificuldade.","A amizade tem benefícios comprovados para a saúde mental das crianças: reduz a ansiedade, melhora a autoestima e desenvolve habilidades sociais essenciais."],
+    saude:["O Artigo 24.º da Convenção dos Direitos da Criança garante o direito à saúde e a cuidados médicos. Nenhuma criança deve sofrer por falta de acesso a médicos.","Em Portugal, o Serviço Nacional de Saúde (SNS) garante cuidados de saúde gratuitos a todas as crianças, incluindo consultas, vacinas e urgências.","A vacinação é uma das maiores conquistas da humanidade: erradicou a varíola e quase eliminou a poliomielite, salvando milhões de vidas infantis por ano."],
+    natureza:["As crianças de hoje serão os adultos que enfrentarão as maiores consequências das alterações climáticas. É por isso que proteger o ambiente é um ato de amor pelas crianças.","Em 2021, o Tribunal Europeu dos Direitos Humanos reconheceu que as alterações climáticas ameaçam os direitos fundamentais das crianças.","Portugal comprometeu-se a atingir a neutralidade carbónica até 2050. As crianças portuguesas de hoje verão esse futuro!"],
+    sonhos:["Segundo a ONU, as crianças têm o direito de participar nas decisões que afetam as suas vidas. Os seus sonhos e opiniões devem ser ouvidos!","Malala Yousafzai, paquistanesa, lutou pelo direito das raparigas à educação e tornou-se a mais jovem Nobel da Paz com 17 anos — prova de que os sonhos das crianças podem mudar o mundo!","Em Portugal, o Parlamento dos Jovens é um programa que permite que jovens estudantes participem em debates como se fossem deputados — os sonhos políticos também contam!"],
+    mundo:["A Convenção sobre os Direitos da Criança foi aprovada pela ONU em 20 de novembro de 1989 e é o tratado de direitos humanos mais ratificado da história — mais de 196 países a assinaram!","O Unicef (Fundo das Nações Unidas para a Infância) trabalha em mais de 190 países para garantir os direitos das crianças, especialmente em zonas de conflito e pobreza.","Em Portugal, o 20 de novembro é também o Dia Nacional dos Direitos da Criança, celebrado em escolas por todo o país com atividades sobre os 54 artigos da Convenção."]
+  };
+
+  function openKidQuiz(usedIndices, attempt){
+    usedIndices=usedIndices||[]; attempt=attempt||1;
+    const quizList=QUIZ_DATA[currentThemeKey]||[];
+    if(!quizList.length){ completeLevel(); return; }
+    const available=quizList.map((_,i)=>i).filter(i=>!usedIndices.includes(i));
+    const pool=available.length?available:quizList.map((_,i)=>i);
+    const qIdx=pool[Math.floor(Math.random()*pool.length)];
+    const q=quizList[qIdx];
+    const newUsed=[...usedIndices,qIdx];
+    const attemptLabel=attempt===1?"1.ª tentativa":attempt===2?"2.ª tentativa ✨":attempt===3?"3.ª tentativa 💪":`${attempt}.ª tentativa 🔥`;
+    const opts=q.ops.map((text,i)=>({text,correct:i===q.a}));
+    for(let i=opts.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[opts[i],opts[j]]=[opts[j],opts[i]];}
+    let popup=document.getElementById("popup-door-quiz");
+    let inner=document.getElementById("popup-door-quiz-inner");
+    if(!popup){
+      popup=document.createElement("div");
+      popup.id="popup-door-quiz";
+      popup.style.cssText="position:fixed;inset:0;background:rgba(8,3,20,0.85);display:flex;align-items:center;justify-content:center;z-index:9500;backdrop-filter:blur(4px);";
+      inner=document.createElement("div");
+      inner.id="popup-door-quiz-inner";
+      inner.style.cssText="background:linear-gradient(155deg,#2d0e52,#1a0835);border:3px solid #ff6b35;outline:2px solid #ffd700;outline-offset:-5px;border-radius:20px;padding:22px 24px;max-width:440px;width:92%;text-align:left;box-shadow:0 0 0 2px rgba(255,215,0,0.3),8px 8px 0 #0a0520,0 0 60px rgba(255,107,53,.3);font-family:'Fredoka One',cursive;color:#FFD700;position:relative;";
+      popup.appendChild(inner);
+      document.body.appendChild(popup);
+    }
+    popup.style.display="flex";
+    inner.innerHTML=`
+      <div style="font-size:2.2rem;text-align:center;margin-bottom:8px;animation:popIn .3s cubic-bezier(.34,1.56,.64,1);">🚪🌟</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <div style="font-size:.75rem;color:#ff6b35;text-transform:uppercase;letter-spacing:.07em;font-weight:400;font-family:'Fredoka One',cursive;">🔒 Porta Mágica</div>
+        <div id="dq-attempt-badge" style="font-size:.72rem;font-family:'Fredoka One',cursive;padding:3px 12px;border-radius:999px;background:rgba(255,107,53,0.15);border:1px solid rgba(255,107,53,0.5);color:#ffb890;">${attemptLabel}</div>
+      </div>
+      <div style="font-size:.92rem;color:#FFD700;font-weight:400;line-height:1.6;margin-bottom:16px;font-family:'Fredoka One',cursive;">${q.q}</div>
+      <div id="dq-opts" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        ${opts.map(opt=>`<button data-correct="${opt.correct}" style="padding:10px 12px;border-radius:12px;border:2px solid rgba(255,107,53,0.4);background:rgba(255,107,53,0.1);color:#FFD700;font-size:.78rem;cursor:pointer;font-family:'Nunito',sans-serif;font-weight:700;text-align:center;line-height:1.4;transition:all .12s;-webkit-tap-highlight-color:transparent;">${opt.text}</button>`).join("")}
+      </div>
+      <div id="dq-feedback" style="font-size:.82rem;font-weight:700;min-height:22px;margin-top:12px;color:#FFD700;font-family:'Fredoka One',cursive;text-align:center;"></div>`;
+    inner.querySelectorAll("#dq-opts button").forEach(btn=>{
+      btn.addEventListener("click",()=>{
+        const ok=btn.getAttribute("data-correct")==="true";
+        const fb=inner.querySelector("#dq-feedback");
+        if(ok){
+          btn.style.background="rgba(67,160,71,0.25)"; btn.style.borderColor="#66BB6A"; btn.style.color="#A5D6A7"; btn.style.fontWeight="900";
+          inner.querySelectorAll("#dq-opts button").forEach(b=>{b.disabled=true;});
+          if(fb){fb.style.color="#81C784";fb.textContent="✅ Muito bem! A porta mágica abre-se! 🎉";}
+          playTone("quizOk");
+          setTimeout(()=>{ popup.style.display="none"; doorQuizOpen=false; completeLevel(); },900);
+        } else {
+          inner.querySelectorAll("#dq-opts button").forEach(b=>{
+            b.disabled=true; b.style.pointerEvents="none";
+            if(b.getAttribute("data-correct")==="true"){
+              b.style.background="rgba(67,160,71,0.25)"; b.style.borderColor="#66BB6A"; b.style.color="#A5D6A7"; b.style.fontWeight="900";
+            }
+          });
+          btn.style.background="rgba(229,57,53,0.25)"; btn.style.borderColor="#EF5350"; btn.style.color="#EF9A9A";
+          const correctBtn=inner.querySelector("#dq-opts button[data-correct='true']");
+          const correctText=correctBtn?correctBtn.textContent:"";
+          if(fb){fb.style.color="#EF9A9A";fb.innerHTML=`❌ Era: <span style="color:#A5D6A7;font-weight:900;">${correctText}</span> — Vem aí outra...`;}
+          playTone("quizErr");
+          setTimeout(()=>openKidQuiz(newUsed, attempt+1), 1800);
+        }
+      });
+    });
+  }
+
+  function completeLevel(){
+    playSound("soundVictory");
+    shouldDanceOnRender=true; renderGrid();
+    const lvls=levelsFor(currentCycleKey,currentTheme);
+    const prog=loadProgress(currentCycleKey,currentThemeKey);
+    if(!prog.levels) prog.levels={};
+    const li=currentLevelIndex;
+    if(!prog.levels[li]) prog.levels[li]={};
+    prog.levels[li].completed=true;
+    prog.levels[li].bestMoves=Math.min(moveCount, prog.levels[li].bestMoves||99999);
+    prog.currentLevelIndex=Math.min(li+1,lvls.length-1);
+    saveProgress(currentCycleKey,currentThemeKey,prog);
+    updateThemeProgressUI(); updateSideProgress();
+    const stars=currentMinMoves!==null?
+      (moveCount<=currentMinMoves?3:moveCount<=currentMinMoves*1.5?2:1):1;
+    showPopup(stars, lvls[li]);
+  }
+
+  function showPopup(stars, levelBase){
+    const pop=$("popup-complete"); if(!pop) return;
+    const pt=$("popup-title");
+    if(pt) pt.textContent=stars===3?"🌟 Missão perfeita!":stars===2?"⭐ Muito bem!":"✅ Missão cumprida!";
+    const ptxt=$("popup-text");
+    const starMsgs={
+      3:[`Perfeito! ${moveCount} movimentos — o mínimo absoluto! 🏆 És incrível!`,`Resolveste com o número mínimo de movimentos! Génio! 🎯`],
+      2:[`Muito bem! ${moveCount} mov. (mínimo: ${currentMinMoves}). Quase perfeito! 💪`,`Excelente resolução em ${moveCount} movimentos! ⭐`],
+      1:[`Conseguiste em ${moveCount} movimentos${currentMinMoves!==null?` (mínimo: ${currentMinMoves})`:``}. Continua a praticar! 🌱`,`Missão completa em ${moveCount} movimentos. Podes fazer melhor! 🎯`]
+    };
+    const msgs=starMsgs[stars]||starMsgs[1];
+    if(ptxt) ptxt.textContent=msgs[Math.floor(Math.random()*msgs.length)];
+    [1,2,3].forEach(i=>{
+      const s=$("popup-star"+i); if(s){ s.classList.remove("lit"); if(i<=stars) setTimeout(()=>s.classList.add("lit"),i*220); }
+    });
+    const pf=$("popup-fact");
+    const facts=FACTS[currentThemeKey]||[];
+    if(facts.length){ pf.style.display="block"; pf.textContent="💡 "+facts[currentLevelIndex%facts.length]; }
+    else pf.style.display="none";
+    const qs=$("popup-quiz-section"); if(qs) qs.style.display="none";
+    const pnext=$("popup-next"); if(pnext) pnext.style.display="inline-flex";
+    pop.classList.remove("hidden");
+    launchConfetti();
+  }
+
+  function launchConfetti(){
+    const wrap=$("popup-confetti"); if(!wrap) return;
+    wrap.innerHTML="";
+    const colors=["#FF6B9D","#FFD700","#4FC3F7","#66BB6A","#CE93D8","#FFA726","#FF8A65","#80DEEA","#ffffff"];
+    for(let i=0;i<60;i++){
+      const p=document.createElement("div");
+      const x=Math.random()*100, y=-10-Math.random()*20;
+      const size=Math.random()*9+3;
+      const color=colors[Math.floor(Math.random()*colors.length)];
+      const dur=Math.random()*1.8+0.8, del=Math.random()*1.0;
+      const shapeRng=Math.random();
+      const shape=shapeRng>0.7?`border-radius:50%;`
+        :shapeRng>0.4?`border-radius:2px;transform:rotate(${Math.random()*360}deg);`
+        :`width:${size*0.4}px;height:${size*1.8}px;border-radius:2px;transform:rotate(${Math.random()*360}deg);`;
+      const drift=(Math.random()-0.5)*60;
+      p.style.cssText=`position:absolute;left:${x}%;top:${y}%;width:${size}px;height:${size}px;background:${color};${shape}animation:confettiFall${i} ${dur}s ${del}s ease-in forwards;pointer-events:none;`;
+      wrap.appendChild(p);
+      // Inject individual keyframe for drift
+      const kfId="cf"+i;
+      if(!document.getElementById(kfId)){
+        const s=document.createElement("style"); s.id=kfId;
+        s.textContent=`@keyframes confettiFall${i}{to{top:115%;opacity:0;transform:rotate(${360+Math.random()*360}deg) translateX(${drift}px);}}`;
+        document.head.appendChild(s);
+      }
+    }
+  }
+
+  function showAllCompleted(){
+    setFeedback("🏆 Parabéns! Completaste todos os níveis deste tema!","ok");
+    shouldDanceOnRender=true; renderGrid();
+    const pop=$("popup-complete"); if(!pop) return;
+    const pt=$("popup-title"); if(pt) pt.textContent="Tema concluído! 🏆";
+    const ptxt=$("popup-text"); if(ptxt) ptxt.textContent="Incrível! Completaste todos os níveis! És um verdadeiro campeão! 🎉";
+    [1,2,3].forEach(i=>{ const s=$("popup-star"+i); if(s){ s.classList.remove("lit"); setTimeout(()=>s.classList.add("lit"),i*200); } });
+    const pf=$("popup-fact"); if(pf) pf.style.display="none";
+    pop.classList.remove("hidden");
+    launchBigCelebration();
+  }
+
+  function launchBigCelebration(){
+    launchConfetti();
+    // Extra floating stars overlay
+    let overlay=document.getElementById("big-celebrate-overlay");
+    if(!overlay){
+      overlay=document.createElement("div");
+      overlay.id="big-celebrate-overlay";
+      overlay.style.cssText="position:fixed;inset:0;pointer-events:none;z-index:9998;overflow:hidden;";
+      document.body.appendChild(overlay);
+    }
+    overlay.innerHTML="";
+    const emojis=["⭐","🌟","✨","🎉","🎊","🏆","🎈","💛","🩷","🌈"];
+    for(let i=0;i<50;i++){
+      const el=document.createElement("div");
+      const em=emojis[Math.floor(Math.random()*emojis.length)];
+      const x=Math.random()*100;
+      const size=Math.random()*1.5+0.8;
+      const dur=Math.random()*2+1.5;
+      const del=Math.random()*1.5;
+      el.style.cssText=`position:absolute;left:${x}%;top:-60px;font-size:${size}rem;animation:bigStarFall ${dur}s ${del}s ease-in forwards;`;
+      el.textContent=em;
+      overlay.appendChild(el);
+    }
+    if(!document.getElementById("bigCelebStyle")){
+      const style=document.createElement("style");
+      style.id="bigCelebStyle";
+      style.textContent=`@keyframes bigStarFall{0%{top:-60px;opacity:1;transform:rotate(0deg) scale(1);}100%{top:110%;opacity:0;transform:rotate(${Math.random()>0.5?360:-360}deg) scale(0.5);}}`;
+      document.head.appendChild(style);
+    }
+    // Play victory sound 3x
+    let count=0;
+    const iv=setInterval(()=>{
+      playSound("soundVictory"); count++;
+      if(count>=3) clearInterval(iv);
+    }, 500);
+    setTimeout(()=>{ if(overlay) overlay.innerHTML=""; }, 5000);
+  }
+
+  /* QUEUE MODE */
+  function renderQueue(){
+    const qc=$("queue-commands"); if(!qc) return;
+    qc.innerHTML="";
+    queuedCommands.forEach((cmd)=>{
+      const span=document.createElement("span"); span.className="queue-cmd";
+      span.textContent=cmd.label; qc.appendChild(span);
+    });
+    const rb=$("btn-run-queue"), ub=$("btn-undo-queue"), cb=$("btn-clear-queue");
+    const has=queuedCommands.length>0;
+    if(rb) rb.style.display=has?"inline-flex":"none";
+    if(ub) ub.style.display=has?"inline-flex":"none";
+    if(cb) cb.style.display=has?"inline-flex":"none";
+  }
+  function updateQueueUI(){ renderQueue(); }
+
+  async function executeQueue(){
+    if(runningQueue||queuedCommands.length===0) return;
+    runningQueue=true;
+    const cmds=[...queuedCommands]; queuedCommands=[];
+    renderQueue();
+    for(const cmd of cmds){
+      if(!runningQueue) break;
+      runSingleCommand(cmd.cmd);
+      await new Promise(r=>setTimeout(r,320));
+    }
+    runningQueue=false;
+  }
+
+  /* ===== EXTRA LEVELS GENERATOR ===== */
+  (function addExtraLevels(){
+    function rand(n){ return Math.floor(Math.random()*n); }
+    function makeLevel(size,diff){
+      const ic=diff>=3?4:diff===2?3:2, oc=diff>=3?10:diff===2?7:4;
+      const used=new Set();
+      function pos(){ let r,c,k; do{r=rand(size);c=rand(size);k=r+"-"+c;}while(used.has(k)); used.add(k);return[r,c]; }
+      const robot=pos(),deposit=[pos()],items=Array.from({length:ic},()=>pos()),obstacles=Array.from({length:oc},()=>pos());
+      const ds=["Médio","Difícil","Desafio"];
+      return{size,robot,items,deposit,obstacles,difficulty:ds[Math.min(diff,2)],desc:"Missão extra: apanha todos os itens e leva ao destino!",_generated:true};
+    }
+    Object.keys(GAME_DATA).forEach(ck=>{
+      const cycle=GAME_DATA[ck], extra=ck==="1c"?10:5;
+      Object.values(cycle.themes).forEach(theme=>{
+        theme._designedCount=theme.levels.length;
+        for(let i=0;i<extra;i++){
+          const size=ck==="1c"?6+rand(2):7+rand(2);
+          const diff=Math.min(3,Math.floor(i/2));
+          theme.levels.push(makeLevel(size,diff));
+        }
+      });
+    });
+  })();
+
+  /* ===== EVENT LISTENERS ===== */
+  const pnext=$("popup-next");
+  if(pnext) pnext.addEventListener("click",()=>{
+    const pop=$("popup-complete"); if(pop) pop.classList.add("hidden");
+    const lvls=levelsFor(currentCycleKey,currentTheme);
+    if(currentLevelIndex+1<lvls.length){ loadLevel(currentLevelIndex+1); }
+    else{
+      const s=currentCycleKey==="1c"?themes1cScreen:currentCycleKey==="2c"?themes2cScreen:themes3cScreen;
+      showScreen(s);
+    }
+  });
+  const pmenu=$("popup-menu");
+  if(pmenu) pmenu.addEventListener("click",()=>{ const pop=$("popup-complete"); if(pop) pop.classList.add("hidden"); showScreen(menuScreen); });
+
+  document.querySelectorAll(".cmd-btn").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      const cmd=btn.getAttribute("data-cmd"); if(!cmd||!currentTheme||!levelState) return;
+      if(isQueueMode()){
+        const lm={MOVE:"⬆️ Avançar",LEFT:"↩️ Virar esq.",RIGHT:"↪️ Virar dir.",COLLECT:"✋ Apanhar",DROP:"📥 Depositar",BACK:"⬇️ Recuar"};
+        queuedCommands.push({cmd,label:lm[cmd]||cmd}); renderQueue(); setFeedback("✅ Comando adicionado.","info");
+      } else { runSingleCommand(cmd); }
+    });
+  });
+
+  const runQ=$("btn-run-queue"); if(runQ) runQ.addEventListener("click",executeQueue);
+  const undQ=$("btn-undo-queue"); if(undQ) undQ.addEventListener("click",()=>{ if(queuedCommands.length>0){ queuedCommands.pop(); renderQueue(); setFeedback("↩ Último comando removido.","info"); } });
+  const clrQ=$("btn-clear-queue"); if(clrQ) clrQ.addEventListener("click",()=>{ queuedCommands=[]; renderQueue(); setFeedback("🧹 Sequência limpa.","info"); });
+
+  ["btn-back-menu-1c","btn-back-menu-2c","btn-back-menu-3c"].forEach(id=>{
+    const b=$(id); if(b) b.addEventListener("click",()=>showScreen(menuScreen));
+  });
+  const bmm=$("btn-main-menu"); if(bmm) bmm.addEventListener("click",()=>showScreen(menuScreen));
+  const bbt=$("btn-back-themes"); if(bbt) bbt.addEventListener("click",()=>{
+    const s=currentCycleKey==="1c"?themes1cScreen:currentCycleKey==="2c"?themes2cScreen:themes3cScreen;
+    showScreen(s);
+  });
+
+  $("btn-cycle-1c")?.addEventListener("click",()=>showScreen(themes1cScreen));
+  $("btn-cycle-2c")?.addEventListener("click",()=>showScreen(themes2cScreen));
+  $("btn-cycle-3c")?.addEventListener("click",()=>showScreen(themes3cScreen));
+
+  $("side-home")?.addEventListener("click",()=>showScreen(menuScreen));
+  $("side-1c")?.addEventListener("click",()=>showScreen(themes1cScreen));
+  $("side-2c")?.addEventListener("click",()=>showScreen(themes2cScreen));
+  $("side-3c")?.addEventListener("click",()=>showScreen(themes3cScreen));
+
+  document.querySelectorAll(".theme-card").forEach(card=>{
+    card.addEventListener("click",()=>{
+      const ck=card.getAttribute("data-cycle"), tk=card.getAttribute("data-theme");
+      currentCycleKey=ck; currentThemeKey=tk;
+      currentCycle=GAME_DATA[ck]; currentTheme=currentCycle.themes[tk];
+      const progress=loadProgress(ck,tk);
+      const lvls=levelsFor(ck,currentTheme);
+      currentLevelIndex=Math.min(progress.currentLevelIndex||0,Math.max(0,lvls.length-1));
+      const ct=$("crumb-theme"); if(ct) ct.textContent=currentTheme.name+" "+currentTheme.emoji;
+      showScreen(gameScreen); loadLevel(currentLevelIndex);
+    });
+  });
+
+  function resetQueue(){ runningQueue=false; queuedCommands=[]; renderQueue(); }
+
+  function doConfirm(msg,cb){
+    const box=document.createElement("div");
+    box.style.cssText="position:fixed;inset:0;background:rgba(45,27,105,0.5);display:flex;align-items:center;justify-content:center;z-index:9999;";
+    box.innerHTML=`<div style="background:linear-gradient(155deg,#fff,#FFF8E1);padding:20px 24px;border-radius:20px;text-align:center;max-width:320px;border:3px solid #FF8C00;box-shadow:0 10px 30px rgba(45,27,105,0.25);font-family:'Fredoka One',cursive;color:#2D1B69;">
+      <p style="font-size:.9rem;margin-bottom:14px;">${msg}</p>
+      <button id="conf-y" style="padding:6px 18px;border:none;background:linear-gradient(180deg,#FF6B9D,#E91E8C);border-radius:999px;cursor:pointer;margin-right:8px;font-weight:400;font-family:'Fredoka One',cursive;color:#fff;font-size:.85rem;">Sim!</button>
+      <button id="conf-n" style="padding:6px 18px;border:2px solid #FF8C00;background:transparent;border-radius:999px;cursor:pointer;font-weight:400;font-family:'Fredoka One',cursive;color:#7A4500;font-size:.85rem;">Não</button></div>`;
+    document.body.appendChild(box);
+    box.querySelector("#conf-n").onclick=()=>box.remove();
+    box.querySelector("#conf-y").onclick=()=>{ box.remove(); if(typeof cb==="function")cb(); };
+  }
+
+  const rlTopBtn=$("btn-reset-level-top");
+  if(rlTopBtn) rlTopBtn.addEventListener("click",()=>{
+    if(!currentTheme){setFeedback("Entra num nível para o reiniciar.","warn");return;}
+    doConfirm("🔁 Queres reiniciar o nível atual?",()=>{ runningQueue=false; resetQueue(); loadLevel(currentLevelIndex); setFeedback("↺ Nível reiniciado!","ok"); });
+  });
+  const rlBtn=$("btn-reset-level");
+  if(rlBtn) rlBtn.addEventListener("click",()=>{ if(!currentTheme) return; runningQueue=false; resetQueue(); loadLevel(currentLevelIndex); setFeedback("↺ Nível reiniciado!","ok"); });
+  const rtBtn=$("btn-reset-theme");
+  if(rtBtn) rtBtn.addEventListener("click",()=>{
+    if(!currentTheme){setFeedback("Escolhe primeiro um tema.","warn");return;}
+    doConfirm("🗑 Queres voltar ao nível 1 deste tema?",()=>{
+      const p=loadProgress(currentCycleKey,currentThemeKey);
+      p.currentLevelIndex=0; p.levels={};
+      saveProgress(currentCycleKey,currentThemeKey,p);
+      runningQueue=false; resetQueue(); loadLevel(0); setFeedback("✨ Tema reiniciado!","ok");
+    });
+  });
+
+  const muteBtn=$("btn-mute");
+  if(muteBtn) muteBtn.addEventListener("click",()=>{ isMuted=!isMuted; muteBtn.textContent=isMuted?"🔇 Sem som":"🔊 Som"; });
+
+
+
+  function updateSuperEasyBtn(){ const b=$("btn-super-easy"); if(b) b.textContent=superEasy1c?"🧸 Super Fácil: ON":"🧸 Super Fácil: OFF"; }
+  try{ superEasy1c=localStorage.getItem(SUPER_EASY_KEY)==="1"; }catch(e){}
+  updateSuperEasyBtn();
+  const seBtn=$("btn-super-easy");
+  if(seBtn) seBtn.addEventListener("click",()=>{
+    const next=!superEasy1c;
+    doConfirm(next?"🧸 Ativar modo super fácil para o 1.º Ciclo?":"Voltar ao modo normal do 1.º Ciclo?",()=>{
+      superEasy1c=next; try{localStorage.setItem(SUPER_EASY_KEY,next?"1":"0");}catch(e){}
+      updateSuperEasyBtn(); updateThemeProgressUI(); updateSideProgress();
+      if(currentCycleKey==="1c"&&currentTheme){ const lvls=levelsFor("1c",currentTheme); const p=loadProgress("1c",currentThemeKey); currentLevelIndex=Math.min(p.currentLevelIndex||0,Math.max(0,lvls.length-1)); loadLevel(currentLevelIndex); }
+      setFeedback(next?"🧸 Modo super fácil ativo!":"Modo normal ativo.","ok");
+    });
+  });
+
+  /* ── DICA ── */
+  function showHint(){
+    if(!levelState||!currentTheme) return;
+    // Find robot, items not collected, deposit, door
+    const {robot,items,obstacles,deposit,size}=levelState;
+    const remaining=items.filter(i=>!i.collected);
+    // Simple hint: highlight next target
+    // If carrying — go to deposit; if nothing to collect — go to door; else go to nearest item
+    let targetR, targetC, msg;
+    if(carriedItem){
+      targetR=deposit[0]; targetC=deposit[1];
+      msg="💡 Leva o item que tens ao destino!";
+    } else if(remaining.length===0&&allDeposited&&doorPos){
+      targetR=doorPos[0]; targetC=doorPos[1];
+      msg="💡 Todos entregues! Vai à porta de saída 🚪";
+    } else if(remaining.length>0){
+      // nearest item
+      let best=null, bestD=9999;
+      remaining.forEach(it=>{
+        const d=Math.abs(it.r-robot[0])+Math.abs(it.c-robot[1]);
+        if(d<bestD){bestD=d;best=it;}
+      });
+      targetR=best.r; targetC=best.c;
+      msg="💡 Vai apanhar o item em destaque!";
+    } else {
+      setFeedback("💡 Entrega os itens ao destino primeiro!","info"); return;
+    }
+    // Highlight target cell and robot
+    const g=$("grid"); if(!g) return;
+    const cells=g.querySelectorAll(".cell");
+    cells.forEach((cell,idx)=>{
+      const r=Math.floor(idx/size), c=idx%size;
+      if(r===targetR&&c===targetC) cell.classList.add("hint-highlight");
+      if(r===robot[0]&&c===robot[1]) cell.classList.add("hint-highlight");
+    });
+    setFeedback(msg,"info");
+    setTimeout(()=>cells.forEach(cell=>cell.classList.remove("hint-highlight")),2200);
+  }
+
+  const hintBtn=$("btn-hint");
+  if(hintBtn) hintBtn.addEventListener("click",showHint);
+
+  document.addEventListener("keydown",e=>{
+    if(!gameScreen||gameScreen.classList.contains("hidden")) return;
+    if(!currentTheme||!levelState||runningQueue) return;
+    if((e.key==="z"||e.key==="Z")&&!isQueueMode()){ undoLastMove(); return; }
+    const km={"ArrowUp":"MOVE","w":"MOVE","W":"MOVE","ArrowDown":"BACK","s":"BACK","S":"BACK","ArrowLeft":"LEFT","a":"LEFT","A":"LEFT","ArrowRight":"RIGHT","d":"RIGHT","D":"RIGHT","e":"COLLECT","E":"COLLECT","f":"DROP","F":"DROP"};
+    const cmd=km[e.key]; if(!cmd) return;
+    if(cmd==="BACK"&&isQueueMode()) return;
+    if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key)) e.preventDefault();
+    const btn=document.querySelector(`.cmd-btn[data-cmd="${cmd}"]`);
+    if(btn){ btn.classList.add("cmd-btn-active"); setTimeout(()=>btn.classList.remove("cmd-btn-active"),180); }
+    if(isQueueMode()){
+      const lm={MOVE:"⬆️ Avançar",LEFT:"↩️ Virar esq.",RIGHT:"↪️ Virar dir.",COLLECT:"✋ Apanhar",DROP:"📥 Depositar"};
+      queuedCommands.push({cmd,label:lm[cmd]||cmd}); renderQueue(); setFeedback("✅ Comando adicionado.","info");
+    } else { runSingleCommand(cmd); }
+  });
+
+  const undoDirect=$("btn-undo-direct");
+  if(undoDirect) undoDirect.addEventListener("click",()=>undoLastMove());
+
+  showScreen(menuScreen);
+  updateSideProgress();
+  updateThemeProgressUI();
+  setFeedback("🎉 Escolhe uma fase para começar a aventura do Dia da Criança!","info");
+
+  /* ── TOUCH SWIPE SUPPORT ── */
+  (function addSwipeSupport(){
+    const gw=document.querySelector(".grid-wrapper");
+    if(!gw) return;
+    let sx=0, sy=0, active=false;
+    gw.addEventListener("touchstart",(e)=>{
+      if(e.touches.length!==1) return;
+      sx=e.touches[0].clientX; sy=e.touches[0].clientY; active=true;
+    },{passive:true});
+    gw.addEventListener("touchmove",(e)=>{ if(active) e.preventDefault(); },{passive:false});
+    gw.addEventListener("touchend",(e)=>{
+      if(!active||!currentTheme||!levelState||runningQueue) return;
+      active=false;
+      const dx=e.changedTouches[0].clientX-sx, dy=e.changedTouches[0].clientY-sy;
+      const adx=Math.abs(dx), ady=Math.abs(dy);
+      if(Math.max(adx,ady)<25) return; // too short
+      e.preventDefault();
+      let swipeCmd;
+      if(adx>ady){ swipeCmd=dx>0?"RIGHT":"LEFT"; }
+      else { swipeCmd=dy>0?"BACK":"MOVE"; }
+      if(isQueueMode()){
+        const lm={MOVE:"⬆️ Avançar",LEFT:"↩️ Virar esq.",RIGHT:"↪️ Virar dir.",BACK:"⬇️ Recuar"};
+        queuedCommands.push({cmd:swipeCmd,label:lm[swipeCmd]||swipeCmd});
+        renderQueue(); setFeedback("✅ Swipe: "+lm[swipeCmd],"info");
+      } else {
+        runSingleCommand(swipeCmd);
+      }
+    },{passive:false});
+    // Also attach to the grid itself once it exists (re-attach on level load)
+    const origRender=window._origRenderGrid;
+  })();
+
+  /* ── LEVEL TRANSITION BANNER ── */
+  function showLevelBanner(msg){
+    let b=document.getElementById("level-banner");
+    if(!b){ b=document.createElement("div"); b.id="level-banner"; b.className="level-banner"; document.body.appendChild(b); }
+    b.textContent=msg; b.style.display="block";
+    b.style.animation="none"; void b.offsetWidth; b.style.animation="bannerIn .3s ease";
+    setTimeout(()=>{ b.style.animation="bannerOut .3s ease forwards"; setTimeout(()=>{b.style.display="none";},300); }, 2200);
+  }
+
+}); // fim DOMContentLoaded
+</script>
+</body>
+</html>
