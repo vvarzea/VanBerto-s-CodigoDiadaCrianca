@@ -264,7 +264,7 @@
     .cycle-card--1c:hover{transform:translateY(-5px) scale(1.02);box-shadow:0 0 0 1px #4ecb71,8px 8px 0 #040e08,0 0 40px rgba(78,203,113,0.45);}
     .cycle-card--1c .cycle-title{color:#4ecb71;text-shadow:0 0 14px rgba(78,203,113,0.5);}
     .cycle-card--1c .cycle-sub{color:rgba(78,203,113,0.75);}
-    .cycle-card--1c .chip{border-color:rgba(78,203,113,0.5);color:#4ecb71;background:rgba(78,203,113,0.15);font-weight:700;}
+    .cycle-card--1c .chip{border-color:#4ecb71!important;color:#4ecb71;background:none!important;font-weight:700;}
     .cycle-card--1c .side-prog{color:rgba(78,203,113,0.6)!important;}
 
     .cycle-card--2c{
@@ -275,7 +275,7 @@
     .cycle-card--2c:hover{transform:translateY(-5px) scale(1.02);box-shadow:0 0 0 1px #38bdf8,8px 8px 0 #030a10,0 0 40px rgba(56,189,248,0.45);}
     .cycle-card--2c .cycle-title{color:#38bdf8;text-shadow:0 0 14px rgba(56,189,248,0.5);}
     .cycle-card--2c .cycle-sub{color:rgba(56,189,248,0.75);}
-    .cycle-card--2c .chip{border-color:rgba(56,189,248,0.5);color:#38bdf8;background:rgba(56,189,248,0.15);font-weight:700;}
+    .cycle-card--2c .chip{border-color:#38bdf8!important;color:#38bdf8;background:none!important;font-weight:700;}
     .cycle-card--2c .side-prog{color:rgba(56,189,248,0.6)!important;}
 
     .cycle-card--3c{
@@ -286,13 +286,13 @@
     .cycle-card--3c:hover{transform:translateY(-5px) scale(1.02);box-shadow:0 0 0 1px #FF8C00,8px 8px 0 #0e0701,0 0 40px rgba(255,140,0,0.45);}
     .cycle-card--3c .cycle-title{color:#FF8C00;text-shadow:0 0 14px rgba(255,140,0,0.5);}
     .cycle-card--3c .cycle-sub{color:rgba(255,140,0,0.75);}
-    .cycle-card--3c .chip{border-color:rgba(255,140,0,0.5);color:#FF8C00;background:rgba(255,140,0,0.15);font-weight:700;}
+    .cycle-card--3c .chip{border-color:#FF8C00!important;color:#FF8C00;background:none!important;font-weight:700;}
     .cycle-card--3c .side-prog{color:rgba(255,140,0,0.6)!important;}
 
     .cycle-title{font-weight:400;display:flex;align-items:center;gap:8px;font-size:1.1rem;font-family:'Fredoka One',cursive;}
     .cycle-sub{font-size:.82rem;font-style:italic;margin-top:2px;}
     .chip-row{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px;}
-    .chip{border-radius:999px;padding:4px 12px;font-size:.72rem;font-family:'Fredoka One',cursive;border:1.5px solid;}
+    .chip{border-radius:999px;padding:4px 12px;font-size:.72rem;font-family:'Fredoka One',cursive;border:1.5px solid;background:none!important;}
 
     .back-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
     .breadcrumbs{display:flex;align-items:center;gap:4px;font-size:.75rem;color:var(--surface-text2);flex-wrap:wrap;}
@@ -1949,9 +1949,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const pd=$("pill-difficulty"); if(pd) pd.textContent="Dificuldade: "+(base.difficulty||"—");
     currentMinMoves=null;
     const to=$("tag-optimal"); if(to) to.textContent="🏁 Ótimo: a calcular…";
+    const capturedThemeKey=currentThemeKey;
     bfsOptimalAsync(base, doorPos, (result)=>{
       // Verificar que o nível não mudou entretanto
-      if(levelState&&currentLevelIndex===idx&&currentThemeKey===currentTheme?.name||true){
+      if(levelState&&currentLevelIndex===idx&&currentThemeKey===capturedThemeKey){
         currentMinMoves=result;
         if(to) to.textContent="🏁 Ótimo: "+(result!==null?result+" mov.":"—");
       }
@@ -1962,7 +1963,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if(isQueueMode()){ if(qb) qb.classList.remove("hidden"); updateQueueUI(); }
     else{ if(qb) qb.classList.add("hidden"); }
     const ub=$("btn-undo-direct"); if(ub) ub.style.display=isQueueMode()?"none":"inline-flex";
-    const bb=$("btn-cmd-back"); if(bb) bb.style.display=isQueueMode()?"none":"flex";
+    const bb=$("btn-cmd-back"); if(bb) bb.style.display="flex";
     renderGrid(); setFeedback("📍 Nível "+(idx+1)+" de "+lvls.length+" — "+currentTheme.name,"info");
     if(idx>0) setTimeout(()=>showLevelBanner("🎯 Nível "+(idx+1)+" — "+currentTheme.name+" "+currentTheme.emoji),100);
     const g=$("grid"); if(g){ g.classList.remove("level-fade-in"); void g.offsetWidth; g.classList.add("level-fade-in"); }
@@ -2096,8 +2097,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const rem=items.filter(i=>!i.collected).length;
       if(rem>0) ht.textContent=`${rem} ${rem>1?"itens":"item"} por apanhar. Leva ao portal 🌀!`;
       else if(carriedItem) ht.textContent="Leva o item ao portal 🌀 e deposita!";
-      else if(!allDeposited) ht.textContent="Entrega o último item ao portal 🌀!";
-      else ht.textContent="🎉 Todos os itens entregues! Responde à pergunta do portal! 🌟";
+      else if(!allDeposited) ht.textContent="Leva o item ao portal 🌀 e deposita!";
+      else ht.textContent="🎉 Todos os itens entregues! Responde à pergunta do portal! ✨";
     }
   }
 
@@ -2306,6 +2307,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const s=moveHistory.pop();
     levelState.robot=[...s.robot]; dir=s.dir; carriedItem=s.carriedItem; moveCount=s.moveCount;
     levelState.items=s.items.map(it=>({...it})); allDeposited=s.allDeposited;
+    // Se regressámos a um estado antes de depositar tudo, fechar o quiz e resetar flag
+    if(!s.allDeposited){ doorQuizOpen=false; const dq=document.getElementById("popup-door-quiz"); if(dq) dq.style.display="none"; }
     updateMoves(); renderGrid(); setFeedback("↩ Movimento desfeito.","info");
   }
 
@@ -2329,7 +2332,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if(obstacles.some(o=>o[0]===nr&&o[1]===nc)){ playSound("soundBump"); setFeedback("⛔ Há um obstáculo! Contorna-o.","warn"); renderGrid(); if(window._vbReact) window._vbReact('vb-shake'); return; }
     robot[0]=nr; robot[1]=nc; moveCount++; updateMoves(); playSound("soundMove"); setFeedback("⬆️ Robô avançou.","info");
     if(window._vbReact) window._vbReact('vb-bump');
-    renderGrid(); checkStuck();
+    renderGrid(); checkStuck(); checkDoor(nr,nc);
   }
 
   function moveBackward(){
@@ -2340,7 +2343,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if(obstacles.some(o=>o[0]===nr&&o[1]===nc)){ playSound("soundBump"); setFeedback("⛔ Há um obstáculo! Contorna-o.","warn"); renderGrid(); if(window._vbReact) window._vbReact('vb-shake'); return; }
     robot[0]=nr; robot[1]=nc; moveCount++; updateMoves(); playSound("soundMove"); setFeedback("⬇️ Robô recuou.","info");
     if(window._vbReact) window._vbReact('vb-bump');
-    renderGrid(); checkStuck();
+    renderGrid(); checkStuck(); checkDoor(nr,nc);
   }
 
   function collectEffect(emoji){
@@ -2411,7 +2414,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if(window._vbReact) window._vbReact('vb-spin');
     const rem=items.filter(i=>!i.collected).length;
     if(rem===0){
-      allDeposited=true; doorQuizOpen=true; renderGrid();
+      allDeposited=true; doorQuizOpen=true; runningQueue=false; renderGrid();
       setFeedback("🌟 Todos os itens entregues! Responde à pergunta do portal!","ok");
       setTimeout(()=>{ if(doorQuizOpen) openKidQuiz(); },400);
     } else {
@@ -2620,7 +2623,7 @@ document.addEventListener("DOMContentLoaded", () => {
       popup.appendChild(inner);
       document.body.appendChild(popup);
     }
-    popup.style.display="flex";
+    popup.style.display="flex"; popup.style.opacity="1"; popup.style.pointerEvents="auto";
     inner.innerHTML=`
       <div style="font-size:2.2rem;text-align:center;margin-bottom:8px;animation:popIn .3s cubic-bezier(.34,1.56,.64,1);">🌀✨</div>
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
@@ -2797,6 +2800,18 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   function updateQueueUI(){ renderQueue(); }
 
+  // Executa um único comando sem verificar runningQueue
+  // (usado durante a execução da sequência)
+  function _execCmd(cmd){
+    if(!levelState||doorQuizOpen) return;
+    if(cmd==="MOVE") moveForward();
+    else if(cmd==="BACK") moveBackward();
+    else if(cmd==="LEFT"){ dir=(dir+3)%4; playSound("soundMove"); setFeedback("↩️ Virou à esquerda.","info"); moveCount++; updateMoves(); renderGrid(); if(window._vbReact) window._vbReact('vb-bump'); }
+    else if(cmd==="RIGHT"){ dir=(dir+1)%4; playSound("soundMove"); setFeedback("↪️ Virou à direita.","info"); moveCount++; updateMoves(); renderGrid(); if(window._vbReact) window._vbReact('vb-bump'); }
+    else if(cmd==="COLLECT"){ grabItem(); }
+    else if(cmd==="DROP"){ dropItem(); }
+  }
+
   async function executeQueue(){
     if(runningQueue||queuedCommands.length===0) return;
     runningQueue=true;
@@ -2805,8 +2820,9 @@ document.addEventListener("DOMContentLoaded", () => {
     try{
       for(const cmd of cmds){
         if(!runningQueue) break;
-        runSingleCommand(cmd.cmd);
-        await new Promise(r=>setTimeout(r,320));
+        if(doorQuizOpen) break;
+        _execCmd(cmd.cmd);
+        await new Promise(r=>setTimeout(r,340));
       }
     } catch(e){
       console.error("Erro ao executar sequência:",e);
@@ -2819,9 +2835,26 @@ document.addEventListener("DOMContentLoaded", () => {
   (function addExtraLevels(){
     function rand(n){ return Math.floor(Math.random()*n); }
 
-    /* BFS simples de acessibilidade: verifica se todos os pontos-alvo
-       são alcançáveis a partir do robô, ignorando obstáculos entre si.
-       Retorna true se o nível é possível (todas as células livres ligadas). */
+    /* Calcula o doorPos da mesma forma que computeDoorPos() */
+    function getDoorPos(size, robotPos, depositPos, obstacles){
+      const corners=[[0,0],[0,size-1],[size-1,0],[size-1,size-1]];
+      const obs=obstacles||[];
+      const free=corners.filter(([r,c])=>{
+        if(obs.some(o=>o[0]===r&&o[1]===c)) return false;
+        if(depositPos[0]===r&&depositPos[1]===c) return false;
+        if(robotPos[0]===r&&robotPos[1]===c) return false;
+        return true;
+      });
+      const pool=free.length?free:corners;
+      return pool.reduce((best,p)=>{
+        const d=Math.abs(p[0]-depositPos[0])+Math.abs(p[1]-depositPos[1]);
+        const bd=Math.abs(best[0]-depositPos[0])+Math.abs(best[1]-depositPos[1]);
+        return d>bd?p:best;
+      },pool[0]);
+    }
+
+    /* BFS completo: verifica se robô consegue alcançar todos os pontos-chave
+       incluindo o doorPos (portal de saída) — não apenas o depositPos */
     function isLevelSolvable(size, robotPos, items, depositPos, obstacles){
       const obsSet=new Set(obstacles.map(([r,c])=>r+","+c));
       const isBlocked=(r,c)=>r<0||r>=size||c<0||c>=size||obsSet.has(r+","+c);
@@ -2838,29 +2871,50 @@ document.addEventListener("DOMContentLoaded", () => {
           if(!isBlocked(nr,nc)&&!visited.has(k)){ visited.add(k); queue.push([nr,nc]); }
         }
       }
-      // Todos os itens e o depósito têm de ser alcançáveis
+      // Todos os itens têm de ser alcançáveis
       for(const [r,c] of items){ if(!visited.has(r+","+c)) return false; }
+      // O depositPos (portal) tem de ser alcançável
       if(!visited.has(depositPos[0]+","+depositPos[1])) return false;
+      // O doorPos (canto de saída) também tem de ser alcançável
+      const door=getDoorPos(size, robotPos, depositPos, obstacles);
+      if(!visited.has(door[0]+","+door[1])) return false;
+      // Verificação extra: pelo menos 40% das células devem estar livres
+      // para garantir que o nível não é um labirinto sem saída
+      const totalCells=size*size;
+      const freeCells=totalCells-obstacles.length-items.length-1-1; // -robot -deposit
+      if(freeCells/totalCells < 0.40) return false;
       return true;
     }
 
     function makeLevel(size,diff){
-      const ic=diff>=3?4:diff===2?3:2, oc=diff>=3?10:diff===2?7:4;
+      // Limitar obstáculos para garantir jogabilidade:
+      // diff 0=Médio: máx 4, diff 1=Difícil: máx 6, diff 2+=Desafio: máx 8
+      const ic=diff>=3?4:diff===2?3:2;
+      const maxObs=diff>=2?8:diff===1?6:4;
       const ds=["Médio","Difícil","Desafio"];
-      const MAX_ATTEMPTS=30;
+      const MAX_ATTEMPTS=50;
       for(let attempt=0;attempt<MAX_ATTEMPTS;attempt++){
         const used=new Set();
         function pos(){ let r,c,k; do{r=rand(size);c=rand(size);k=r+"-"+c;}while(used.has(k)); used.add(k);return[r,c]; }
         const robot=pos(), depositPos=pos();
         const items=Array.from({length:ic},()=>pos());
-        const obstacles=Array.from({length:oc},()=>pos());
+        // Gerar obstáculos até ao máximo, mas garantir que não bloqueiam cantos
+        const obstacles=[];
+        const corners=new Set([[0,0],[0,size-1],[size-1,0],[size-1,size-1]].map(([r,c])=>r+","+c));
+        for(let o=0;o<maxObs;o++){
+          let r,c,k;
+          let tries=0;
+          do{ r=rand(size); c=rand(size); k=r+"-"+c; tries++; }
+          while((used.has(k)||corners.has(k))&&tries<20);
+          if(!used.has(k)&&!corners.has(k)){ used.add(k); obstacles.push([r,c]); }
+        }
         if(isLevelSolvable(size, robot, items, depositPos, obstacles)){
           return{size,robot,items,deposit:[depositPos],obstacles,difficulty:ds[Math.min(diff,2)],desc:"Missão extra: apanha todos os itens e leva ao portal 🌀!",_generated:true};
         }
       }
-      // Fallback: nível simples garantidamente possível (sem obstáculos)
-      const used=new Set();
-      function safePos(){ let r,c,k; do{r=rand(size);c=rand(size);k=r+"-"+c;}while(used.has(k)); used.add(k);return[r,c]; }
+      // Fallback: nível simples sem obstáculos (sempre possível)
+      const used2=new Set();
+      function safePos(){ let r,c,k; do{r=rand(size);c=rand(size);k=r+"-"+c;}while(used2.has(k)); used2.add(k);return[r,c]; }
       const robot=safePos(), depositPos=safePos();
       const items=Array.from({length:ic},()=>safePos());
       return{size,robot,items,deposit:[depositPos],obstacles:[],difficulty:ds[Math.min(diff,2)],desc:"Missão extra: apanha todos os itens e leva ao portal 🌀!",_generated:true};
