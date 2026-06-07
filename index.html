@@ -1151,6 +1151,8 @@
     </div>
     <div class="header-btns">
       <button class="btn secondary small" id="btn-mute" data-tip="Ligar/desligar som">🔊 Som</button>
+      <button class="btn secondary small btn-touch-toggle" data-tip="Controlo táctil">📱 Botões: AUTO</button>
+      <button class="btn secondary small" id="btn-teacher-pause" data-tip="Pausar para a turma (P)" style="background:linear-gradient(180deg,#6c5ce7,#4a3ab8);border-color:#ffd700;">⏸️ Pausa</button>
       <button class="btn secondary small" id="btn-fullscreen" data-tip="Ecrã inteiro">⛶ Ecrã</button>
     </div>
   </header>
@@ -1316,6 +1318,7 @@
         <span class="pill" id="pill-difficulty">Dificuldade: —</span>
         <button class="btn secondary small" id="btn-reset-level-top">↺ Reiniciar</button>
         <button class="btn secondary small" id="btn-reset-theme">🗑 Recomeçar tema</button>
+        <button class="btn secondary small btn-touch-toggle" style="font-size:.72rem;">📱 Botões: AUTO</button>
       </div>
     </div>
 
@@ -2642,9 +2645,12 @@ document.addEventListener("DOMContentLoaded", () => {
         if(ok){
           btn.style.background="rgba(67,160,71,0.25)"; btn.style.borderColor="#66BB6A"; btn.style.color="#A5D6A7"; btn.style.fontWeight="900";
           inner.querySelectorAll("#dq-opts button").forEach(b=>{b.disabled=true;});
-          if(fb){fb.style.color="#81C784";fb.textContent="✅ Muito bem! A porta mágica abre-se! 🎉";}
+          const praise = window._getRandomPraise ? window._getRandomPraise() : "✅ Muito bem!";
+          if(fb){fb.style.color="#81C784";fb.textContent=`${praise} A porta mágica abre-se! 🎉`;}
           playTone("quizOk");
-          setTimeout(()=>{ popup.style.display="none"; doorQuizOpen=false; completeLevel(); },900);
+          // Starmelody na resposta correta!
+          setTimeout(()=>{ if(typeof playStarMelody === 'function') playStarMelody(); }, 200);
+          setTimeout(()=>{ popup.style.display="none"; doorQuizOpen=false; completeLevel(); },1100);
         } else {
           inner.querySelectorAll("#dq-opts button").forEach(b=>{
             b.disabled=true; b.style.pointerEvents="none";
@@ -2684,10 +2690,12 @@ document.addEventListener("DOMContentLoaded", () => {
   function showPopup(stars, levelBase){
     const pop=$("popup-complete"); if(!pop) return;
     const pt=$("popup-title");
-    if(pt) pt.textContent=stars===3?"🌟 Missão perfeita!":stars===2?"⭐ Muito bem!":"✅ Missão cumprida!";
+    const pName = (localStorage.getItem('mundocrianca_player')||'').trim();
+    const starTitle = stars===3?"🌟 Missão perfeita!":stars===2?"⭐ Muito bem!":"✅ Missão cumprida!";
+    if(pt) pt.textContent=pName ? `${starTitle} ${pName}!` : starTitle;
     const ptxt=$("popup-text");
     const starMsgs={
-      3:[`Perfeito! ${moveCount} movimentos — o mínimo absoluto! 🏆 És incrível!`,`Resolveste com o número mínimo de movimentos! Génio! 🎯`],
+      3:[`Perfeito! ${moveCount} movimentos — o mínimo absoluto! 🏆 ${window._getRandomPraise?window._getRandomPraise():'És incrível!'}`,`Resolveste com o número mínimo de movimentos! Génio! 🎯`],
       2:[`Muito bem! ${moveCount} mov. (mínimo: ${currentMinMoves}). Quase perfeito! 💪`,`Excelente resolução em ${moveCount} movimentos! ⭐`],
       1:[`Conseguiste em ${moveCount} movimentos${currentMinMoves!==null?` (mínimo: ${currentMinMoves})`:``}. Continua a praticar! 🌱`,`Missão completa em ${moveCount} movimentos. Podes fazer melhor! 🎯`]
     };
@@ -2737,10 +2745,17 @@ document.addEventListener("DOMContentLoaded", () => {
     shouldDanceOnRender=true; renderGrid();
     const pop=$("popup-complete"); if(!pop) return;
     const pt=$("popup-title"); if(pt) pt.textContent="Tema concluído! 🏆";
-    const ptxt=$("popup-text"); if(ptxt) ptxt.textContent="Incrível! Completaste todos os níveis! És um verdadeiro campeão! 🎉";
+    // Personalizar mensagem com nome do jogador
+    const pName = (localStorage.getItem('mundocrianca_player')||'').trim();
+    const ptxt=$("popup-text");
+    if(ptxt) ptxt.textContent=pName
+      ? `Parabéns, ${pName}! Completaste todos os níveis! És um verdadeiro campeão! 🎉`
+      : "Incrível! Completaste todos os níveis! És um verdadeiro campeão! 🎉";
     [1,2,3].forEach(i=>{ const s=$("popup-star"+i); if(s){ s.classList.remove("lit"); setTimeout(()=>s.classList.add("lit"),i*200); } });
     const pf=$("popup-fact"); if(pf) pf.style.display="none";
     pop.classList.remove("hidden");
+    // 🎵 Fanfarra final — inspirada no Dia da Criança
+    if(typeof playFinalFanfare === 'function') playFinalFanfare();
     launchBigCelebration();
   }
 
@@ -3400,8 +3415,318 @@ document.addEventListener("DOMContentLoaded", () => {
 
   })();
 
+
+  /* ══════════════════════════════════════════════════
+     🏫 MODO PROFESSOR — pausedByTeacher
+     Inspirado no Dia da Criança: permite pausar o jogo
+     sem interromper o estado, ideal para uso em sala.
+     Atalho: tecla P ou botão no header.
+  ══════════════════════════════════════════════════ */
+  let pausedByTeacher = false;
+
+  function teacherPause(force) {
+    pausedByTeacher = (force !== undefined) ? force : !pausedByTeacher;
+    const btn = document.getElementById('btn-teacher-pause');
+    const overlay = document.getElementById('teacher-pause-overlay');
+    if (pausedByTeacher) {
+      if (btn) { btn.textContent = '▶️ Continuar'; btn.classList.add('paused'); }
+      if (overlay) overlay.classList.remove('hidden');
+    } else {
+      if (btn) { btn.textContent = '⏸️ Pausa'; btn.classList.remove('paused'); }
+      if (overlay) overlay.classList.add('hidden');
+    }
+  }
+
+  const tPauseBtn = document.getElementById('btn-teacher-pause');
+  if (tPauseBtn) tPauseBtn.addEventListener('click', () => {
+    teacherPause();
+    if (!pausedByTeacher) playTone('move');
+  });
+
+  // Fechar overlay de pausa ao clicar nele
+  const tPauseOverlay = document.getElementById('teacher-pause-overlay');
+  if (tPauseOverlay) tPauseOverlay.addEventListener('click', (e) => {
+    if (e.target === tPauseOverlay) teacherPause(false);
+  });
+
+  // Tecla P para pausa
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'p' || e.key === 'P') {
+      if (e.target.matches('input, textarea')) return;
+      teacherPause();
+    }
+  });
+
+  /* ══════════════════════════════════════════════════
+     🔒 PAUSA AUTOMÁTICA AO MUDAR DE ABA
+     Inspirado no Dia da Criança: evita que crianças
+     joguem sem supervisão ao mudar de separador.
+  ══════════════════════════════════════════════════ */
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      // Parar execução de sequência se estiver a correr
+      if (runningQueue) { runningQueue = false; }
+    } else {
+      // Ao voltar — não retomar automaticamente se pausado pelo professor
+      if (!pausedByTeacher) {
+        // Verificar se há overlays abertos
+        const overlayIds = ['popup-complete', 'popup-door-quiz', 'teacher-pause-overlay', 'tutorial-overlay'];
+        const anyOpen = overlayIds.some(id => {
+          const el = document.getElementById(id);
+          return el && !el.classList.contains('hidden');
+        });
+        if (!anyOpen) {
+          // Dar feedback de que o jogo retomou
+          if (levelState) setFeedback('🎮 Jogo retomado! Bem-vindo de volta!', 'info');
+        }
+      }
+    }
+  });
+
+  /* ══════════════════════════════════════════════════
+     👁️ MUTATIONOBSERVER — gerir classe overlay-open
+     Inspirado no Dia da Criança: desativa inputs touch
+     quando um overlay está visível.
+  ══════════════════════════════════════════════════ */
+  function updateOverlayOpenClass() {
+    const overlayIds = ['popup-complete', 'popup-door-quiz', 'tutorial-overlay', 'teacher-pause-overlay'];
+    const anyOpen = overlayIds.some(id => {
+      const el = document.getElementById(id);
+      return el && !el.classList.contains('hidden');
+    });
+    document.body.classList.toggle('overlay-open', anyOpen);
+  }
+
+  const _overlayObserver = new MutationObserver(updateOverlayOpenClass);
+  ['popup-complete', 'popup-door-quiz', 'tutorial-overlay', 'teacher-pause-overlay'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) _overlayObserver.observe(el, { attributes: true, attributeFilter: ['class'] });
+  });
+  updateOverlayOpenClass();
+
+  /* ══════════════════════════════════════════════════
+     📱 TOGGLE CONTROLO TOUCH — force-touch / hide-touch
+     Inspirado no Dia da Criança: cicla entre AUTO → ON → OFF
+  ══════════════════════════════════════════════════ */
+  (function setupTouchToggle() {
+    let touchState = 'auto';
+    try { touchState = localStorage.getItem('mc_touch_state') || 'auto'; } catch(e) {}
+
+    function applyTouchState(state) {
+      touchState = state;
+      document.body.classList.toggle('force-touch', state === 'on');
+      document.body.classList.toggle('hide-touch', state === 'off');
+      const lbl = state === 'on' ? '📱 Botões: ON' : state === 'off' ? '📱 Botões: OFF' : '📱 Botões: AUTO';
+      document.querySelectorAll('.btn-touch-toggle').forEach(el => { el.textContent = lbl; });
+      try { localStorage.setItem('mc_touch_state', state); } catch(e) {}
+    }
+
+    function handleTouchToggle() {
+      const tc = document.querySelector('.dpad-wrapper');
+      const autoVisible = tc && getComputedStyle(tc).display !== 'none';
+      let next;
+      if (touchState === 'auto') { next = autoVisible ? 'off' : 'on'; }
+      else if (touchState === 'on') { next = 'off'; }
+      else { next = 'auto'; }
+      applyTouchState(next);
+    }
+
+    document.querySelectorAll('.btn-touch-toggle').forEach(el => {
+      el.addEventListener('click', handleTouchToggle);
+    });
+
+    // Aplicar estado guardado
+    applyTouchState(touchState);
+  })();
+
+  /* ══════════════════════════════════════════════════
+     🎵 SFX ENRIQUECIDOS — inspirados no Dia da Criança
+     Adicionados: starMelody (vitória grande), quizBell,
+     fanfarra final quando se completa um ciclo.
+  ══════════════════════════════════════════════════ */
+  function beepSFX({ freq=440, dur=0.08, type='square', vol=0.06, slideTo=null }) {
+    if (isMuted) return;
+    const ctx = getAudioCtx(); if(!ctx) return;
+    try { if(ctx.state==='suspended') ctx.resume(); } catch(e) {}
+    try {
+      const t0 = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, t0);
+      if (slideTo) osc.frequency.exponentialRampToValueAtTime(Math.max(1, slideTo), t0 + dur);
+      gain.gain.setValueAtTime(0.0001, t0);
+      gain.gain.exponentialRampToValueAtTime(vol, t0 + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.start(t0); osc.stop(t0 + dur + 0.02);
+    } catch(e) {}
+  }
+
+  function playStarMelody() {
+    // Melodia estilo Mario Star — ascendente/descendente
+    const notes = [
+      {f:659, d:0.10}, {f:740, d:0.10}, {f:830, d:0.10}, {f:880, d:0.10},
+      {f:932, d:0.10}, {f:1047,d:0.10}, {f:1175,d:0.10}, {f:1319,d:0.14},
+      {f:1175,d:0.10}, {f:1047,d:0.10}, {f:932, d:0.10}, {f:880, d:0.10},
+      {f:830, d:0.10}, {f:740, d:0.10}, {f:659, d:0.10}, {f:587, d:0.14}
+    ];
+    const step = 95;
+    notes.forEach(({f,d},i) => {
+      setTimeout(() => {
+        beepSFX({ freq:f, dur:d, type:'square', vol:0.055 });
+        if (i % 2 === 0) beepSFX({ freq:f*1.26, dur:d, type:'triangle', vol:0.018 });
+      }, i * step);
+    });
+  }
+
+  function playFinalFanfare() {
+    // Fanfarra final ao completar um ciclo completo
+    const seq=[560,700,840,1120,1050,840,1120,1400,1260,1400,1680,1400,1680,1900,1680,1900];
+    seq.forEach((n,i) => setTimeout(() =>
+      beepSFX({ freq:n, dur:i<4?0.08:i<8?0.10:0.13, type:i<8?'square':'triangle', vol:0.06, slideTo:n*1.12 }), i*95));
+    setTimeout(() => beepSFX({ freq:1900, dur:0.28, type:'triangle', vol:0.06, slideTo:2200 }), seq.length*95+80);
+    setTimeout(() => {
+      [560,840,1120].forEach((n,i)=>setTimeout(()=>beepSFX({freq:n,dur:0.35,type:'triangle',vol:0.05,slideTo:n*1.05}),i*60));
+    }, seq.length*95+500);
+  }
+
+  function playQuizBell() {
+    // Sino do quiz — 3 pings rápidos
+    [880, 1100, 1320].forEach((f, i) => {
+      setTimeout(() => beepSFX({ freq:f, dur:0.10, type:'triangle', vol:0.06, slideTo:f*1.05 }), i*110);
+    });
+  }
+
+  // Substituir som de vitória grande pela fanfarra
+  const _origShowAllCompleted = showAllCompleted;
+  window._overrideShowAllCompleted = true;
+
+  /* ══════════════════════════════════════════════════
+     🎬 TRANSIÇÃO DE NÍVEL MELHORADA
+     Flash de tela suave ao entrar num novo nível.
+  ══════════════════════════════════════════════════ */
+  function playLevelTransitionFlash(cb) {
+    let flash = document.getElementById('level-transition-flash');
+    if (!flash) {
+      flash = document.createElement('div');
+      flash.id = 'level-transition-flash';
+      flash.style.cssText = 'position:fixed;inset:0;background:#ffd700;opacity:0;pointer-events:none;z-index:9997;transition:opacity .15s;';
+      document.body.appendChild(flash);
+    }
+    flash.style.opacity = '0.35';
+    setTimeout(() => { flash.style.opacity = '0'; if(cb) setTimeout(cb, 150); }, 100);
+  }
+
+  // Interceptar loadLevel para adicionar transição
+  const _origLoadLevel = loadLevel;
+  window.loadLevel = function(idx) {
+    playLevelTransitionFlash(() => _origLoadLevel(idx));
+  };
+
+  /* ══════════════════════════════════════════════════
+     🔔 QUIZ — toca sino antes de abrir
+  ══════════════════════════════════════════════════ */
+  const _origOpenKidQuiz = openKidQuiz;
+  window.openKidQuiz = function(usedIndices, attempt) {
+    playQuizBell();
+    setTimeout(() => _origOpenKidQuiz(usedIndices, attempt), 330);
+  };
+
+  /* ══════════════════════════════════════════════════
+     💾 GUARDAR ESTADO COMPLETO (mute, nome, touch)
+  ══════════════════════════════════════════════════ */
+  function saveFullState() {
+    try {
+      localStorage.setItem('mc_game_state_v2', JSON.stringify({
+        isMuted,
+        playerName: localStorage.getItem('mundocrianca_player') || '',
+        superEasy: localStorage.getItem('kid_game_supereasy_v1') || '0',
+      }));
+    } catch(e) {}
+  }
+
+  // Auto-save a cada 30 segundos
+  setInterval(saveFullState, 30000);
+
+  // Guardar ao sair
+  window.addEventListener('beforeunload', saveFullState);
+
+  /* ══════════════════════════════════════════════════
+     🌟 ELOGIOS ALEATÓRIOS — banco mais rico
+  ══════════════════════════════════════════════════ */
+  const PRAISE_BANK = [
+    "🌟 Excelente!","🎈 Muito bem!","🧠 Que raciocínio!","🎊 Fantástico!",
+    "✨ Brilhante!","🎁 Continua assim!","🚀 Incrível!","💡 Que ideia!",
+    "🏆 Campeão!","🌈 Perfeito!","🤖 O VanBerto está orgulhoso!","⭐ Estrela!",
+    "🎯 No alvo!","💪 Que força!","🧩 Que lógica!"
+  ];
+  window._getRandomPraise = function() {
+    return PRAISE_BANK[Math.floor(Math.random() * PRAISE_BANK.length)];
+  };
+
 }); // fim DOMContentLoaded
+
+/* ══════════════════════════════════════════════════
+   CSS extra injetado via JS para as novas features
+   (overlay-open, force-touch, teacher-pause, flash)
+══════════════════════════════════════════════════ */
+(function injectExtraCSS() {
+  const style = document.createElement('style');
+  style.id = 'mc-extra-features-css';
+  style.textContent = `
+    /* overlay-open: desativa botões dpad enquanto popup aberto */
+    body.overlay-open .cmd-btn { pointer-events:none; opacity:0.5; }
+    body.overlay-open .dpad-wrapper { pointer-events:none; }
+
+    /* force-touch / hide-touch */
+    @media(min-width:601px) {
+      body.force-touch .dpad-wrapper { display:flex !important; }
+    }
+    body.hide-touch .dpad-wrapper { display:none !important; }
+
+    /* teacher pause overlay */
+    #teacher-pause-overlay {
+      position:fixed;inset:0;z-index:9996;
+      background:rgba(26,8,53,0.92);
+      display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
+      backdrop-filter:blur(6px);
+    }
+    #teacher-pause-overlay.hidden { display:none!important; }
+    #teacher-pause-overlay .tp-box {
+      background:linear-gradient(145deg,#2a0a4e,#1a0835);
+      border:3px solid #ffd700;
+      border-radius:22px;padding:32px 40px;text-align:center;
+      box-shadow:0 0 0 2px #ff6b35,8px 8px 0 #0a0520,0 0 60px rgba(255,215,0,0.3);
+      font-family:'Fredoka One',cursive;color:#ffd700;
+      animation:popIn .28s cubic-bezier(.34,1.56,.64,1);
+    }
+    #teacher-pause-overlay .tp-icon { font-size:3rem;margin-bottom:8px; }
+    #teacher-pause-overlay h2 { font-size:1.8rem;margin:0 0 8px; }
+    #teacher-pause-overlay p { font-size:.9rem;color:#FFB3D1;font-family:'Nunito',sans-serif;margin:0 0 20px; }
+
+    /* botão pausa professor com estado */
+    #btn-teacher-pause.paused {
+      background:linear-gradient(180deg,#4ecb71,#00b894)!important;
+      border-color:#ffd700!important;
+      box-shadow:4px 4px 0 #004433,0 0 14px rgba(78,203,113,0.4)!important;
+    }
+  `;
+  document.head.appendChild(style);
+})();
 </script>
+
+<!-- ── PAUSA PROFESSOR ── -->
+<div id="teacher-pause-overlay" class="hidden">
+  <div class="tp-box">
+    <div class="tp-icon">⏸️</div>
+    <h2>Jogo em Pausa</h2>
+    <p>A professora pausou o jogo.<br>Aguarda instruções para continuar.</p>
+    <button class="btn secondary" onclick="document.getElementById('btn-teacher-pause').click()" style="font-size:.95rem;padding:10px 28px;">
+      ▶️ Continuar a jogar
+    </button>
+  </div>
+</div>
 
 <!-- ── TUTORIAL OVERLAY ── -->
 <div id="tutorial-overlay" class="hidden">
