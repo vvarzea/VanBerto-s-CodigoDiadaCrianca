@@ -1159,19 +1159,16 @@
     }
 
     #scale-root {
-      width: 1920px;
+      /* Largura = largura real do conteúdo do jogo (#app max-width).
+         Usar 1120px em vez de 1920px evita que o scale fique
+         desnecessariamente pequeno em smartphones portrait. */
+      width: 1120px;
       transform-origin: top left;
       transform: scale(var(--game-scale));
       overflow-y: auto;
       overflow-x: hidden;
-      /* height definido dinamicamente pelo JS */
+      /* height e translateX definidos dinamicamente pelo JS */
       position: relative;
-    }
-
-    /* Impede que o landscape-warning escale (já é position:fixed relativo ao scale-root) */
-    #landscape-warning {
-      /* As coordenadas fixed ficam relativas ao #scale-root (ancestor com transform) */
-      /* Não é necessário ajuste adicional */
     }
   </style>
 </head>
@@ -3918,10 +3915,15 @@ document.addEventListener("DOMContentLoaded", () => {
 (function () {
   'use strict';
 
-  var DESIGN_W = 1920;
+  // Largura de referência = max-width do #app (conteúdo real do jogo).
+  // Usar o valor real do conteúdo em vez do canvas de design (1920px)
+  // evita que o scale fique < 0.25 em smartphones portrait.
+  var DESIGN_W = 1120;
   var DESIGN_H = 1080;
+
   var scaleRoot = document.getElementById('scale-root');
   var currentScale = 1;
+  var currentTranslateX = 0;  // offset para centrar horizontalmente
 
   /* ── Escala global ───────────────────────────────── */
   function applyScale() {
@@ -3930,27 +3932,33 @@ document.addEventListener("DOMContentLoaded", () => {
     var vw = window.innerWidth;
     var vh = window.innerHeight;
 
-    currentScale = Math.min(vw / DESIGN_W, vh / DESIGN_H);
+    // Escala uniforme: nunca ultrapassa 1 (não amplia além do natural)
+    currentScale = Math.min(vw / DESIGN_W, vh / DESIGN_H, 1);
 
-    // Altura interna: inverso da escala — garante que o
-    // conteúdo preenche exactamente o viewport após scale()
+    // Centrar horizontalmente: quando o jogo escalado é mais estreito
+    // que o viewport, adicionar margem igual em cada lado.
+    currentTranslateX = Math.max(0, (vw - DESIGN_W * currentScale) / 2);
+
+    // Altura interna: inverso da escala para preencher o viewport
     var innerH = Math.ceil(vh / currentScale);
 
-    scaleRoot.style.transform = 'scale(' + currentScale + ')';
+    scaleRoot.style.transformOrigin = 'top left';
+    scaleRoot.style.transform =
+      'translateX(' + currentTranslateX + 'px) scale(' + currentScale + ')';
     scaleRoot.style.height = innerH + 'px';
+
     document.documentElement.style.setProperty('--game-scale', currentScale);
   }
 
   /* ── Redirigir document.body.appendChild → #scale-root ──
-     Este override corre ANTES do DOMContentLoaded, por isso
-     intercepta todos os elementos criados dinamicamente pelo
-     jogo (quiz popup, confirmações, banner de nível, etc.)
-     e coloca-os dentro do contentor escalável.
+     Corre ANTES do DOMContentLoaded — intercepta todos os
+     elementos dinâmicos (quiz popup, confirmações, banner de
+     nível, overlay de celebração) e coloca-os no contentor
+     escalável.
 
-     Excepção: item-fly usa getBoundingClientRect() em
-     coordenadas de viewport; ajustamos as coordenadas
-     dividindo pelo factor de escala para compensar o
-     sistema de coordenadas do ancestor transformado.
+     item-fly usa getBoundingClientRect() em coordenadas de
+     viewport; convertemos para o espaço local do ancestor
+     transformado (divide por scale e subtrai o offset translateX).
   ─────────────────────────────────────────────────── */
   if (scaleRoot) {
     var _origBodyAppend = document.body.appendChild.bind(document.body);
@@ -3960,17 +3968,15 @@ document.addEventListener("DOMContentLoaded", () => {
         return _origBodyAppend(child);
       }
 
-      // item-fly: usa coordenadas de viewport (getBoundingClientRect)
-      // Ajustar left/top para o espaço local do ancestor escalado
       if (child.classList && child.classList.contains('item-fly')) {
+        // Coordenadas em viewport → espaço local do #scale-root
         var origLeft = parseFloat(child.style.left) || 0;
         var origTop  = parseFloat(child.style.top)  || 0;
-        child.style.left = (origLeft / currentScale) + 'px';
+        child.style.left = ((origLeft - currentTranslateX) / currentScale) + 'px';
         child.style.top  = (origTop  / currentScale) + 'px';
         return scaleRoot.appendChild(child);
       }
 
-      // Todos os outros elementos vão para #scale-root
       return scaleRoot.appendChild(child);
     };
   }
@@ -3978,9 +3984,6 @@ document.addEventListener("DOMContentLoaded", () => {
   /* ── Inicialização e listeners ───────────────────── */
   applyScale();
   window.addEventListener('resize', applyScale);
-
-  // Orientação em telemóveis — delay para o browser
-  // terminar a rotação antes de recalcular
   window.addEventListener('orientationchange', function () {
     setTimeout(applyScale, 120);
   });
