@@ -1136,9 +1136,47 @@
       .quiz-opt{padding:12px 14px;font-size:.82rem;}
       .back-row{flex-direction:column;align-items:flex-start;gap:6px;}
     }
+
+    /* ══════════════════════════════════════════════════
+       SISTEMA DE ESCALA GLOBAL — resolução ref. 1920×1080
+       Todos os elementos escalam proporcionalmente.
+       O body mantém o fundo animado; #scale-root
+       é o contentor escalável do jogo.
+    ══════════════════════════════════════════════════ */
+    :root { --game-scale: 1; }
+
+    html {
+      overflow: hidden;
+    }
+
+    body {
+      /* Sobrepõe min-height e overflow-x anteriores */
+      min-height: unset !important;
+      height: 100vh !important;
+      height: 100dvh !important;
+      overflow: hidden !important;
+      width: 100vw;
+    }
+
+    #scale-root {
+      width: 1920px;
+      transform-origin: top left;
+      transform: scale(var(--game-scale));
+      overflow-y: auto;
+      overflow-x: hidden;
+      /* height definido dinamicamente pelo JS */
+      position: relative;
+    }
+
+    /* Impede que o landscape-warning escale (já é position:fixed relativo ao scale-root) */
+    #landscape-warning {
+      /* As coordenadas fixed ficam relativas ao #scale-root (ancestor com transform) */
+      /* Não é necessário ajuste adicional */
+    }
   </style>
 </head>
 <body class="dark">
+<div id="scale-root">
 <div id="app">
   <header>
     <div>
@@ -3869,6 +3907,85 @@ document.addEventListener("DOMContentLoaded", () => {
   </svg>
   <div class="hero-glow"></div>
 </div>
+
+</div><!-- /#scale-root -->
+
+<!-- ══════════════════════════════════════════════════
+     SISTEMA DE ESCALA GLOBAL — resolução ref. 1920×1080
+     Sem alteração à lógica do jogo.
+══════════════════════════════════════════════════ -->
+<script>
+(function () {
+  'use strict';
+
+  var DESIGN_W = 1920;
+  var DESIGN_H = 1080;
+  var scaleRoot = document.getElementById('scale-root');
+  var currentScale = 1;
+
+  /* ── Escala global ───────────────────────────────── */
+  function applyScale() {
+    if (!scaleRoot) return;
+
+    var vw = window.innerWidth;
+    var vh = window.innerHeight;
+
+    currentScale = Math.min(vw / DESIGN_W, vh / DESIGN_H);
+
+    // Altura interna: inverso da escala — garante que o
+    // conteúdo preenche exactamente o viewport após scale()
+    var innerH = Math.ceil(vh / currentScale);
+
+    scaleRoot.style.transform = 'scale(' + currentScale + ')';
+    scaleRoot.style.height = innerH + 'px';
+    document.documentElement.style.setProperty('--game-scale', currentScale);
+  }
+
+  /* ── Redirigir document.body.appendChild → #scale-root ──
+     Este override corre ANTES do DOMContentLoaded, por isso
+     intercepta todos os elementos criados dinamicamente pelo
+     jogo (quiz popup, confirmações, banner de nível, etc.)
+     e coloca-os dentro do contentor escalável.
+
+     Excepção: item-fly usa getBoundingClientRect() em
+     coordenadas de viewport; ajustamos as coordenadas
+     dividindo pelo factor de escala para compensar o
+     sistema de coordenadas do ancestor transformado.
+  ─────────────────────────────────────────────────── */
+  if (scaleRoot) {
+    var _origBodyAppend = document.body.appendChild.bind(document.body);
+
+    document.body.appendChild = function (child) {
+      if (!child || child.nodeType !== 1) {
+        return _origBodyAppend(child);
+      }
+
+      // item-fly: usa coordenadas de viewport (getBoundingClientRect)
+      // Ajustar left/top para o espaço local do ancestor escalado
+      if (child.classList && child.classList.contains('item-fly')) {
+        var origLeft = parseFloat(child.style.left) || 0;
+        var origTop  = parseFloat(child.style.top)  || 0;
+        child.style.left = (origLeft / currentScale) + 'px';
+        child.style.top  = (origTop  / currentScale) + 'px';
+        return scaleRoot.appendChild(child);
+      }
+
+      // Todos os outros elementos vão para #scale-root
+      return scaleRoot.appendChild(child);
+    };
+  }
+
+  /* ── Inicialização e listeners ───────────────────── */
+  applyScale();
+  window.addEventListener('resize', applyScale);
+
+  // Orientação em telemóveis — delay para o browser
+  // terminar a rotação antes de recalcular
+  window.addEventListener('orientationchange', function () {
+    setTimeout(applyScale, 120);
+  });
+})();
+</script>
 
 </body>
 </html>
