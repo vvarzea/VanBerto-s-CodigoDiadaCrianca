@@ -1146,28 +1146,21 @@
     :root { --game-scale: 1; }
 
     html {
-      overflow: hidden;
+      /* overflow-y gerido pelo JS conforme o tamanho do ecrã */
+      overflow-x: hidden;
     }
 
     body {
-      /* Sobrepõe min-height e overflow-x anteriores */
       min-height: unset !important;
-      height: 100vh !important;
-      height: 100dvh !important;
-      overflow: hidden !important;
+      /* height e overflow-y geridos pelo JS */
+      overflow-x: hidden !important;
       width: 100vw;
     }
 
     #scale-root {
-      /* Largura = largura real do conteúdo do jogo (#app max-width).
-         Usar 1120px em vez de 1920px evita que o scale fique
-         desnecessariamente pequeno em smartphones portrait. */
-      width: 1120px;
+      /* Largura e transform definidos dinamicamente pelo JS */
       transform-origin: top left;
-      transform: scale(var(--game-scale));
-      overflow-y: auto;
       overflow-x: hidden;
-      /* height e translateX definidos dinamicamente pelo JS */
       position: relative;
     }
   </style>
@@ -1186,7 +1179,6 @@
     </div>
     <div class="header-btns">
       <button class="btn secondary small" id="btn-mute" data-tip="Ligar/desligar som">🔊 Som</button>
-      <button class="btn secondary small btn-touch-toggle" data-tip="Controlo táctil">📱 Botões: AUTO</button>
       <button class="btn secondary small" id="btn-teacher-pause" data-tip="Pausar para a turma (P)" style="background:linear-gradient(180deg,#6c5ce7,#4a3ab8);border-color:#ffd700;">⏸️ Pausa</button>
       <button class="btn secondary small" id="btn-fullscreen" data-tip="Ecrã inteiro">⛶ Ecrã</button>
     </div>
@@ -1353,7 +1345,6 @@
         <span class="pill" id="pill-difficulty">Dificuldade: —</span>
         <button class="btn secondary small" id="btn-reset-level-top">↺ Reiniciar</button>
         <button class="btn secondary small" id="btn-reset-theme">🗑 Recomeçar tema</button>
-        <button class="btn secondary small btn-touch-toggle" style="font-size:.72rem;">📱 Botões: AUTO</button>
       </div>
     </div>
 
@@ -3915,37 +3906,65 @@ document.addEventListener("DOMContentLoaded", () => {
 (function () {
   'use strict';
 
-  // Largura de referência = max-width do #app (conteúdo real do jogo).
-  // Usar o valor real do conteúdo em vez do canvas de design (1920px)
-  // evita que o scale fique < 0.25 em smartphones portrait.
+  // Largura do conteúdo do jogo (#app max-width)
   var DESIGN_W = 1120;
+  // Altura de referência para ecrãs grandes (controla scale vertical)
   var DESIGN_H = 1080;
 
   var scaleRoot = document.getElementById('scale-root');
   var currentScale = 1;
-  var currentTranslateX = 0;  // offset para centrar horizontalmente
+  var currentTranslateX = 0;
 
-  /* ── Escala global ───────────────────────────────── */
+  /* ══════════════════════════════════════════════════
+     DOIS MODOS:
+
+     ① MOBILE (vw < DESIGN_W)
+       – Sem transform scaling.
+       – #scale-root preenche 100 % da largura do viewport.
+       – O CSS responsivo existente (media queries até 480 px)
+         trata do layout. O utilizador pode fazer scroll vertical.
+
+     ② DESKTOP / TABLET LANDSCAPE (vw ≥ DESIGN_W)
+       – Scale down se a altura do ecrã for inferior a DESIGN_H.
+       – Nunca amplia além de 100 % (scale ≤ 1).
+       – Centra horizontalmente com translateX.
+       – overflow: hidden no body (sem scroll de página).
+  ══════════════════════════════════════════════════ */
   function applyScale() {
     if (!scaleRoot) return;
 
     var vw = window.innerWidth;
     var vh = window.innerHeight;
 
-    // Escala uniforme: nunca ultrapassa 1 (não amplia além do natural)
-    currentScale = Math.min(vw / DESIGN_W, vh / DESIGN_H, 1);
+    if (vw < DESIGN_W) {
+      /* ── MOBILE ── */
+      currentScale = 1;
+      currentTranslateX = 0;
+      scaleRoot.style.width = vw + 'px';
+      // scale(1) mantém o stacking context para os filhos
+      // com position:fixed ficarem relativos ao scale-root
+      scaleRoot.style.transform = 'scale(1)';
+      scaleRoot.style.height = 'auto';
+      // Permite scroll vertical no mobile
+      document.documentElement.style.overflow = 'auto';
+      document.body.style.height = 'auto';
+      document.body.style.overflowY = 'auto';
+    } else {
+      /* ── DESKTOP / TABLET LANDSCAPE ── */
+      // Scale apenas se a altura do ecrã não chegar para o conteúdo
+      currentScale = Math.min(vh / DESIGN_H, 1);
+      currentTranslateX = Math.max(0, (vw - DESIGN_W * currentScale) / 2);
+      var innerH = Math.ceil(vh / currentScale);
 
-    // Centrar horizontalmente: quando o jogo escalado é mais estreito
-    // que o viewport, adicionar margem igual em cada lado.
-    currentTranslateX = Math.max(0, (vw - DESIGN_W * currentScale) / 2);
-
-    // Altura interna: inverso da escala para preencher o viewport
-    var innerH = Math.ceil(vh / currentScale);
-
-    scaleRoot.style.transformOrigin = 'top left';
-    scaleRoot.style.transform =
-      'translateX(' + currentTranslateX + 'px) scale(' + currentScale + ')';
-    scaleRoot.style.height = innerH + 'px';
+      scaleRoot.style.width = DESIGN_W + 'px';
+      scaleRoot.style.transform =
+        'translateX(' + currentTranslateX + 'px) scale(' + currentScale + ')';
+      scaleRoot.style.height = innerH + 'px';
+      // Sem scroll de página — o scale-root faz overflow-y:auto internamente
+      document.documentElement.style.overflow = 'hidden';
+      document.body.style.height = '100vh';
+      document.body.style.overflowY = 'hidden';
+    }
 
     document.documentElement.style.setProperty('--game-scale', currentScale);
   }
@@ -3953,12 +3972,12 @@ document.addEventListener("DOMContentLoaded", () => {
   /* ── Redirigir document.body.appendChild → #scale-root ──
      Corre ANTES do DOMContentLoaded — intercepta todos os
      elementos dinâmicos (quiz popup, confirmações, banner de
-     nível, overlay de celebração) e coloca-os no contentor
-     escalável.
+     nível, overlay de celebração) e coloca-os dentro do
+     contentor com transform (para escalar com o resto).
 
-     item-fly usa getBoundingClientRect() em coordenadas de
-     viewport; convertemos para o espaço local do ancestor
-     transformado (divide por scale e subtrai o offset translateX).
+     item-fly: usa getBoundingClientRect() em coordenadas de
+     viewport. Convertemos para o espaço local do #scale-root
+     dividindo por currentScale e subtraindo currentTranslateX.
   ─────────────────────────────────────────────────── */
   if (scaleRoot) {
     var _origBodyAppend = document.body.appendChild.bind(document.body);
@@ -3969,7 +3988,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       if (child.classList && child.classList.contains('item-fly')) {
-        // Coordenadas em viewport → espaço local do #scale-root
         var origLeft = parseFloat(child.style.left) || 0;
         var origTop  = parseFloat(child.style.top)  || 0;
         child.style.left = ((origLeft - currentTranslateX) / currentScale) + 'px';
