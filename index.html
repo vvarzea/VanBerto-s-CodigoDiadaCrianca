@@ -2311,7 +2311,7 @@ document.addEventListener("DOMContentLoaded", () => {
     levelState.robot=[...s.robot]; dir=s.dir; carriedItem=s.carriedItem; moveCount=s.moveCount;
     levelState.items=s.items.map(it=>({...it})); allDeposited=s.allDeposited;
     // Se regressámos a um estado antes de depositar tudo, fechar o quiz e resetar flag
-    if(!s.allDeposited){ doorQuizOpen=false; const dq=document.getElementById("popup-door-quiz"); if(dq) dq.style.display="none"; }
+    if(!s.allDeposited){ doorQuizOpen=false; const dq=document.getElementById("popup-door-quiz"); if(dq){ dq.style.display="none"; updateOverlayOpenClass(); } }
     updateMoves(); renderGrid(); setFeedback("↩ Movimento desfeito.","info");
   }
 
@@ -2625,8 +2625,11 @@ document.addEventListener("DOMContentLoaded", () => {
       inner.style.cssText="background:linear-gradient(155deg,#2d0e52,#1a0835);border:3px solid #ff6b35;outline:2px solid #ffd700;outline-offset:-5px;border-radius:20px;padding:22px 24px;max-width:440px;width:92%;text-align:left;box-shadow:0 0 0 2px rgba(255,215,0,0.3),8px 8px 0 #0a0520,0 0 60px rgba(255,107,53,.3);font-family:'Fredoka One',cursive;color:#FFD700;position:relative;";
       popup.appendChild(inner);
       document.body.appendChild(popup);
+      if (typeof _overlayObserver !== 'undefined') {
+        _overlayObserver.observe(popup, { attributes: true, attributeFilter: ['class', 'style'] });
+      }
     }
-    popup.style.display="flex"; popup.style.opacity="1"; popup.style.pointerEvents="auto";
+    popup.style.display="flex"; popup.style.opacity="1"; popup.style.pointerEvents="auto"; updateOverlayOpenClass();
     inner.innerHTML=`
       <div style="font-size:2.2rem;text-align:center;margin-bottom:8px;animation:popIn .3s cubic-bezier(.34,1.56,.64,1);">🌀✨</div>
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
@@ -2650,7 +2653,7 @@ document.addEventListener("DOMContentLoaded", () => {
           playTone("quizOk");
           // Starmelody na resposta correta!
           setTimeout(()=>{ if(typeof playStarMelody === 'function') playStarMelody(); }, 200);
-          setTimeout(()=>{ popup.style.display="none"; doorQuizOpen=false; completeLevel(); },1100);
+          setTimeout(()=>{ popup.style.display="none"; doorQuizOpen=false; updateOverlayOpenClass(); completeLevel(); },1100);
         } else {
           inner.querySelectorAll("#dq-opts button").forEach(b=>{
             b.disabled=true; b.style.pointerEvents="none";
@@ -3492,7 +3495,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const overlayIds = ['popup-complete', 'popup-door-quiz', 'tutorial-overlay', 'teacher-pause-overlay'];
     const anyOpen = overlayIds.some(id => {
       const el = document.getElementById(id);
-      return el && !el.classList.contains('hidden');
+      if (!el) return false;
+      if (el.classList.contains('hidden')) return false;
+      if (el.style.display === 'none') return false;
+      return true;
     });
     document.body.classList.toggle('overlay-open', anyOpen);
   }
